@@ -1,0 +1,10 @@
+name: SurvivalGames
+author: maker56
+main: me.maker56.survivalgames.SurvivalGames
+version: Beta 1.0 R2
+softdepend: [WorldEdit,Vault,Multiverse-Core]
+
+commands:
+  sg:
+    description: SurvivalGames Main Command
+    aliases: [survivalgames,sg,hg,hungergames]
