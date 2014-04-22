@@ -367,7 +367,7 @@ public class PlayerListener implements Listener {
 		if(um.isPlaying(p.getName())) {
 			String message = event.getMessage().toLowerCase();
 			
-			if(message.startsWith("/sg")) {
+			if(message.startsWith("/sg") || message.startsWith("/hg") || message.startsWith("/survivalgames") || message.startsWith("/hungergames")) {
 				return;
 			} else if(message.startsWith("/list")) {
 				Game g = um.getUser(p.getName()).getGame();
