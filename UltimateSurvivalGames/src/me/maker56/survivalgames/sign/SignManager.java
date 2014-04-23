@@ -50,10 +50,12 @@ public class SignManager {
 		int a = 0;
 		for(String key : s) {
 			String[] split = key.split(":");
+			
 			Location loc = ConfigUtil.parseLocation(split[0]);
 			if(loc != null) {
 				signs.put(loc, split[1]);
 			}
+			
 			a++;
 		}
 		System.out.println("[SurvivalGames] " + a + " signs loaded!");
