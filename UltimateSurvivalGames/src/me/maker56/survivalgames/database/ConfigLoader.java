@@ -6,7 +6,6 @@ import java.util.List;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.game.GameState;
 
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class ConfigLoader {
@@ -177,9 +176,12 @@ public class ConfigLoader {
 		c.addDefault("Chestloot.C5", lvl5);
 		c.addDefault("Chest-Title", "Survival Chest");
 		
-		c.addDefault("Voting.Open-Item.Material", Material.CHEST);
-		c.addDefault("Voting.Open-Item.SubID", 0);
-		c.addDefault("Voting.Open-Item.Name", "&eRightclick to vote for an arena!");
+		ArrayList<String> allowedCmds = new ArrayList<>();
+		allowedCmds.add("/sg");
+		allowedCmds.add("/hg");
+		allowedCmds.add("/hungergames");
+		allowedCmds.add("/survivalgames");
+		c.addDefault("Allowed-Commands", allowedCmds);
 		
 		c.options().copyDefaults(true);
 		SurvivalGames.instance.saveConfig();

@@ -1,5 +1,7 @@
 package me.maker56.survivalgames.listener;
 
+import java.util.List;
+
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
@@ -360,16 +362,19 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
+	public static List<String> allowedCmds = SurvivalGames.instance.getConfig().getStringList("Allowed-Commands");
+	
 	@EventHandler
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		Player p = event.getPlayer();
-		
 		if(um.isPlaying(p.getName())) {
 			String message = event.getMessage().toLowerCase();
 			
-			if(message.startsWith("/sg") || message.startsWith("/hg") || message.startsWith("/survivalgames") || message.startsWith("/hungergames")) {
-				return;
-			} else if(message.startsWith("/list")) {
+			for(String cmd : allowedCmds) {
+				if(message.startsWith(cmd))
+					return;
+			}
+			if(message.startsWith("/list")) {
 				Game g = um.getUser(p.getName()).getGame();
 				p.sendMessage(MessageHandler.getMessage("game-player-list").replace("%0%", Integer.valueOf(g.getPlayingUsers()).toString()).replace("%1%", g.getAlivePlayers()));
 				event.setCancelled(true);
