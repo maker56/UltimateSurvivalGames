@@ -13,7 +13,6 @@ public class ConfigReloader {
 	public static void reloadConfig() {
 		ConfigLoader.reloadConfig();
 		PermissionHandler.reinitializeUsePermission();
-		ChestManager.reinitializeConfig();
 		PlayerListener.allowedCmds = SurvivalGames.instance.getConfig().getStringList("Allowed-Commands");
 	}
 	
@@ -32,6 +31,11 @@ public class ConfigReloader {
 	public static void reloadMessage() {
 		ConfigLoader.reloadMessages();
 		MessageHandler.reload();
+	}
+	
+	public static void reloadChestloot() {
+		ConfigLoader.reloadChests();
+		ChestManager.reinitializeConfig();
 	}
 
 }

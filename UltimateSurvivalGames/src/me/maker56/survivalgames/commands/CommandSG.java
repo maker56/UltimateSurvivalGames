@@ -15,6 +15,7 @@ import me.maker56.survivalgames.game.GameState;
 import me.maker56.survivalgames.game.phrase.IngamePhrase;
 import me.maker56.survivalgames.game.phrase.VotingPhrase;
 import me.maker56.survivalgames.user.User;
+import me.maker56.survivalgames.user.UserManager;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -65,6 +66,7 @@ public class CommandSG implements CommandExecutor {
 					return new ConfigArgument(sender, args).execute();
 				}
 				
+				// JOIN
 				if(args[0].equalsIgnoreCase("join")) {
 					
 					Player p = (Player)sender;
@@ -76,6 +78,8 @@ public class CommandSG implements CommandExecutor {
 					
 					SurvivalGames.userManger.joinGame(p, args[1]);
 					return true;
+					
+				// LEAVE
 				} else if(args[0].equalsIgnoreCase("leave")) {
 					Player p = (Player)sender;
 					User user = SurvivalGames.userManger.getUser(p.getName());
@@ -96,6 +100,8 @@ public class CommandSG implements CommandExecutor {
 					}
 					
 					return true;
+					
+				// VOTE
 				} else if(args[0].equalsIgnoreCase("vote")) {
 					Player p = (Player)sender;
 					
@@ -149,6 +155,8 @@ public class CommandSG implements CommandExecutor {
 					arena.setVotes(arena.getVotes() + 1);
 					p.sendMessage(MessageHandler.getMessage("game-success-vote").replace("%0%", arena.getName()));
 					return true;
+					
+				// LIST
 				} else if(args[0].equalsIgnoreCase("list")) {
 					if(!PermissionHandler.hasPermission(sender, Permission.LIST)) {
 						sender.sendMessage(MessageHandler.getMessage("no-permission"));
@@ -160,6 +168,33 @@ public class CommandSG implements CommandExecutor {
 					for(Game game : games) {
 						sender.sendMessage("§7- §6" + game.getName() + "§8: §e" + game.getState().toString() + " §7(§e" + game.getPlayingUsers() + "§7/§e" + game.getMaximumPlayers() + "§7)");
 					}
+					return true;
+					
+				// FORCE START
+				} else if(args[0].equalsIgnoreCase("start")) {
+					if(!PermissionHandler.hasPermission(sender, Permission.START)) {
+						sender.sendMessage(MessageHandler.getMessage("no-permission"));
+						return true;
+					}
+					Player p = (Player) sender;
+					
+					Game game = null;
+					if(args.length > 1) {
+						game = SurvivalGames.gameManager.getGame(args[1]);
+					} else {
+						UserManager um = SurvivalGames.userManger;
+						User u = um.getUser(p.getName());
+						if(u != null) {
+							game = u.getGame();
+						}
+					}
+					
+					if(game == null) {
+						p.sendMessage(MessageHandler.getMessage("game-not-found").replace("%0%", (args.length <= 1 ? "" : args[1])));
+						return true;
+					}
+					
+					game.forceStart(p);
 					return true;
 				}
 				

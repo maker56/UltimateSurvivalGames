@@ -31,7 +31,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 public class SurvivalGames extends JavaPlugin {
 	
 	public static SurvivalGames instance;
-	public static FileConfiguration messages, database, signs, reset;
+	public static FileConfiguration messages, database, signs, reset, chestloot;
 	
 	public static ArenaManager arenaManager;
 	public static GameManager gameManager;
@@ -92,6 +92,8 @@ public class SurvivalGames extends JavaPlugin {
 		new UpdateCheck(this, 61788);
 	}
 	
+	// VAULT
+	
 	private boolean setupEconomy() {
 		if(Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
@@ -102,6 +104,8 @@ public class SurvivalGames extends JavaPlugin {
 
         return (econ != null);
 	}
+	
+	// FILECONFIGURATION SAVE
 	
 	public static void saveMessages() {
 		try {
@@ -135,12 +139,44 @@ public class SurvivalGames extends JavaPlugin {
 		}
 	}
 	
+	public static void saveChests() {
+		try {
+			chestloot.save("plugins/SurvivalGames/chestloot.yml");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// WORLDEDIT
+	
 	public static WorldEditPlugin getWorldEdit() {
 		if(!pm.isPluginEnabled("WorldEdit")) {
 			return null;
 		} else {
 			return (WorldEditPlugin) pm.getPlugin("WorldEdit");
 		}
+	}
+	
+	// API
+	
+	public static GameManager getGameManager() {
+		return gameManager;
+	}
+	
+	public static ArenaManager getArenaManager() {
+		return arenaManager;
+	}
+	
+	public static ChestManager getChestManager() {
+		return chestManager;
+	}
+	
+	public static UserManager getUserManager() {
+		return userManger;
+	}
+	
+	public static SignManager getSignManager() {
+		return signManager;
 	}
 
 }

@@ -51,6 +51,7 @@ public class GameManager {
 		cfg.set(path + "Lobby-Time", lobbytime);
 		cfg.set(path + "Max-Voting-Arenas", maxVotingArenas);
 		cfg.set(path + "Required-Players-to-start", reqPlayers);
+		cfg.set(path + "Lobby", ConfigUtil.serializeLocation(p.getLocation(), true));
 		SurvivalGames.saveDataBase();
 		
 		p.sendMessage(MessageHandler.getMessage("game-created").replace("%0%", lobbyname));
@@ -174,9 +175,9 @@ public class GameManager {
 		int lobbytime = cfg.getInt(path + "Lobby-Time");
 		int maxVotingArenas = cfg.getInt(path + "Max-Voting-Arenas");
 		int reqplayers = cfg.getInt(path + "Required-Players-to-start");
+		boolean resetEnabled = true; // TODO IMPORTANT TODO
 		
-		
-		games.add(new Game(name, lobby, voting, lobbytime, maxVotingArenas, reqplayers, arenas));
+		games.add(new Game(name, lobby, voting, lobbytime, maxVotingArenas, reqplayers, arenas, resetEnabled));
 		return true;
 	}
 	

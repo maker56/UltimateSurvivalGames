@@ -23,10 +23,10 @@ import org.bukkit.entity.Player;
 public class SignManager {
 	
 	private String[] design = new String[4];
+	private String[] leaveDesign = new String[4];
 	private HashMap<Location, String> signs = new HashMap<>();
 	private HashMap<GameState, String> translations = new HashMap<>();
 	private boolean arena, playersleft;
-	private String leave;
 	
 	public SignManager() {
 		reload();
@@ -40,8 +40,12 @@ public class SignManager {
 		
 		arena = c.getBoolean("Sign.LeftClick.Show current arena");
 		playersleft = c.getBoolean("Sign.LeftClick.Show players remain");
-		leave = ChatColor.translateAlternateColorCodes('&', c.getString("Sign.LeavePrefix"));
 		
+		leaveDesign[0] = ChatColor.translateAlternateColorCodes('&', c.getString("Sign.LeavePrefix"));
+		for(int i = 2; i <= 4; i++) {
+			leaveDesign[i - 1] = ChatColor.translateAlternateColorCodes('&', c.getString("Sign.Leave.Line." + i));
+		}
+
 		for(String key : c.getConfigurationSection("Translations.").getKeys(false)) {
 			translations.put(GameState.valueOf(key), ChatColor.translateAlternateColorCodes('&', c.getString("Translations." + key)));
 		}
@@ -90,8 +94,8 @@ public class SignManager {
 		}
 	}
 	
-	public String getLeftSignPrefix() {
-		return leave;
+	public String[] getLeaveSignDesign() {
+		return leaveDesign;
 	}
 	
 	public String getLobby(Location loc) {

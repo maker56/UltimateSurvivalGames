@@ -6,6 +6,8 @@ public enum Permission {
 	
 	CONFIG("sg.config"),
 	
+	START("sg.start"),
+	
 	GAME("sg.game"),
 	LOBBY("sg.lobby"),
 	

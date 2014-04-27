@@ -33,7 +33,7 @@ public class ConfigArgument {
 		
 		if(args.length == 1) {
 			p.sendMessage(MessageHandler.getMessage("prefix") + "Configuration §7§m---§r §6Helpsite");
-			p.sendMessage("§8/§6sg config reload [MESSAGES/SIGNS/DATABASE] §7- §eCreates a game with the specify name!");
+			p.sendMessage("§8/§6sg config reload [MESSAGES/SIGNS/DATABASE/CONFIG/CHESTLOOT] §7- §eCreates a game with the specify name!");
 		} else {
 			if(args[1].equalsIgnoreCase("reload")) {
 				if(args.length == 2) {
@@ -59,8 +59,11 @@ public class ConfigArgument {
 				} else if(con.equalsIgnoreCase("config")) {
 					ConfigReloader.reloadConfig();
 					p.sendMessage(MessageHandler.getMessage("prefix") + "You've reloaded the config.yml successfully!");
+				} else if(con.equalsIgnoreCase("chestloot")) {
+					ConfigReloader.reloadChestloot();
+					p.sendMessage(MessageHandler.getMessage("prefix") + "You've reloaded the chestloot.yml successfully!");
 				} else {
-					p.sendMessage(MessageHandler.getMessage("config-error-name").replace("%0%", "/sg config reload [MESSAGES/SIGNS/DATABASE]"));
+					p.sendMessage(MessageHandler.getMessage("config-error-name").replace("%0%", "/sg config reload [MESSAGES/SIGNS/DATABASE/CONFIG/CHESTLOOT]"));
 					return true;
 				}
 				

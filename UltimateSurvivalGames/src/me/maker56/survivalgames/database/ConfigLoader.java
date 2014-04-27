@@ -6,6 +6,7 @@ import java.util.List;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.game.GameState;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class ConfigLoader {
@@ -16,6 +17,125 @@ public class ConfigLoader {
 		reloadDatabase();
 		reloadSigns();
 		reloadReset();
+		reloadChests();
+	}
+	
+	public static void reloadChests() {
+		FileConfiguration c = new DatabaseLoader("plugins/SurvivalGames", "chestloot.yml").getFileConfiguration();
+		SurvivalGames.chestloot = c;
+		
+		List<String> lvl1 = new ArrayList<>();
+		
+		lvl1.add(Material.WOOD_AXE + "");
+		lvl1.add(Material.LEATHER_BOOTS + "");
+		lvl1.add(Material.GOLD_HELMET + "");
+		lvl1.add(Material.APPLE + " 3");
+		lvl1.add(Material.ARROW + " 5");
+		c.addDefault("Chestloot.Level 1", lvl1);
+		
+		
+		List<String> lvl2 = new ArrayList<>();
+		
+		lvl2.add(Material.COOKED_BEEF +"");
+		lvl2.add(Material.RAW_CHICKEN + " 2");
+		lvl2.add(Material.COOKED_CHICKEN + "");
+		lvl2.add(Material.MUSHROOM_SOUP + "");
+		lvl2.add(Material.WOOD_SWORD + "");
+		lvl2.add(Material.GOLD_HELMET + "");
+		lvl2.add(Material.GOLD_LEGGINGS + "");
+		lvl2.add(Material.LEATHER_BOOTS + "");
+		lvl2.add(Material.GRILLED_PORK + " 2");
+		lvl2.add(Material.BOWL + "");
+		lvl2.add(Material.MELON + " 2");
+		lvl2.add(Material.RAW_CHICKEN + "");
+		
+		c.addDefault("Chestloot.Level 2", lvl2);
+		
+		
+		List<String> lvl3 = new ArrayList<>();
+		
+		lvl3.add(Material.MELON_BLOCK + "");
+		lvl3.add(Material.IRON_HELMET + "");
+		lvl3.add(Material.MELON + " 4");
+		lvl3.add(Material.GOLD_SWORD + "");
+		lvl3.add(Material.WEB + " 3");
+		lvl3.add(Material.CHAINMAIL_CHESTPLATE + "");
+		lvl3.add(Material.CHAINMAIL_BOOTS + "");
+		lvl3.add(Material.FISHING_ROD + "");
+		lvl3.add(Material.LEATHER_LEGGINGS + "");
+		lvl3.add(Material.ARROW + " 4");
+		lvl3.add(Material.GOLD_INGOT + " 2");
+		lvl3.add(Material.TNT + "");
+		lvl3.add(Material.DEAD_BUSH + "");
+		
+		c.addDefault("Chestloot.Level 3", lvl3);
+		
+		
+		List<String> lvl4 = new ArrayList<>();
+		
+		lvl4.add(Material.GOLD_INGOT + " 5");
+		lvl4.add(Material.IRON_CHESTPLATE + "");
+		lvl4.add(Material.IRON_BOOTS + "");
+		lvl4.add(Material.CHAINMAIL_HELMET + "");
+		lvl4.add(Material.FLINT_AND_STEEL + "");
+		lvl4.add(Material.GOLD_BOOTS + "");
+		lvl4.add(Material.STONE_SWORD + "");
+		lvl4.add(Material.WOOD_SWORD + "");
+		lvl4.add(Material.STRING + " 2");
+		
+		c.addDefault("Chestloot.Level 4", lvl4);
+		
+		
+		List<String> lvl5 = new ArrayList<>();
+		lvl5.add(Material.DIAMOND + " 2");
+		lvl5.add(Material.IRON_INGOT + "");
+		lvl5.add(Material.STICK + " 2");
+		lvl5.add(Material.CAKE + "");
+		lvl5.add(Material.FERMENTED_SPIDER_EYE + "");
+		lvl5.add(Material.BOW + ":168");
+		lvl4.add(Material.STONE_SWORD + " name:&eSword_of_Herobrine enchant:KNOCKBACK,1 enchant:DAMAGE_ALL,1");
+		lvl5.add(Material.POTION + " effect:heal,1,1");
+		lvl5.add(Material.POTION + " effect:jump,18,1 effect:speed,18,2 name:&ePotion_of_a_rabbit lore:&7Give_you_the//&7abilities_of_a_rabbit!");
+		c.addDefault("Chestloot.Level 5", lvl5);
+		
+		c.addDefault("Chest-Title", "Survival Chest");
+		c.options().header(
+				"##### UltimateSurvivalGames Chestloot Configuration #####\n" +
+				"\n" +
+				"## How does this work? ##\n" +
+				"The chestloot is splitted into 5 lists. You can add unlimited items to each list.\n" +
+				"In one chest can spawn up to 8 itemstacks. For each itemstack, the plugin choose\n" +
+				"one list. The following lists under this text have different spawn changes:\n" +
+				"\n" +
+				"Level 1: 40 %\n" +
+				"Level 2: 30 %\n" +
+				"Level 3: 15 %\n" +
+				"Level 4: 10 %\n" +
+				"Level 5: 5 %\n" +
+				"\n" +
+				"If the plugin has choosed a list for an itemstack, it takes a item random from the list.\n" +
+				"\n" +
+				"## How can I modify the items? ##\n" +
+				"You can add or remove items from all lists. But at least one item has to be on each list.\n" +
+				"\n" +
+				"## How do I format the items? ##\n" +
+				"MATERIAL/ITEMID[:SUBID] [AMOUNT] [SPECIAL THINGS]\n" +
+				"Here are some examples:\n" +
+				"\n" +
+				"# Normal Item:\n" +
+				"\"BREAD\" - is the same like \"BREAD 1\", \"BREAD:0 1\" or \"297:0 1\"\n" +
+				"\n" +
+				"# If you want to set a predefined durability-level, just change the subid:\n" +
+				"\"STONE_SWORD:10\" - This tool has already 10 uses lost.\n" +
+				"\n" +
+				"# You can also add enchantments to an item:\n" +
+				"\"STONE_SWORD enchant:KNOCKBACK,2 enchant:DAMAGE_ALL,3\" - This item has knockback 2 and sharpness 3! Note: Only the vanilla level of an enchantment can be used!\n" +
+				"\n" +
+				"# You can also set a custom name and lore for an item:\n" +
+				"\"EGG name:&eEaster_Egg lore:&7Throw//&7me!\" - This is an egg with a displayname \"Easter Egg\" and the lore \"Throw me\"! Note: Spaces are \"_\" and line breaks in lore the charakters \"//\"\n");
+		
+		c.options().copyDefaults(true);
+		SurvivalGames.saveChests();
 	}
 	
 	public static void reloadSigns() {
@@ -31,6 +151,9 @@ public class ConfigLoader {
 		c.addDefault("Sign.Line.4", "%currentplayers%/&7%requiredplayers%&r/%maxplayers%");
 		
 		c.addDefault("Sign.LeavePrefix", "&bSurvivalGames");
+		c.addDefault("Sign.Leave.Line.2", "");
+		c.addDefault("Sign.Leave.Line.3", "&oRightclick");
+		c.addDefault("Sign.Leave.Line.4", "&oto leave!");
 		
 		for(GameState state : GameState.values()) {
 			c.addDefault("Translations." + state.toString(), state.toString());
@@ -97,84 +220,10 @@ public class ConfigLoader {
 		
 		if(c.contains("Chest"))
 			c.set("Chest", null);
+		if(c.contains("Chestloot"))
+			c.set("Chestloot", null);
 		
-		List<String> lvl1 = new ArrayList<>();
-		
-		lvl1.add("271,1");
-		lvl1.add("301,1");
-		lvl1.add("314,1");
-		lvl1.add("32,2");
-		lvl1.add("287,2");
-		lvl1.add("376,2");
-		lvl1.add("260,3");
-		lvl1.add("262,5");
-		
-		c.addDefault("Chestloot.C1", lvl1);
-		
-		
-		List<String> lvl2 = new ArrayList<>();
-		
-		lvl2.add("364,1");
-		lvl2.add("365,2");
-		lvl2.add("366,1");
-		lvl2.add("282,1");
-		lvl2.add("268,1");
-		lvl2.add("314,1");
-		lvl2.add("316,1");
-		lvl2.add("301,1");
-		lvl2.add("320,2");
-		lvl2.add("281,1");
-		lvl2.add("360,2");
-		lvl2.add("363,1");
-		lvl2.add("262,3");
-		
-		c.addDefault("Chestloot.C2", lvl2);
-		
-		
-		List<String> lvl3 = new ArrayList<>();
-		
-		lvl3.add("103,1");
-		lvl3.add("306,1");
-		lvl3.add("360,4");
-		lvl3.add("283,1");
-		lvl3.add("30,3");
-		lvl3.add("303,1");
-		lvl3.add("305,1");
-		lvl3.add("398,1");
-		lvl3.add("300,1");
-		lvl3.add("262,4");
-		lvl3.add("266,2");
-		lvl3.add("46,1");
-		
-		c.addDefault("Chestloot.C3", lvl3);
-		
-		
-		List<String> lvl4 = new ArrayList<>();
-		
-		lvl4.add("266,5");
-		lvl4.add("307,1");
-		lvl4.add("309,1");
-		lvl4.add("302,1");
-		lvl4.add("259,1");
-		lvl4.add("215,1");
-		lvl4.add("317,1");
-		lvl4.add("272,1");
-		lvl4.add("268,1");
-		lvl4.add("249:3,1");
-		
-		c.addDefault("Chestloot.C4", lvl4);
-		
-		
-		List<String> lvl5 = new ArrayList<>();
-		lvl5.add("264,2");
-		lvl5.add("265,2");
-		lvl5.add("280,2");
-		lvl5.add("354,1");
-		lvl5.add("261:168,1");
-		lvl5.add("373:8261,1");
-		
-		c.addDefault("Chestloot.C5", lvl5);
-		c.addDefault("Chest-Title", "Survival Chest");
+
 		
 		ArrayList<String> allowedCmds = new ArrayList<>();
 		allowedCmds.add("/sg");
@@ -258,7 +307,7 @@ public class ConfigLoader {
 		c.addDefault("game-already-exists", "&cThe lobby %0% already exist!");
 		c.addDefault("game-created", "You've created the lobby %0% successfully!");
 		c.addDefault("game-spawn-set", "You've set the spawn for game %0% successfully!");
-		c.addDefault("game-set-spawn", "To set the lobby of this game, type /sg game setspawn %0%");
+		c.addDefault("game-set-spawn", "To set the spawn of this lobby, type /sg game setspawn %0%");
 		c.addDefault("game-not-found", "&cThe Game %0% does not exists!");
 		c.addDefault("game-must-enter", "&cYou must enter a name: %0%");
 		c.addDefault("game-vote", "Vote for an arena: &b/sg vote <ID>");

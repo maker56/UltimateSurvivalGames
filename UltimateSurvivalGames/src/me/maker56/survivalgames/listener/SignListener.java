@@ -38,10 +38,9 @@ public class SignListener implements Listener {
 			if(event.getLine(1).equalsIgnoreCase("join") ) {
 				SurvivalGames.signManager.addSign(p, event.getBlock().getLocation(), event.getLine(2));
 			} else if(event.getLine(1).equalsIgnoreCase("quit") || event.getLine(1).equalsIgnoreCase("leave")) {
-				event.setLine(0, sm.getLeftSignPrefix());
-				event.setLine(1, "");
-				event.setLine(2, "§oRightclick");
-				event.setLine(3, "§oto leave!");
+				for(int i = 0; i < sm.getLeaveSignDesign().length; i++) {
+					event.setLine(i, sm.getLeaveSignDesign()[i]);
+				}
 			}
 			
 			
@@ -67,9 +66,12 @@ public class SignListener implements Listener {
 				}
 			} else if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				Sign s = (Sign) b.getState();
-				if(s.getLine(0).equals(sm.getLeftSignPrefix()) && s.getLine(2).equals("§oRightclick") && s.getLine(3).equals("§oto leave!")) {
-					SurvivalGames.userManger.leaveGame(event.getPlayer());
+				String[] design = sm.getLeaveSignDesign();
+				for(int i = 0; i < design.length; i++) {
+					if(!s.getLine(i).equals(design[i]))
+						return;
 				}
+				SurvivalGames.userManger.leaveGame(event.getPlayer());
 			}
 		}
 	}

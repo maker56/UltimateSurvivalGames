@@ -28,7 +28,7 @@ public class Save extends Thread {
 	private long start;
 	
 	private BukkitTask task;
-	private int writeStepsDone, writeSteps;
+	private double writeStepsDone, writeSteps;
 	private String player;
 	
 	public Save(String lobby, String arena, Location min, Location max, String player) {
@@ -43,12 +43,14 @@ public class Save extends Thread {
 		task = Bukkit.getScheduler().runTaskTimer(SurvivalGames.instance, new Runnable() {
 			@SuppressWarnings("deprecation")
 			public void run() {
-				float percent = writeStepsDone / (writeSteps / 100);
+				float percent = Math.round((float) (writeStepsDone / (writeSteps / 100)));
+				if(percent > 100)
+					return;
 				Player p = Bukkit.getPlayer(player); // TODO
 				if(p != null)
 					p.sendMessage(MessageHandler.getMessage("prefix") + "§eArena save lobby " + lobby + " arena " + arena + ": " + percent + "% done...");
 			}
-		}, 60, 60);
+		}, 100, 200);
 	}
 	
 	private List<Chunk> chunks = new ArrayList<>();

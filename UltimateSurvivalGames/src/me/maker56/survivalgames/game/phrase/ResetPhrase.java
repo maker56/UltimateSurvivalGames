@@ -1,5 +1,6 @@
 package me.maker56.survivalgames.game.phrase;
 
+import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
 import me.maker56.survivalgames.reset.Reset;
@@ -33,7 +34,14 @@ public class ResetPhrase {
 			}
 		}
 		
-		new Reset(w, game.getName(), game.getCurrentArena().getName(), game.getChunksToReset()).start();
+		if(game.isResetEnabled()) {
+			new Reset(w, game.getName(), game.getCurrentArena().getName(), game.getChunksToReset()).start();
+		} else {
+			String name = game.getName();
+			SurvivalGames.gameManager.unload(game);
+			SurvivalGames.gameManager.load(name);
+			SurvivalGames.signManager.updateSigns();
+		}
 	}
 
 }

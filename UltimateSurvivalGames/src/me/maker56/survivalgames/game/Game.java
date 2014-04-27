@@ -21,7 +21,7 @@ public class Game {
 	
 	private String name;
 	private Location lobby;
-	private boolean voting;
+	private boolean voting, reset;
 	private int maxVotingArenas;
 	private List<Arena> arenas;
 	private int reqplayers, maxplayers;
@@ -39,13 +39,14 @@ public class Game {
 	private List<String> rChunks = new ArrayList<>();
 	public ArrayList<String> voted = new ArrayList<>();
 	
-	public Game(String name, Location lobby, boolean voting, int lobbytime, int maxVotingArenas, int reqplayers, List<Arena> arenas) {
+	public Game(String name, Location lobby, boolean voting, int lobbytime, int maxVotingArenas, int reqplayers, List<Arena> arenas, boolean reset) {
 		this.name = name;
 		this.lobby = lobby;
 		this.voting = voting;
 		this.lobbytime = lobbytime;
 		this.maxVotingArenas = maxVotingArenas;
 		this.arenas = arenas;
+		this.reset = reset;
 		
 		if(reqplayers < 2) {
 			reqplayers = 2;
@@ -89,6 +90,22 @@ public class Game {
 		checkForStart();
 	}
 	
+	public void forceStart(Player p) {
+		if(users.size() < 2) {
+			p.sendMessage(MessageHandler.getMessage("prefix") + "§cAt least 2 players are required to start the game!");
+			return;
+		}
+		
+		if((getVotingPhrase() != null && getVotingPhrase().isRunning()) || (getCooldownPhrase() != null && getCooldownPhrase().isRunning()) ) {
+			p.sendMessage(MessageHandler.getMessage("prefix") + "§cThe game is already starting!");
+			return;
+		}
+		
+		forcedStart = true;
+		checkForStart();
+		p.sendMessage(MessageHandler.getMessage("prefix") + "You've started the game in lobby " + getName() + " successfully!");
+	}
+	
 	public void leave(User user) {
 		users.remove(user);
 		checkForCancelStart();
@@ -128,8 +145,13 @@ public class Game {
 		cooldownPhrase = new CooldownPhrase(this, arena);
 	}
 	
+	public boolean isResetEnabled() {
+		return reset;
+	}
+	
+	private boolean forcedStart = false;
 	public void checkForStart() {
-		if(users.size() == reqplayers) {
+		if(users.size() == reqplayers || forcedStart) {
 			if(getArenas().size() == 1) {
 				cooldownPhrase = new CooldownPhrase(this, getArenas().get(0));
 			} else {
@@ -145,16 +167,29 @@ public class Game {
 	public void checkForCancelStart() {
 		if(state != GameState.VOTING && state != GameState.COOLDOWN)
 			return;
-		
-		if(users.size() < reqplayers) {
-			if(cooldownPhrase != null && !cooldownPhrase.isRunning()) {
-				cooldownPhrase.cancelTask();
-				sendMessage(MessageHandler.getMessage("game-start-canceled"));
-			} else if(votingPhrase != null && !votingPhrase.isRunning()){
-				votingPhrase.cancelTask();
-				sendMessage(MessageHandler.getMessage("game-start-canceled"));
+
+		if(forcedStart) {
+			if(users.size() < 2) {
+				if(cooldownPhrase != null && !cooldownPhrase.isRunning()) {
+					cooldownPhrase.cancelTask();
+					sendMessage(MessageHandler.getMessage("game-start-canceled"));
+				} else if(votingPhrase != null && !votingPhrase.isRunning()){
+					votingPhrase.cancelTask();
+					sendMessage(MessageHandler.getMessage("game-start-canceled"));
+				}
+				forcedStart = false;
 			}
-			
+		} else {
+			if(users.size() < reqplayers) {
+				if(cooldownPhrase != null && !cooldownPhrase.isRunning()) {
+					cooldownPhrase.cancelTask();
+					sendMessage(MessageHandler.getMessage("game-start-canceled"));
+				} else if(votingPhrase != null && !votingPhrase.isRunning()){
+					votingPhrase.cancelTask();
+					sendMessage(MessageHandler.getMessage("game-start-canceled"));
+				}
+				
+			}
 		}
 	}
 	

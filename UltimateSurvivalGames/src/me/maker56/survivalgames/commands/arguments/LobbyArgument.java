@@ -54,7 +54,7 @@ public class LobbyArgument {
 				}
 				
 				if(SurvivalGames.gameManager.getGame(args[2]) != null) {
-					p.sendMessage(MessageHandler.getMessage("prefix") + "§cYou must unload the lobby first! /sg unload " + args[2]);
+					p.sendMessage(MessageHandler.getMessage("prefix") + "§cYou must unload the lobby first! /sg lobby unload " + args[2]);
 					return true;
 				}
 				
@@ -152,7 +152,7 @@ public class LobbyArgument {
 					return true;
 				}
 				List<Arena> arenas = game.getArenas();
-				p.sendMessage(MessageHandler.getMessage("prefix") + "Arenas in lobby " + game.getName() + "§7: §8(§b" + arenas.size() + "§7)");
+				p.sendMessage(MessageHandler.getMessage("prefix") + "Arenas in lobby " + game.getName() + "§8: §7(§b" + arenas.size() + "§7)");
 				for(Arena a : arenas) {
 					p.sendMessage("§7- §6" + a.getName());
 				}
