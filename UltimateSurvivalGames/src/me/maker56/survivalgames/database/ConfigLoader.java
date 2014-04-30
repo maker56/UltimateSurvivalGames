@@ -317,6 +317,7 @@ public class ConfigLoader {
 		c.addDefault("fulljoin-kick", "&cI'm sorry, you've been kicked to make a free slot for a donator or a team member!");
 		c.addDefault("join-already-playing", "&cYou're already playing!");
 		c.addDefault("leave-not-playing", "&cYou aren't playing!");
+		c.addDefault("game-leave", "%0% left the lobby! &7(&e%1%&7/&e%2%&7)");
 		c.addDefault("game-cooldown-big", "The game starts in %0% seconds");
 		c.addDefault("game-cooldown-little", "The game starts in %0%");
 		

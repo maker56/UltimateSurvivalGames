@@ -73,7 +73,8 @@ public class UserManager {
 		final User user = getUser(p.getName());
 		user.clear();
 		Game game = user.getGame();
-		
+		if(game.getState() == GameState.WAITING || game.getState() == GameState.VOTING || game.getState() == GameState.COOLDOWN)
+			game.sendMessage(MessageHandler.getMessage("game-leave").replace("%0%", p.getName()).replace("%1%", Integer.valueOf(game.getPlayingUsers() - 1).toString()).replace("%2%", Integer.valueOf(game.getMaximumPlayers()).toString()));
 		game.leave(user);
 		if(p.isDead()) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(SurvivalGames.instance, new Runnable() {
