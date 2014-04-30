@@ -1,15 +1,15 @@
 package me.maker56.survivalgames.game.phrase;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.scheduler.BukkitTask;
-
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
 import me.maker56.survivalgames.user.User;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.scheduler.BukkitTask;
 
 public class CooldownPhrase {
 	
@@ -69,6 +69,7 @@ public class CooldownPhrase {
 				} else if(time == 0) {
 					for(User user : game.getUsers()) {
 						user.getPlayer().playSound(user.getPlayer().getLocation(), Sound.NOTE_PLING, 8.0F, 1.0F);
+						user.clearInventory();
 					}
 					task.cancel();
 					running = false;

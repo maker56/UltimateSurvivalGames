@@ -8,11 +8,13 @@ import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
 import me.maker56.survivalgames.game.phrase.IngamePhrase;
+import me.maker56.survivalgames.game.phrase.VotingPhrase;
 import me.maker56.survivalgames.user.User;
 import me.maker56.survivalgames.user.UserManager;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
@@ -28,21 +30,96 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class PlayerListener implements Listener {
 	
 	private UserManager um = SurvivalGames.userManger;
+	
+	@EventHandler
+	public void onInventoryClickEvent(InventoryClickEvent event) {
+		Player p = (Player) event.getWhoClicked();
+		User u = um.getUser(p.getName());
+		
+		if(u != null) {
+			Game g = u.getGame();
+			if(g.getState() == GameState.VOTING || g.getState() == GameState.WAITING || g.getState() == GameState.COOLDOWN) {
+				event.setCancelled(true);
+				
+				
+				int slot = event.getRawSlot();
+				ItemStack is;
+				try {
+					is = event.getInventory().getItem(slot);
+					if(is == null || is.getType() == Material.AIR)
+						return;
+				} catch(ArrayIndexOutOfBoundsException e) {
+					return;
+				}
+
+				
+				ItemMeta im = is.getItemMeta();
+				if(im.hasDisplayName()) {
+					String[] split = im.getDisplayName().split(". ");
+					if(split.length >= 2) {
+						p.closeInventory();
+						Arena a = g.getVotingPhrase().vote(p, Integer.parseInt(split[0]));
+						if(a != null) {
+							p.playSound(p.getLocation(), Sound.ORB_PICKUP, 4.0F, 2.0F);
+						} else {
+							p.sendMessage(MessageHandler.getMessage("prefix") + "§cAn interal error occured!");
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerInteractEvent(PlayerInteractEvent event) {
+		if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			Player p = event.getPlayer();
+			User u = um.getUser(p.getName());
+			
+			if(u != null) {
+				Game g = u.getGame();
+				ItemStack hand = p.getItemInHand();
+				if(hand == null || hand.getType() == Material.AIR)
+					return;
+				
+				if(g.getState() == GameState.WAITING || g.getState() == GameState.VOTING || g.getState() == GameState.COOLDOWN) {
+					event.setCancelled(true);
+					if(hand.equals(Game.getLeaveItem())) {
+						um.leaveGame(p);
+					} else if(hand.equals(VotingPhrase.getVotingOpenItemStack())) {
+						if(g.getState() != GameState.VOTING) {
+							p.sendMessage(MessageHandler.getMessage("prefix") + "§cVoting isn't active right now!");
+							return;
+						}
+						if(!g.getVotingPhrase().canVote(p.getName())) {
+							p.sendMessage(MessageHandler.getMessage("game-already-vote"));
+							return;
+						}
+						p.openInventory(g.getVotingPhrase().getVotingInventory());
+					}
+				}
+			}
+		}
+	}
 	
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -104,6 +181,26 @@ public class PlayerListener implements Listener {
 				
 				ip.killUser(user, null, false);
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerItemDrop(PlayerDropItemEvent event) {
+		User u = um.getUser(event.getPlayer().getName());
+		if(u != null) {
+			GameState gs = u.getGame().getState();
+			if(gs == GameState.WAITING || gs == GameState.VOTING || gs == GameState.COOLDOWN)
+				event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerItemPickup(PlayerPickupItemEvent event) {
+		User u = um.getUser(event.getPlayer().getName());
+		if(u != null) {
+			GameState gs = u.getGame().getState();
+			if(gs == GameState.WAITING || gs == GameState.VOTING || gs == GameState.COOLDOWN)
+				event.setCancelled(true);
 		}
 	}
 	
@@ -263,7 +360,6 @@ public class PlayerListener implements Listener {
 		if(from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ()) {
 			if(um.isPlaying(p.getName())) {
 				Game game = um.getUser(p.getName()).getGame();
-				
 				if(game.getState() == GameState.COOLDOWN) {
 					p.teleport(from);
 					event.setCancelled(true);

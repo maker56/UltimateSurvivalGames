@@ -26,8 +26,8 @@ public class ChestManager {
 	public static void reinitializeConfig() {
 		c = SurvivalGames.chestloot;
 		title = ChatColor.translateAlternateColorCodes('&', c.getString("Chest-Title", "Survival Chest"));
-		if(title.length() > 16)
-			title = title.substring(0, 16);
+		if(title.length() > 32)
+			title = title.substring(0, 32);
 		
 		for(String key : c.getConfigurationSection("Chestloot.").getKeys(false)) {
 			List<ItemStack> l = new ArrayList<>();

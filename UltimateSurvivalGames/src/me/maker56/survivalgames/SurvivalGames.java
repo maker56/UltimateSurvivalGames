@@ -7,6 +7,7 @@ import me.maker56.survivalgames.arena.chest.ChestListener;
 import me.maker56.survivalgames.arena.chest.ChestManager;
 import me.maker56.survivalgames.commands.CommandSG;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
+import me.maker56.survivalgames.commands.permission.PermissionHandler;
 import me.maker56.survivalgames.database.ConfigLoader;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameManager;
@@ -16,6 +17,7 @@ import me.maker56.survivalgames.listener.SelectionListener;
 import me.maker56.survivalgames.listener.SignListener;
 import me.maker56.survivalgames.listener.UpdateListener;
 import me.maker56.survivalgames.metrics.Metrics;
+import me.maker56.survivalgames.scoreboard.ScoreBoardManager;
 import me.maker56.survivalgames.sign.SignManager;
 import me.maker56.survivalgames.user.UserManager;
 import net.milkbowl.vault.economy.Economy;
@@ -31,13 +33,15 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 public class SurvivalGames extends JavaPlugin {
 	
 	public static SurvivalGames instance;
-	public static FileConfiguration messages, database, signs, reset, chestloot;
+	public static FileConfiguration messages, database, signs, reset, chestloot, scoreboard;
 	
 	public static ArenaManager arenaManager;
 	public static GameManager gameManager;
 	public static ChestManager chestManager;
 	public static UserManager userManger;
 	public static SignManager signManager;
+	public static ScoreBoardManager scoreBoardManager;
+	
 	public static Economy econ;
 	
 	public static String version = "SurvivalGames - Version ";
@@ -55,6 +59,8 @@ public class SurvivalGames extends JavaPlugin {
 		version += getDescription().getVersion();
 		
 		new ConfigLoader().load();
+		PermissionHandler.reinitializeDatabase();
+		Game.reinitializeDatabase();
 		MessageHandler.reload();
 		
 		if(setupEconomy())
@@ -147,6 +153,14 @@ public class SurvivalGames extends JavaPlugin {
 		}
 	}
 	
+	public static void saveScoreboard() {
+		try {
+			scoreboard.save("plugins/SurvivalGames/scoreboard.yml");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// WORLDEDIT
 	
 	public static WorldEditPlugin getWorldEdit() {
@@ -177,6 +191,10 @@ public class SurvivalGames extends JavaPlugin {
 	
 	public static SignManager getSignManager() {
 		return signManager;
+	}
+	
+	public static ScoreBoardManager getScoreboardManager() {
+		return scoreBoardManager;
 	}
 
 }

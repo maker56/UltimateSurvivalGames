@@ -20,6 +20,42 @@ public class ConfigLoader {
 		reloadChests();
 	}
 	
+	public static void reloadScoreboard() {
+		FileConfiguration c = new DatabaseLoader("plugins/SurvivalGames", "scoreboard.yml").getFileConfiguration();
+		SurvivalGames.scoreboard = c;
+		
+		String path = "Phase.Waiting.";
+		c.addDefault(path + "Title", "&lWaiting for players");
+		List<String> content = new ArrayList<>();
+		content.add("&aRequired&7://%requiredplayers%");
+		c.addDefault(path + "Content", content);
+		
+		path = "Phase.Voting.";
+		c.addDefault(path + "Title", "&lArena Voting &7%time%");
+		content = new ArrayList<>();
+		content.add("%arena%//%votecount%");
+		content.add("%arena%//%votecount%");
+		content.add("%arena%//%votecount%");
+		c.addDefault(path + "Content", content);
+		
+		path = "Phase.Cooldown.";
+		c.addDefault(path + "Title", "&lCooldown");
+		content = new ArrayList<>();
+		content.add("&aTime&7://%time%");
+		c.addDefault(path + "Content", content);
+		
+		path = "Phase.Ingame.";
+		c.addDefault(path + "Title", "&lIngame");
+		content = new ArrayList<>();
+		content.add("&eAlive&7://%alive%");
+		content.add("&cDeath&7://%death%");
+		c.addDefault(path + "Content", content);
+		
+		
+		c.options().copyDefaults(true);
+		SurvivalGames.saveScoreboard();
+	}
+	
 	public static void reloadChests() {
 		FileConfiguration c = new DatabaseLoader("plugins/SurvivalGames", "chestloot.yml").getFileConfiguration();
 		SurvivalGames.chestloot = c;
@@ -232,8 +268,32 @@ public class ConfigLoader {
 		allowedCmds.add("/survivalgames");
 		c.addDefault("Allowed-Commands", allowedCmds);
 		
+		
+		c.addDefault("Voting.Item", Material.CHEST + " name:&eVote_for_an_arena lore:&7Rightclick_to_open//&7the_voting_menu!");
+		c.addDefault("Voting.InventoryTitle", "Vote for an arena!");
+		c.addDefault("Voting.ArenaItem", Material.MAP + " 0 lore:&7Click_to_vote//&7for_this_arena!");
+		c.addDefault("Leave-Item", Material.MAGMA_CREAM + " name:&eLeave_the_lobby lore:&7Rightclick_to_leave//&7the_lobby!");
+		
+		List<String> joinfull = new ArrayList<>();
+		joinfull.add("sg.donator.vip.iron");
+		joinfull.add("sg.donator.vip.gold");
+		joinfull.add("sg.donator.moderator");
+		joinfull.add("sg.donator.admin");
+		c.addDefault("Donator-Permissions.Join-Full-Arena", joinfull);
+		
+		List<String> votePower = new ArrayList<>();
+		votePower.add("sg.donator.vip.iron//2");
+		votePower.add("sg.donator.vip.gold//2");
+		c.addDefault("Donator-Permissions.Extra-Vote-Power", votePower);
+		
+		c.addDefault("Enable-Arena-Reset", true);
+		
 		c.options().copyDefaults(true);
 		SurvivalGames.instance.saveConfig();
+		
+		if(!c.getBoolean("Enable-Arena-Reset")) {
+			System.out.println("[SurvivalGames] Warning: Arena map reset ist disabled.");
+		}
 	}
 	
 	public static void reloadDatabase() {
@@ -245,7 +305,7 @@ public class ConfigLoader {
 		FileConfiguration c = new DatabaseLoader("plugins/SurvivalGames", "messages.yml").getFileConfiguration();
 		SurvivalGames.messages = c;
 		
-		c.addDefault("prefix", "&3[SurvivalGames] &6");
+		c.addDefault("prefix", "&7[&3SG&7] &6");
 		c.addDefault("no-permission", "&cYou don't have permission to do this!");
 		c.addDefault("cmd-error", "&cError: %0%");
 		
@@ -254,6 +314,7 @@ public class ConfigLoader {
 		c.addDefault("join-vehicle", "&cYou can't join SurvivalGames in a vehicle!");
 		c.addDefault("join-game-full", "&cSorry, this lobby is full!");
 		c.addDefault("join-success", "%0% joined the lobby! &7(&e%1%&7/&e%2%&7)");
+		c.addDefault("fulljoin-kick", "&cI'm sorry, you've been kicked to make a free slot for a donator or a team member!");
 		c.addDefault("join-already-playing", "&cYou're already playing!");
 		c.addDefault("leave-not-playing", "&cYou aren't playing!");
 		c.addDefault("game-cooldown-big", "The game starts in %0% seconds");
@@ -283,9 +344,10 @@ public class ConfigLoader {
 		c.addDefault("game-voting-end", "The voting phrase has been ended!");
 		c.addDefault("game-no-vote", "&cYou can only vote in the voting phase of the game!");
 		c.addDefault("game-bad-vote", "&cThis isn't a valid vote ID!");
-		c.addDefault("game-already-vote", "&cYou've already voted for a arena!");
+		c.addDefault("game-already-vote", "&cYou've already voted for an arena!");
 		c.addDefault("game-no-voting-enabled", "&cSorry, voting isn't enabled! The arena will choosed random!");
 		c.addDefault("game-success-vote", "You've voted successfully for arena &b%0%&6!");
+		c.addDefault("game-extra-vote", "You've voted with &b%0% &6votes!");
 		c.addDefault("game-start-canceled", "Not enough players are in this lobby. Cancel Timer...");
 		c.addDefault("game-start", "The round begins, &b%0% &6players are playing! &bGood luck&6!");
 		c.addDefault("game-chestrefill", "It's midnight! All chests are refilled!");

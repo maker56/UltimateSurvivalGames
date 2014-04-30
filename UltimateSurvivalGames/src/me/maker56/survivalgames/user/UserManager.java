@@ -48,8 +48,14 @@ public class UserManager {
 		}
 		
 		if(g.getUsers().size() >= g.getMaximumPlayers()) {
-			p.sendMessage(MessageHandler.getMessage("join-game-full"));
-			return;
+			User kick = PermissionHandler.canJoin(p, g);
+			if(kick != null) {
+				kick.sendMessage(MessageHandler.getMessage("fulljoin-kick"));
+				leaveGame(kick.getPlayer());
+			} else {
+				p.sendMessage(MessageHandler.getMessage("join-game-full"));
+				return;
+			}
 		}
 		
 		User user = new User(p, g);
@@ -57,34 +63,12 @@ public class UserManager {
 		return;
 	}
 	
-//	public void leaveGameLater(Player p) {
-//		final String name = p.getName();
-//		
-//		Bukkit.getScheduler().scheduleSyncDelayedTask(SurvivalGames.instance, new Runnable() {
-//			public void run() {
-//				Player fp = Bukkit.getPlayer(name);
-//				
-//				if(fp != null) {
-//					leaveGame(fp);
-//				}
-//			}
-//		}, 2L);
-//	}
-	
 
 	public void leaveGame(final Player p) {
 		if(!isPlaying(p.getName())) {
 			p.sendMessage(MessageHandler.getMessage("leave-not-playing"));
 			return;
 		}
-		
-//		if(p.isDead()) {
-//			try {
-//				Packet205ClientCommand packet = new Packet205ClientCommand();
-//				packet.a = 1;
-//				((CraftPlayer) p).getHandle().playerConnection.a(packet);
-//			} catch(NoClassDefFoundError e) { }
-//		}
 		
 		final User user = getUser(p.getName());
 		user.clear();

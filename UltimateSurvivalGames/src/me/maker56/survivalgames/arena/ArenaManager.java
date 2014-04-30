@@ -136,7 +136,7 @@ public class ArenaManager {
 		}
 		
 		int spawns = cfg.getStringList(path + "Spawns").size();
-		
+		// TODO
 		if(spawns < 2) {
 			p.sendMessage(" §8§l–º §bSpawns §7(§c" + spawns + "§7) §eAt least 2 Spawns required");
 		} else {
@@ -350,7 +350,8 @@ public class ArenaManager {
 		SurvivalGames.saveDataBase();
 		selectArena(p, arenaname, gamename);
 		p.sendMessage(MessageHandler.getMessage("arena-created").replace("%0%", arenaname).replace("%1%", gamename));
-		save(p);
+		if(SurvivalGames.instance.getConfig().getBoolean("Enable-Arena-Reset"))
+			save(p);
 		p.sendMessage(MessageHandler.getMessage("arena-check").replace("%0%", "/sg arena check"));
 		return;
 	}
@@ -377,7 +378,7 @@ public class ArenaManager {
 	
 	@SuppressWarnings("deprecation")
 	public Arena getArena(String game, String arenaname) {
-		if(!new File("plugins/SurvivalGames/reset/" + game + arenaname + ".map").exists()) {
+		if(!new File("plugins/SurvivalGames/reset/" + game + arenaname + ".map").exists() && !SurvivalGames.instance.getConfig().getBoolean("Enable-Arena-Reset")) {
 			System.out.println("[SurvivalGames] Cannot load arena " + arenaname + " in lobby " + game + ": Arena map file is missing! To create a map file, select the arena first with /sg arena select " + game + " " + arenaname + " and type /sg arena save!");
 			return null;
 		}

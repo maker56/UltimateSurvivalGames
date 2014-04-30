@@ -175,7 +175,7 @@ public class GameManager {
 		int lobbytime = cfg.getInt(path + "Lobby-Time");
 		int maxVotingArenas = cfg.getInt(path + "Max-Voting-Arenas");
 		int reqplayers = cfg.getInt(path + "Required-Players-to-start");
-		boolean resetEnabled = true; // TODO IMPORTANT TODO
+		boolean resetEnabled = SurvivalGames.instance.getConfig().getBoolean("Enable-Arena-Reset");
 		
 		games.add(new Game(name, lobby, voting, lobbytime, maxVotingArenas, reqplayers, arenas, resetEnabled));
 		return true;

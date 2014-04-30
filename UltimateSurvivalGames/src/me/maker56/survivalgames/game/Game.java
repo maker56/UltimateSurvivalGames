@@ -7,6 +7,7 @@ import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.arena.chest.Chest;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
+import me.maker56.survivalgames.database.ConfigUtil;
 import me.maker56.survivalgames.game.phrase.CooldownPhrase;
 import me.maker56.survivalgames.game.phrase.DeathmatchPhrase;
 import me.maker56.survivalgames.game.phrase.IngamePhrase;
@@ -14,10 +15,25 @@ import me.maker56.survivalgames.game.phrase.ResetPhrase;
 import me.maker56.survivalgames.game.phrase.VotingPhrase;
 import me.maker56.survivalgames.user.User;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Scoreboard;
 
 public class Game {
+	
+	// STATIC VARIABLES
+	private static ItemStack leaveItem;
+	
+	public static ItemStack getLeaveItem() {
+		return leaveItem;
+	}
+	
+	public static void reinitializeDatabase() {
+		leaveItem = ConfigUtil.parseItemStack(SurvivalGames.instance.getConfig().getString("Leave-Item"));
+	}
 	
 	private String name;
 	private Location lobby;
@@ -47,13 +63,17 @@ public class Game {
 		this.maxVotingArenas = maxVotingArenas;
 		this.arenas = arenas;
 		this.reset = reset;
-		
+
 		if(reqplayers < 2) {
 			reqplayers = 2;
 		}
 		
 		this.reqplayers = reqplayers;
 		this.maxplayers = getFewestArena().getSpawns().size();
+		
+		scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+		scoreboard.registerNewObjective("sidebar", "dummy").setDisplaySlot(DisplaySlot.SIDEBAR);
+		
 		setState(GameState.WAITING);
 	}
 	
@@ -61,16 +81,17 @@ public class Game {
 		return voted;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void join(User user) {
 		users.add(user);
 		Player p = user.getPlayer();
-		
 		if(arenas.size() == 1) {
 			Arena arena = arenas.get(0);
 			for(int i = 0; i < arena.getSpawns().size(); i++) {
 				if(!hasUserIndex(i)) {
 					p.teleport(arena.getSpawns().get(i));
 					user.setSpawnIndex(i);
+					break;
 				}
 			}
 		} else if(getState() == GameState.COOLDOWN) {
@@ -78,12 +99,19 @@ public class Game {
 				if(!hasUserIndex(i)) {
 					p.teleport(getCurrentArena().getSpawns().get(i));
 					user.setSpawnIndex(i);
+					break;
 				}
 			}
 		} else {
 			p.teleport(lobby);
 		}
 		user.clear();
+		p.getInventory().setItem(7, leaveItem);
+		p.updateInventory();
+		
+		if(getState() == GameState.VOTING) {
+			getVotingPhrase().equipPlayer(user);
+		}
 		
 		sendMessage(MessageHandler.getMessage("join-success").replace("%0%", p.getName()).replace("%1%", Integer.valueOf(users.size()).toString()).replace("%2%", Integer.valueOf(maxplayers).toString()));
 		SurvivalGames.signManager.updateSigns();
@@ -152,6 +180,11 @@ public class Game {
 	private boolean forcedStart = false;
 	public void checkForStart() {
 		if(users.size() == reqplayers || forcedStart) {
+			if(cooldownPhrase != null && cooldownPhrase.isRunning())
+				return;
+			if(votingPhrase != null && votingPhrase.isRunning())
+				return;
+			
 			if(getArenas().size() == 1) {
 				cooldownPhrase = new CooldownPhrase(this, getArenas().get(0));
 			} else {
@@ -167,28 +200,28 @@ public class Game {
 	public void checkForCancelStart() {
 		if(state != GameState.VOTING && state != GameState.COOLDOWN)
 			return;
-
+		
 		if(forcedStart) {
-			if(users.size() < 2) {
-				if(cooldownPhrase != null && !cooldownPhrase.isRunning()) {
+			if(users.size() == 1) {
+				if(getState() == GameState.COOLDOWN) {
 					cooldownPhrase.cancelTask();
 					sendMessage(MessageHandler.getMessage("game-start-canceled"));
-				} else if(votingPhrase != null && !votingPhrase.isRunning()){
+				} else if(getState() == GameState.VOTING){
 					votingPhrase.cancelTask();
 					sendMessage(MessageHandler.getMessage("game-start-canceled"));
 				}
 				forcedStart = false;
 			}
+			
 		} else {
-			if(users.size() < reqplayers) {
-				if(cooldownPhrase != null && !cooldownPhrase.isRunning()) {
+			if(users.size() == reqplayers - 1) {
+				if(getState() == GameState.COOLDOWN) {
 					cooldownPhrase.cancelTask();
 					sendMessage(MessageHandler.getMessage("game-start-canceled"));
-				} else if(votingPhrase != null && !votingPhrase.isRunning()){
+				} else if(getState() == GameState.VOTING){
 					votingPhrase.cancelTask();
 					sendMessage(MessageHandler.getMessage("game-start-canceled"));
 				}
-				
 			}
 		}
 	}
@@ -342,6 +375,18 @@ public class Game {
 				s += "§7, ";
 		}
 		return s;
+	}
+	
+	// SCOREBOARD
+	
+	private Scoreboard scoreboard;
+	
+	public void setScoreboard(Scoreboard scoreboard) {
+		this.scoreboard = scoreboard;
+	}
+	
+	public Scoreboard getScoreboard() {
+		return scoreboard;
 	}
 
 }

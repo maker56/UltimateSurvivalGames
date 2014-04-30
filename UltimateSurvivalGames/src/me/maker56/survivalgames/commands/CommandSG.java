@@ -145,15 +145,12 @@ public class CommandSG implements CommandExecutor {
 					}
 					
 
-					Arena arena = vp.vote(p.getName(), mapid);
+					Arena arena = vp.vote(p, mapid);
 					
 					if(arena == null) {
 						p.sendMessage(MessageHandler.getMessage("game-bad-vote"));
 						return true;
 					}
-					
-					arena.setVotes(arena.getVotes() + 1);
-					p.sendMessage(MessageHandler.getMessage("game-success-vote").replace("%0%", arena.getName()));
 					return true;
 					
 				// LIST

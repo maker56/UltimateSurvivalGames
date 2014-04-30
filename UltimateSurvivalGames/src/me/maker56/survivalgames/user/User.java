@@ -22,8 +22,7 @@ public class User {
 		this.player = player;
 		this.game = game;
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public void clear() {
 		for(Iterator<PotionEffect> i = player.getActivePotionEffects().iterator(); i.hasNext();) {
 			player.removePotionEffect(i.next().getType());
@@ -38,6 +37,11 @@ public class User {
 		player.setFlying(false);
 		player.setAllowFlight(false);
 		
+		clearInventory();
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void clearInventory() {
 		ItemStack[] inv = player.getInventory().getContents();
 	    for (int i = 0; i < inv.length; i++) {
 	      inv[i] = null;

@@ -29,7 +29,7 @@ public class SignListener implements Listener {
 		
 		if(event.getLine(0).equalsIgnoreCase("[SurvivalGames]")) {
 			
-			if(!PermissionHandler.hasPermission(p, Permission.GAME)) {
+			if(!PermissionHandler.hasPermission(p, Permission.LOBBY)) {
 				p.sendMessage(MessageHandler.getMessage("no-permission"));
 				event.getBlock().breakNaturally();
 				return;
