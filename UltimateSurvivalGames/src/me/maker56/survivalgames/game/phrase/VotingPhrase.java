@@ -84,63 +84,33 @@ public class VotingPhrase {
 					user.getPlayer().setExp(0);
 				}
 				
-				if(game.isVotingEnabled()) {
+				if(time % 10 == 0 && time != 10 && time != 0 && time != game.getLobbyTime()) {
+					game.sendMessage(MessageHandler.getMessage("game-voting-cooldown-big").replace("%0%", Integer.valueOf(time).toString()));
+				} else if(time % 15 == 0 && time != 0) {
+					sendVoteMessage();
+				} else if(time <= 10 && time > 0){
+					game.sendMessage(MessageHandler.getMessage("game-voting-cooldown-little").replace("%0%", Integer.valueOf(time).toString()));
+				} else if(time == 0) {
+					for(User user : game.getUsers()) {
+						user.getPlayer().getInventory().setItem(1, null);
+						user.getPlayer().updateInventory();
+					}
 					
-					if(time % 10 == 0 && time != 10 && time != 0 && time != game.getLobbyTime()) {
-						game.sendMessage(MessageHandler.getMessage("game-voting-cooldown-big").replace("%0%", Integer.valueOf(time).toString()));
-					} else if(time % 15 == 0 && time != 0) {
-						sendVoteMessage();
-					} else if(time <= 10 && time > 0){
-						game.sendMessage(MessageHandler.getMessage("game-voting-cooldown-little").replace("%0%", Integer.valueOf(time).toString()));
-					} else if(time == 0) {
-						for(User user : game.getUsers()) {
-							user.getPlayer().getInventory().setItem(1, null);
-							user.getPlayer().updateInventory();
-						}
-						
-						task.cancel();
-						running = false;
-						time = game.getLobbyTime();
-						game.sendMessage(MessageHandler.getMessage("game-voting-end"));
-						Arena winner = getMostVotedArena();
-						winner.getSpawns().get(0).getWorld().setTime(0);
-						
-						game.startCooldown(winner);
-						for(Arena arena : voteArenas) {
-							arena.setVotes(0);
-						}
-						voteArenas.clear();
-						game.getVotedUsers().clear();
-						return;
+					task.cancel();
+					running = false;
+					time = game.getLobbyTime();
+					game.sendMessage(MessageHandler.getMessage("game-voting-end"));
+					Arena winner = getMostVotedArena();
+					winner.getSpawns().get(0).getWorld().setTime(0);
+					
+					game.startCooldown(winner);
+					for(Arena arena : voteArenas) {
+						arena.setVotes(0);
 					}
-				} else {
-					if(time % 10 == 0 && time != 10 && time != 0 && time != game.getLobbyTime()) {
-						game.sendMessage(MessageHandler.getMessage("game-waiting-cooldown-big").replace("%0%", Integer.valueOf(time).toString()));
-					} else if(time <= 10 && time > 0){
-						game.sendMessage(MessageHandler.getMessage("game-waiting-cooldown-little").replace("%0%", Integer.valueOf(time).toString()));
-					} else if(time == 0) {
-						Arena winner = getMostVotedArena();
-						if(winner == null) {
-							time = 80;
-							game.sendMessage(MessageHandler.getMessage("prefix") + "§cAn internal error occured.");
-							return;
-						}
-						
-						winner.getSpawns().get(0).getWorld().setTime(0);
-						
-						task.cancel();
-						running = false;
-						time = game.getLobbyTime();
-						game.sendMessage(MessageHandler.getMessage("game-waiting-end"));
-						
-						
-						game.startCooldown(winner);
-						voteArenas.clear();
-						game.getVotedUsers().clear();
-						return;
-					}
+					voteArenas.clear();
+					game.getVotedUsers().clear();
+					return;
 				}
-				
 				
 				time--;
 
@@ -243,12 +213,16 @@ public class VotingPhrase {
 	}
 	
 	private void sendVoteMessage() {
-		game.sendMessage(MessageHandler.getMessage("game-vote"));
-		
-		int i = 1;
-		for(Arena arena : voteArenas) {
-			game.sendMessage("§3" + i + "§7. §6" + arena.getName() + " §7(§e" + arena.getVotes() + "§7)");
-			i++;
+		if(game.isVotingEnabled()) {
+			if(voteItem == null) {
+				game.sendMessage(MessageHandler.getMessage("game-vote"));
+			}
+			
+			int i = 1;
+			for(Arena arena : voteArenas) {
+				game.sendMessage("§3" + i + "§7. §6" + arena.getName() + " §7(§e" + arena.getVotes() + "§7)");
+				i++;
+			}
 		}
 	}
 	
