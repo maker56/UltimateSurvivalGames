@@ -4,6 +4,7 @@ import java.util.List;
 
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.Arena;
+import me.maker56.survivalgames.chat.Helper;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.Permission;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
@@ -38,14 +39,7 @@ public class LobbyArgument {
 		}
 		
 		if(args.length == 1) {
-			p.sendMessage(MessageHandler.getMessage("prefix") + "Lobby §7§m---§r §6Helpsite");
-			p.sendMessage("§8/§6sg lobby create <LOBBYNAME> §7- §eCreates a game with the specify name!");
-			p.sendMessage("§8/§6sg lobby setspawn <LOBBYNAME> §7- §eSet the Lobby-Spawnlocation at the specify game!");
-			p.sendMessage("§8/§6sg lobby unload <LOBBYNAME> §7- §eUnload a lobby!");
-			p.sendMessage("§8/§6sg lobby load <LOBBYNAME> §7- §eLoad a lobby!");
-			p.sendMessage("§8/§6sg lobby reload <LOBBYNAME> §7- §eUnload and load a lobby!");
-			p.sendMessage("§8/§6sg lobby list <LOBBYNAME> §7- §eList of all loaded arenas in a lobby!");
-			p.sendMessage("§8/§6sg lobby delete <LOBBYNAME> §7- §eDeletes a lobby from file!");
+			Helper.showLobbyHelpsite(p);
 		} else {
 			if(args[1].equalsIgnoreCase("delete")) {
 				if(args.length == 2) {

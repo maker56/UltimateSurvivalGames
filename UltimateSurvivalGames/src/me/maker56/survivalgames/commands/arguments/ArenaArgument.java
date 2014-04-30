@@ -1,6 +1,7 @@
 package me.maker56.survivalgames.commands.arguments;
 
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.chat.Helper;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.Permission;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
@@ -39,19 +40,7 @@ public class ArenaArgument {
 		}
 		
 		if(args.length == 1) {
-			p.sendMessage(MessageHandler.getMessage("prefix") + "Arena-Setup §7§m---§r §6Helpsite");
-			p.sendMessage("§8/§6sg arena create <LOBBYNAME> <ARENA NAME> §7- §eCreates an arena in a specify game!");
-			p.sendMessage("§8/§6sg arena select <LOBBYNAME> <ARENA NAME> §7- §eSelects the specify arena!");
-			p.sendMessage("§8/§6sg arena tools §7- §eGives you the Arena-Selection Tools!");
-			p.sendMessage("§8/§6sg arena check §7- §eShows whats even need to be done on the selected arena!");
-			p.sendMessage("§8/§6sg arena addspawn §7- §eAdd a Spawn on the selected arena!");
-			p.sendMessage("§8/§6sg arena removespawn <SPAWNID> §7- §eRemoves a spawn from the selected arena!");
-			p.sendMessage("§8/§6sg arena deathmatch §7- §eDe/activate the Deathmatch on the spelected arena!");
-			p.sendMessage("§8/§6sg arena deathmatch add §7- §eAdd a Deathmatch-Spawn on the selected arena!");
-			p.sendMessage("§8/§6sg arena deathmatch remove <SPAWNID> §7- §eRemove an Spawn on the selected arena!");
-			p.sendMessage("§8/§6sg arena finish §7- §eFinished the create-setup on the selected arena!");
-			p.sendMessage("§8/§6sg arena save §7- §eSaves the blocks of an arena to file for map reset!");
-			p.sendMessage("§8/§6sg arena delete §7- §eRemoves an arena in a lobby!");
+			Helper.showArenaHelpsite(p);
 			return true;
 		} else {
 			if(args[1].equalsIgnoreCase("delete")) {
