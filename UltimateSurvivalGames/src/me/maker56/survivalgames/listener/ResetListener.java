@@ -7,11 +7,11 @@ import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.Permission;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
+import me.maker56.survivalgames.events.ResetDoneEvent;
+import me.maker56.survivalgames.events.SaveDoneEvent;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameManager;
 import me.maker56.survivalgames.game.GameState;
-import me.maker56.survivalgames.reset.ResetDoneEvent;
-import me.maker56.survivalgames.reset.SaveDoneEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

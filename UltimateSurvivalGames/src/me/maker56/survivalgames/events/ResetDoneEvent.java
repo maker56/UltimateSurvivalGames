@@ -1,9 +1,9 @@
-package me.maker56.survivalgames.reset;
+package me.maker56.survivalgames.events;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class SaveDoneEvent extends Event {
+public class ResetDoneEvent extends Event {
 	
 	private static final HandlerList handlers = new HandlerList();
 	
@@ -17,23 +17,12 @@ public class SaveDoneEvent extends Event {
     }
 	
     private long time;
-    private int size;
-    private String arena, lobby, format;
+    private String arena, lobby;
     
-	public SaveDoneEvent(String lobby, String arena, long time, int size, String format) {
+	public ResetDoneEvent(String lobby, String arena, long time) {
 		this.lobby = lobby;
 		this.arena = arena;
 		this.time = time;
-		this.size = size;
-		this.format = format;
-	}
-	
-	public int getFileSize() {
-		return size;
-	}
-	
-	public String getFileSizeFormat() {
-		return format;
 	}
 	
 	public long getTime() {

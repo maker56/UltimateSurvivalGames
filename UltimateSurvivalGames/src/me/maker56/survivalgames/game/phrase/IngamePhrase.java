@@ -3,6 +3,8 @@ package me.maker56.survivalgames.game.phrase;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.chest.Chest;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
+import me.maker56.survivalgames.commands.permission.Permission;
+import me.maker56.survivalgames.commands.permission.PermissionHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
 import me.maker56.survivalgames.user.User;
@@ -12,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -42,7 +45,12 @@ public class IngamePhrase {
 		start();
 	}
 	
-	public void start() {
+	public void start() {		
+		game.setState(GameState.INGAME);
+		game.sendMessage(MessageHandler.getMessage("game-start").replace("%0%", Integer.valueOf(game.getPlayingUsers()).toString()));
+		running = true;
+		game.redefinePlayerNavigatorInventory();
+		
 		game.getCurrentArena().getMinimumLocation().getWorld().setTime(0);
 		
 		if(game.getCurrentArena().chestRefill()) {
@@ -60,10 +68,6 @@ public class IngamePhrase {
 				}
 			}, 18001);
 		}
-		
-		game.setState(GameState.INGAME);
-		game.sendMessage(MessageHandler.getMessage("game-start").replace("%0%", Integer.valueOf(game.getPlayingUsers()).toString()));
-		running = true;
 		
 		if(period != 0) {
 			game.sendMessage(MessageHandler.getMessage("game-grace-period").replace("%0%", Integer.valueOf(period).toString()));
@@ -143,8 +147,8 @@ public class IngamePhrase {
 				continue;
 			user.getPlayer().getWorld().dropItemNaturally(user.getPlayer().getLocation(), is);
 		}
-		
-		um.leaveGame(user.getPlayer());
+		Player p = user.getPlayer();
+		um.leaveGame(p);
 		
 		if(remain == 1) {
 			User winner = game.getUsers().get(0);
@@ -162,8 +166,13 @@ public class IngamePhrase {
 			
 			um.leaveGame(winner.getPlayer());
 			game.end();
-		} else if(remain == game.getCurrentArena().getPlayerDeathmatchAmount())
-			startDeathmatchTask();
+		} else {
+			if(PermissionHandler.hasPermission(p, Permission.SPECTATE)) 
+				um.joinGameAsSpectator(p, game.getName());
+			if(remain == game.getCurrentArena().getPlayerDeathmatchAmount())
+				startDeathmatchTask();
+		}
+
 	}
 	
 	public void startDeathmatchTask() {

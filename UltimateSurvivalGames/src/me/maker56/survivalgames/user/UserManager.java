@@ -1,9 +1,12 @@
 package me.maker56.survivalgames.user;
 
+import java.util.Iterator;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.IllegalPluginAccessException;
+import org.bukkit.potion.PotionEffect;
 
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
@@ -16,6 +19,64 @@ import me.maker56.survivalgames.game.GameState;
 public class UserManager {
 	
 	private GameManager gm = SurvivalGames.gameManager;
+	
+	// START SPECTATOR
+	
+	public void leaveGame(SpectatorUser su) {
+		Game g = su.getGame();
+		for(User u : g.getUsers()) {
+			u.getPlayer().showPlayer(su.getPlayer());
+		}
+		g.leaveSpectator(su);
+		setState(su.getPlayer(), su);
+	}
+	
+	public void joinGameAsSpectator(Player p, String gamename) {
+		if(!SurvivalGames.instance.getConfig().getBoolean("Spectating.Enabled")) {
+			p.sendMessage(MessageHandler.getMessage("spectator-disabled"));
+			return;
+		}
+		
+		if(!PermissionHandler.hasPermission(p, Permission.SPECTATE)) {
+			p.sendMessage(MessageHandler.getMessage("no-permission"));
+			return;
+		}
+		
+		if(isSpectator(p.getName()) || isPlaying(p.getName())) {
+			p.sendMessage(MessageHandler.getMessage("join-already-playing"));
+			return;
+		}
+		
+		if(p.getVehicle() != null) {
+			p.sendMessage(MessageHandler.getMessage("join-vehicle"));
+			return;
+		}
+		
+		Game g = gm.getGame(gamename);
+		
+		if(g == null) {
+			p.sendMessage(MessageHandler.getMessage("join-unknown-game").replace("%0%", gamename));
+			return;
+		}
+		
+		int max = SurvivalGames.instance.getConfig().getInt("Spectating.Max-Spectators-Per-Arena", 8);
+		if(g.getSpecators().size() >= max) {
+			p.sendMessage(MessageHandler.getMessage("spectator-full").replace("%0%", Integer.valueOf(max).toString()));
+			return;
+		}
+		
+		GameState state = g.getState();
+		
+		if(state == GameState.VOTING || state == GameState.WAITING || state == GameState.COOLDOWN) {
+			p.sendMessage(MessageHandler.getMessage("spectator-game-running"));
+			return;
+		}
+		
+		g.joinSpectator(new SpectatorUser(p, g));
+		return;
+	}
+	
+	// END SPECTATOR
 	
 	public void joinGame(Player p, String gamename) {
 		if(!PermissionHandler.hasPermission(p, Permission.JOIN)) {
@@ -43,7 +104,11 @@ public class UserManager {
 		GameState state = g.getState();
 		
 		if(state != GameState.VOTING && state != GameState.WAITING && state != GameState.COOLDOWN) {
-			p.sendMessage(MessageHandler.getMessage("join-game-running"));
+			if(SurvivalGames.instance.getConfig().getBoolean("Spectating.Enabled")) {
+				joinGameAsSpectator(p, gamename);
+			} else {
+				p.sendMessage(MessageHandler.getMessage("join-game-running"));
+			}
 			return;
 		}
 		
@@ -66,6 +131,11 @@ public class UserManager {
 
 	public void leaveGame(final Player p) {
 		if(!isPlaying(p.getName())) {
+			SpectatorUser su = getSpectator(p.getName());
+			if(su != null) {
+				leaveGame(su);
+				return;
+			}
 			p.sendMessage(MessageHandler.getMessage("leave-not-playing"));
 			return;
 		}
@@ -73,17 +143,23 @@ public class UserManager {
 		final User user = getUser(p.getName());
 		user.clear();
 		Game game = user.getGame();
+		
+		for(SpectatorUser su : game.getSpecators()) {
+			p.showPlayer(su.getPlayer());
+		}
+		
+		
 		if(game.getState() == GameState.WAITING || game.getState() == GameState.VOTING || game.getState() == GameState.COOLDOWN)
 			game.sendMessage(MessageHandler.getMessage("game-leave").replace("%0%", p.getName()).replace("%1%", Integer.valueOf(game.getPlayingUsers() - 1).toString()).replace("%2%", Integer.valueOf(game.getMaximumPlayers()).toString()));
 		game.leave(user);
 		if(p.isDead()) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(SurvivalGames.instance, new Runnable() {
 				public void run() {
-					setState(p, user.getState());
+					setState(p, user);
 				}
 			}, 1);
 		} else {
-			setState(p, user.getState());
+			setState(p, user);
 		}
 	}
 	
@@ -98,6 +174,12 @@ public class UserManager {
 		p.setExp(state.getExp());
 		p.setHealth(state.getHealth());
 		p.setFoodLevel(state.getFoodLevel());
+		p.setWalkSpeed(state.getWalkSpeed());
+		p.setFlySpeed(state.getFlySpeed());
+		
+		for (Iterator<PotionEffect> i = p.getActivePotionEffects().iterator(); i.hasNext();) {
+			p.removePotionEffect(i.next().getType());
+		}
 		p.addPotionEffects(state.getActivePotionEffects());
 		
 		final String name = p.getName();
@@ -123,24 +205,29 @@ public class UserManager {
 		}
 	}
 	
-	public boolean isPlaying(String name) {
+	public boolean isSpectator(String name) {
+		return getSpectator(name) != null;
+	}
+	
+	public SpectatorUser getSpectator(String name) {
 		for(Game game : gm.getGames()) {
-			for(User user : game.getUsers()) {
-				if(user.getName().equals(name)) {
-					return true;
-				}
+			for(SpectatorUser su : game.getSpecators()) {
+				if(su.getName().equals(name))
+					return su;
 			}
 		}
-		return false;
+		return null;
+	}
+	
+	public boolean isPlaying(String name) {
+		return getUser(name) != null;
 	}
 	
 	public User getUser(String name) {
 		for(Game game : gm.getGames()) {
-			for(User user : game.getUsers()) {
-				if(user.getName().equals(name)) {
-					return user;
-				}
-			}
+			User u = game.getUser(name);
+			if(u != null)
+				return u;
 		}
 		return null;
 	}

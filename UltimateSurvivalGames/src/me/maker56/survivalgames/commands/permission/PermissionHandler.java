@@ -32,7 +32,7 @@ public class PermissionHandler {
 			if(sender.isOp()) {
 				return true;
 			} else {
-				if(permission == Permission.JOIN || permission == Permission.LIST) {
+				if(permission == Permission.JOIN || permission == Permission.LIST || permission == Permission.SPECTATE) {
 					return true;
 				} else {
 					return false;

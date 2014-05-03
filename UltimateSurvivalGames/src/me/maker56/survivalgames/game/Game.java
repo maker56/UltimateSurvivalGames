@@ -13,12 +13,19 @@ import me.maker56.survivalgames.game.phrase.DeathmatchPhrase;
 import me.maker56.survivalgames.game.phrase.IngamePhrase;
 import me.maker56.survivalgames.game.phrase.ResetPhrase;
 import me.maker56.survivalgames.game.phrase.VotingPhrase;
+import me.maker56.survivalgames.user.SpectatorUser;
 import me.maker56.survivalgames.user.User;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -33,6 +40,11 @@ public class Game {
 	
 	public static void reinitializeDatabase() {
 		leaveItem = ConfigUtil.parseItemStack(SurvivalGames.instance.getConfig().getString("Leave-Item"));
+		playerNavigator = ConfigUtil.parseItemStack(SurvivalGames.instance.getConfig().getString("Spectating.Player-Navigator.Item"));
+		String s = SurvivalGames.instance.getConfig().getString("Spectating.Player-Navigator.Inventory-Title");
+		if(s.length() > 32)
+			s = s.substring(0, 32);
+		inventoryTitle = ChatColor.translateAlternateColorCodes('&', s);
 	}
 	
 	private String name;
@@ -79,6 +91,115 @@ public class Game {
 	
 	public List<String> getVotedUsers() {
 		return voted;
+	}
+	
+	// START SPECTATOR
+	private Inventory playerNavigatorInventory;
+	private List<SpectatorUser> spectators = new ArrayList<>();
+	
+	private static ItemStack playerNavigator;
+	private static String inventoryTitle;
+	
+	public static ItemStack getPlayerNavigatorItem() {
+		return playerNavigator;
+	}
+	
+	public static String getPlayerNavigatorInventoryTitle() {
+		return inventoryTitle;
+	}
+	
+	public Inventory getPlayerNavigatorInventory() {
+		return playerNavigatorInventory;
+	}
+	
+	public void redefinePlayerNavigatorInventory() {
+		if(playerNavigator != null) {
+			int amount = getPlayingUsers();
+			int inv = 54;
+			if(amount <= 9) {
+				inv = 9;
+			} else if(amount <= 18) {
+				inv = 18;
+			} else if(amount <= 27) {
+				inv = 27;
+			} else if(amount <= 36) {
+				inv = 36;
+			} else if(amount <= 45) {
+				inv = 45;
+			} else if(amount <= 54) {
+				inv = 54;
+			}
+			
+			playerNavigatorInventory = Bukkit.createInventory(null, inv, inventoryTitle);
+			
+			ItemStack head = new ItemStack(Material.SKULL_ITEM, 0);
+			head.setDurability((short) 3);
+			ItemMeta im = head.getItemMeta();
+			List<String> lore = new ArrayList<>();
+			lore.add("§7Click to spectate!");
+			for(int i = 0; i < users.size(); i++) {
+				if(i >= inv)
+					break;
+				User u = users.get(i);
+				im.setDisplayName("§e" + u.getName());
+				head.setItemMeta(im);
+				playerNavigatorInventory.setItem(i, head);
+			}
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void joinSpectator(final SpectatorUser user) {
+		spectators.add(user);
+		Arena a = getCurrentArena();
+		if(getState() == GameState.DEATHMATCH) {
+			user.getPlayer().teleport(a.getDeathmatchSpawns().get(0));
+		} else {
+			user.getPlayer().teleport(a.getSpawns().get(0));
+		}
+		
+		for(User u : users) {
+			u.getPlayer().hidePlayer(user.getPlayer());
+		}
+		user.clear();
+		user.getPlayer().setAllowFlight(true);
+		user.getPlayer().setFlying(true);
+		user.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 1));
+		
+		Bukkit.getScheduler().scheduleSyncDelayedTask(SurvivalGames.instance, new Runnable() {
+			public void run() {
+				user.getPlayer().getInventory().setItem(8, leaveItem);
+				user.getPlayer().getInventory().setItem(7, playerNavigator);
+				user.getPlayer().updateInventory();
+			}
+		}, 2L);
+		
+		sendSpectators(MessageHandler.getMessage("spectator-join").replace("%0%", user.getName()));
+	}
+	
+	public void leaveSpectator(SpectatorUser user) {
+		spectators.remove(user);
+	}
+	
+	
+	public void sendSpectators(String msg) {
+		for(SpectatorUser su : spectators) {
+			su.sendMessage(msg);
+		}
+	}
+	
+	public List<SpectatorUser> getSpecators() {
+		return spectators;
+	}
+	
+	// END SPECTATOR
+	
+	public User getUser(String name) {
+		for(User u : users) {
+			if(u.getName().equals(name))
+				return u;
+		}
+		return null;
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -136,6 +257,8 @@ public class Game {
 	
 	public void leave(User user) {
 		users.remove(user);
+		if(getState() == GameState.INGAME || getState() == GameState.DEATHMATCH)
+			redefinePlayerNavigatorInventory();
 		checkForCancelStart();
 		SurvivalGames.signManager.updateSigns();
 	}
@@ -146,6 +269,16 @@ public class Game {
 			for(int i = 0; i < size; i++) {
 				try {
 					SurvivalGames.userManger.leaveGame(users.get(0).getPlayer());
+				} catch(IndexOutOfBoundsException e) {
+					break;
+				}
+			}
+		}
+		if(spectators.size() != 0) {
+			int size = spectators.size();
+			for(int i = 0; i < size; i++) {
+				try {
+					SurvivalGames.userManger.leaveGame(spectators.get(0));
 				} catch(IndexOutOfBoundsException e) {
 					break;
 				}
@@ -326,6 +459,9 @@ public class Game {
 	public void sendMessage(String message) {
 		for(User user : users) {
 			user.sendMessage(message);
+		}
+		for(SpectatorUser su : spectators) {
+			su.sendMessage(message);
 		}
 	}
 	

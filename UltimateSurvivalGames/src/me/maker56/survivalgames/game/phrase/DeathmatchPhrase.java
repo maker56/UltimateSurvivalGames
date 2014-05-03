@@ -7,11 +7,13 @@ import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
+import me.maker56.survivalgames.user.SpectatorUser;
 import me.maker56.survivalgames.user.User;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 public class DeathmatchPhrase {
 	
@@ -34,6 +36,14 @@ public class DeathmatchPhrase {
 				i = 0;
 			user.getPlayer().teleport(spawns.get(i));
 			i++;
+		}
+		
+		Location suloc = spawns.get(0);
+		for(SpectatorUser su : game.getSpecators()) {
+			su.getPlayer().teleport(suloc);
+			Vector v = new Vector(0, 2, 0);
+			v.multiply(1.25);
+			su.getPlayer().getLocation().setDirection(v);
 		}
 		
 		task = Bukkit.getScheduler().runTaskTimer(SurvivalGames.instance, new Runnable() {

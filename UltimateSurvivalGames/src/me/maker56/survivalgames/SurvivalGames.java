@@ -15,6 +15,7 @@ import me.maker56.survivalgames.listener.PlayerListener;
 import me.maker56.survivalgames.listener.ResetListener;
 import me.maker56.survivalgames.listener.SelectionListener;
 import me.maker56.survivalgames.listener.SignListener;
+import me.maker56.survivalgames.listener.SpectatorListener;
 import me.maker56.survivalgames.listener.UpdateListener;
 import me.maker56.survivalgames.metrics.Metrics;
 import me.maker56.survivalgames.scoreboard.ScoreBoardManager;
@@ -80,6 +81,7 @@ public class SurvivalGames extends JavaPlugin {
 		pm.registerEvents(new SignListener(), this);
 		pm.registerEvents(new ResetListener(), this);
 		pm.registerEvents(new UpdateListener(), this);
+		pm.registerEvents(new SpectatorListener(), this);
 		
 		try {
 			new Metrics(this).start();

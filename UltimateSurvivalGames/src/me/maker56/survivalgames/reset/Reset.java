@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.events.ResetDoneEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

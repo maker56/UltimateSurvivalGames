@@ -57,7 +57,7 @@ public class ArenaManager {
 		
 		if(Save.isSaveing(gamename, arenaname) || Reset.isResetting(gamename, arenaname)) {
 			Bukkit.broadcastMessage(Boolean.valueOf(Save.isSaveing(gamename, arenaname)).toString() + " " + Boolean.valueOf(Reset.isResetting(gamename, arenaname)));
-			p.sendMessage(MessageHandler.getMessage("prefix") + "§cThis arena is already saveing or resetting.");
+			p.sendMessage(MessageHandler.getMessage("prefix") + "Â§cThis arena is already saveing or resetting.");
 			return;
 		}
 		
@@ -65,7 +65,7 @@ public class ArenaManager {
 		if(game != null) {
 			Arena arena = game.getArena(arenaname);
 			if(arena != null) {
-				p.sendMessage(MessageHandler.getMessage("prefix") + "§cYou can only save arenas of an unloaded lobby.");
+				p.sendMessage(MessageHandler.getMessage("prefix") + "Â§cYou can only save arenas of an unloaded lobby.");
 				return;
 			}
 		}
@@ -83,7 +83,7 @@ public class ArenaManager {
 		new Save(gamename, arenaname, min, max, p.getName()).start();
 	}
 	
-	// ARENA LÖSCHEN
+	// ARENA LÃ–SCHEN
 	
 	public void delete(Player p) {
 		if(!selectedarena.containsKey(p.getName())) {
@@ -100,13 +100,13 @@ public class ArenaManager {
 		}
 		
 		if(!cfg.contains("Games." + gamename + ".Arenas." + arenaname)) {
-			p.sendMessage(MessageHandler.getMessage("prefix") + "§cArena " + arenaname + " in lobby " + gamename + " not found!");
+			p.sendMessage(MessageHandler.getMessage("prefix") + "Â§cArena " + arenaname + " in lobby " + gamename + " not found!");
 			return;
 		}
 		
 		Game game = SurvivalGames.gameManager.getGame(gamename);
 		if(game != null) {
-			p.sendMessage(MessageHandler.getMessage("prefix") + "§cYou can only delete arenas of an unloaded lobby.");
+			p.sendMessage(MessageHandler.getMessage("prefix") + "Â§cYou can only delete arenas of an unloaded lobby.");
 			return;
 		}
 		
@@ -126,45 +126,45 @@ public class ArenaManager {
 		String gamename = selectedarena.get(p.getName())[0];
 		String arenaname = selectedarena.get(p.getName())[1];
 		
-		p.sendMessage(MessageHandler.getMessage("prefix") + "Arena-Check: Arena §e" + arenaname + "§6, Game §e" + gamename);
+		p.sendMessage(MessageHandler.getMessage("prefix") + "Arena-Check: Arena Â§e" + arenaname + "Â§6, Game Â§e" + gamename);
 		String path = "Games." + gamename + ".Arenas." + arenaname + ".";
 		
 		boolean enabled = cfg.getBoolean(path + "Enabled");
 		
 		if(enabled) {
-			p.sendMessage("§aThis arena is ready to play!");
+			p.sendMessage("Â§aThis arena is ready to play!");
 		}
 		
 		int spawns = cfg.getStringList(path + "Spawns").size();
-		// TODO
+
 		if(spawns < 2) {
-			p.sendMessage(" §8§l–º §bSpawns §7(§c" + spawns + "§7) §eAt least 2 Spawns required");
+			p.sendMessage(" Â§8Â§lâ¥ Â§bSpawns Â§7(Â§c" + spawns + "Â§7) Â§eAt least 2 Spawns required");
 		} else {
-			p.sendMessage(" §8§l–º §bSpawns §7(§a" + spawns + "§7) §eAt least 2 Spawns required");
+			p.sendMessage(" Â§8Â§lâ¥ Â§bSpawns Â§7(Â§a" + spawns + "Â§7) Â§eAt least 2 Spawns required");
 		}
 		
 		boolean deathmatch = cfg.getBoolean(path + "Enable-Deathmatch");
 		int dspawns = cfg.getStringList(path + "Deathmatch-Spawns").size();
 		
-		p.sendMessage(" §8§l–º §bDeathmatch §7(§a" + deathmatch + "§7) §e(optional)");
+		p.sendMessage(" Â§8Â§lâ€“Âº Â§bDeathmatch Â§7(Â§a" + deathmatch + "Â§7) Â§e(optional)");
 		
 		if(deathmatch == true) {
 			if(dspawns < 1) {
-				p.sendMessage(" §8§l–º §bDeathmatch-Spawns §7(§c" + dspawns + "§7) §eAt least 1 Deathmatch Spawn required");	
+				p.sendMessage(" Â§8Â§lâ¥ Â§bDeathmatch-Spawns Â§7(Â§c" + dspawns + "Â§7) Â§eAt least 1 Deathmatch Spawn required");	
 			} else {
-				p.sendMessage(" §8§l–º §bDeathmatch-Spawns §7(§a" + dspawns + "§7) §eAt least 1 Deathmatch Spawn required");	
+				p.sendMessage(" Â§8Â§lâ¥ Â§bDeathmatch-Spawns Â§7(Â§a" + dspawns + "Â§7) Â§eAt least 1 Deathmatch Spawn required");	
 			}
 		}
 		
 		p.sendMessage("   ");
-		p.sendMessage("§e§lNext step:");
+		p.sendMessage("Â§eÂ§lNext step:");
 		
 		if(spawns < 2) {
-			p.sendMessage("§aAt least are 2 Spawns required. Type §b/sg arena addspawn §ato add more spawns!");
+			p.sendMessage("Â§aAt least are 2 Spawns required. Type Â§b/sg arena addspawn Â§ato add more spawns!");
 		} else if(deathmatch == true && dspawns < 1){
-			p.sendMessage("§aAt least are 1 Deathmatch-Spawn required. Type §b/sg arena deathmatch add §ato add more Deathmatch-Spawns!");
+			p.sendMessage("Â§aAt least are 1 Deathmatch-Spawn required. Type Â§b/sg arena deathmatch add Â§ato add more Deathmatch-Spawns!");
 		} else {
-			p.sendMessage("§aThis arena is ready to play. Just type §b/sg arena finish §ato finish the setup!");
+			p.sendMessage("Â§aThis arena is ready to play. Just type Â§b/sg arena finish Â§ato finish the setup!");
 		}
 	}
 	
@@ -181,7 +181,7 @@ public class ArenaManager {
 		String path = "Games." + gamename + ".Arenas." + arenaname + ".";
 		
 		if(SurvivalGames.gameManager.getGame(gamename) != null) {
-			p.sendMessage(MessageHandler.getMessage("prefix") + "§cYou can't add an arena to a loaded lobby. Unload the lobby first with /sg lobby unload " + gamename);
+			p.sendMessage(MessageHandler.getMessage("prefix") + "Â§cYou can't add an arena to a loaded lobby. Unload the lobby first with /sg lobby unload " + gamename);
 		} else {
 			cfg.set(path + "Enabled", true);
 			SurvivalGames.saveDataBase();
@@ -192,7 +192,7 @@ public class ArenaManager {
 			}
 			SurvivalGames.gameManager.load(gamename);
 				
-			p.sendMessage(MessageHandler.getMessage("prefix") + "§aYou've finished the setup and activated the arena successfully!");
+			p.sendMessage(MessageHandler.getMessage("prefix") + "Â§aYou've finished the setup and activated the arena successfully!");
 		}
 	}
 	
@@ -212,10 +212,10 @@ public class ArenaManager {
 		
 		if(deathmatch) {
 			cfg.set(path + "Enable-Deathmatch", false);
-			p.sendMessage(MessageHandler.getMessage("arena-deathmatch-changed").replace("%0%", "§cFALSE"));
+			p.sendMessage(MessageHandler.getMessage("arena-deathmatch-changed").replace("%0%", "Â§cFALSE"));
 		} else {
 			cfg.set(path + "Enable-Deathmatch", true);
-			p.sendMessage(MessageHandler.getMessage("arena-deathmatch-changed").replace("%0%", "§aTRUE"));
+			p.sendMessage(MessageHandler.getMessage("arena-deathmatch-changed").replace("%0%", "Â§aTRUE"));
 		}
 		SurvivalGames.saveDataBase();
 	}
@@ -357,7 +357,7 @@ public class ArenaManager {
 	}
 	
 	
-	// ARENA AUSWÃ„HLEN
+	// ARENA AUSWÃƒâ€HLEN
 	
 	public void selectArena(Player p, String arenaname, String gamename) {
 		if(!cfg.contains("Games." + gamename)) {
@@ -378,7 +378,7 @@ public class ArenaManager {
 	
 	@SuppressWarnings("deprecation")
 	public Arena getArena(String game, String arenaname) {
-		if(!new File("plugins/SurvivalGames/reset/" + game + arenaname + ".map").exists() && !SurvivalGames.instance.getConfig().getBoolean("Enable-Arena-Reset")) {
+		if(!new File("plugins/SurvivalGames/reset/" + game + arenaname + ".map").exists() && SurvivalGames.instance.getConfig().getBoolean("Enable-Arena-Reset")) {
 			System.out.println("[SurvivalGames] Cannot load arena " + arenaname + " in lobby " + game + ": Arena map file is missing! To create a map file, select the arena first with /sg arena select " + game + " " + arenaname + " and type /sg arena save!");
 			return null;
 		}

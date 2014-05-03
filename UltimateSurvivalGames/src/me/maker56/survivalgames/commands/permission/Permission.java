@@ -13,7 +13,9 @@ public enum Permission {
 	
 	LIST("sg.list"),
 	
-	JOIN("sg.join");
+	JOIN("sg.join"),
+	
+	SPECTATE("sg.spectate");
 	
 	private final String permission;
 	

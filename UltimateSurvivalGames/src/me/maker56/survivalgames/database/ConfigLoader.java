@@ -274,6 +274,11 @@ public class ConfigLoader {
 		c.addDefault("Voting.ArenaItem", Material.MAP + " 0 lore:&7Click_to_vote//&7for_this_arena!");
 		c.addDefault("Leave-Item", Material.MAGMA_CREAM + " name:&eLeave_the_lobby lore:&7Rightclick_to_leave//&7the_lobby!");
 		
+		c.addDefault("Spectating.Enabled", true);
+		c.addDefault("Spectating.Max-Spectators-Per-Arena", 8);
+		c.addDefault("Spectating.Player-Navigator.Item", Material.COMPASS + " name:&ePlayer Navigator lore:&7Rightclick_to_open//&7the_player_navigator!");
+		c.addDefault("Spectating.Player-Navigator.Inventory-Title", "Click on a item to spectate!");
+		
 		List<String> joinfull = new ArrayList<>();
 		joinfull.add("sg.donator.vip.iron");
 		joinfull.add("sg.donator.vip.gold");
@@ -321,6 +326,13 @@ public class ConfigLoader {
 		c.addDefault("game-cooldown-big", "The game starts in %0% seconds");
 		c.addDefault("game-cooldown-little", "The game starts in %0%");
 		
+		c.addDefault("spectator-join", "%0% joined the game as spectator!");
+		c.addDefault("spectator-full", "&cThe lobby is full. There can be up to %0% spectators in a lobby!");
+		c.addDefault("spectator-game-running", "&cThis game isn't running!");
+		c.addDefault("spectator-not-living", "&cPlayer %0% isn't alive anymore.");
+		c.addDefault("spectator-new-player", "You're now specatating %0%!");
+		c.addDefault("spectator-disabled", "&cSpectating is disabled!");
+		
 		c.addDefault("game-waiting-cooldown-big", "The voting ends in %0% seconds");
 		c.addDefault("game-waiting-cooldown-little", "The voting ends in %0%");
 		c.addDefault("game-waiting-end", "The waiting phase has been ended!");
@@ -334,7 +346,7 @@ public class ConfigLoader {
 		
 		c.addDefault("game-player-die-killer", "%0% was killed by %1%!");
 		c.addDefault("game-player-die-damage", "%0% has died and gone from us!");
-		c.addDefault("game-player-left", "%0% left the game");
+		c.addDefault("game-player-left", "%0% left the lobby!");
 		c.addDefault("game-remainplayers", "%0% tributes remain.");
 		
 		c.addDefault("game-grace-period", "&bYou have %0% seconds Grace-Period!");
@@ -352,8 +364,8 @@ public class ConfigLoader {
 		c.addDefault("game-start-canceled", "Not enough players are in this lobby. Cancel Timer...");
 		c.addDefault("game-start", "The round begins, &b%0% &6players are playing! &bGood luck&6!");
 		c.addDefault("game-chestrefill", "It's midnight! All chests are refilled!");
-		c.addDefault("game-win", "%0% won SurvivalGames in Arena %1% in game %2%!");
-		c.addDefault("game-win-winner-message", "Congratulations! You've won SurvivalGames in Arena &b%0%&6!");
+		c.addDefault("game-win", "%0% won the SurvivalGames in arena %1% in lobby %2%!");
+		c.addDefault("game-win-winner-message", "&bCongratulations!&6 You've won the SurvivalGames in arena &b%0%&6!");
 		
 		c.addDefault("game-sign-info", "&7&m-----&r &6Lobby info: &e%0% &7&m-----");
 		c.addDefault("game-sign-arena", "Arena&7: &e%0%");
