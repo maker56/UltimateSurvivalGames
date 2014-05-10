@@ -58,8 +58,14 @@ public class VotingPhrase {
 		reinitializeDatabase();
 		this.game = game;
 		time = game.getLobbyTime();
+
+	}
+	
+	public void load() {
 		game.setState(GameState.VOTING);
 		chooseRandomArenas();
+		game.setScoreboardPhase(SurvivalGames.getScoreboardManager().getNewScoreboardPhase(GameState.VOTING));
+		
 		start();
 	}
 	
@@ -112,6 +118,7 @@ public class VotingPhrase {
 					return;
 				}
 				
+				game.updateScoreboard();
 				time--;
 
 			}
@@ -126,6 +133,10 @@ public class VotingPhrase {
 	public void equipPlayer(User user) {
 		user.getPlayer().getInventory().setItem(1, voteItem);
 		user.getPlayer().updateInventory();
+	}
+	
+	public List<Arena> getArenas() {
+		return voteArenas;
 	}
 	
 	public void generateInventory() {
@@ -172,6 +183,10 @@ public class VotingPhrase {
 		}
 	}
 	
+	public int getTime() {
+		return time;
+	}
+	
 	public Arena getMostVotedArena() {
 		Arena mostVoted = null;
 
@@ -204,6 +219,7 @@ public class VotingPhrase {
 				if(amount > 1) {
 					p.sendMessage(MessageHandler.getMessage("game-extra-vote").replace("%0%", Integer.valueOf(amount).toString()));
 				}
+				game.updateScoreboard();
 			}
 				
 			return a;

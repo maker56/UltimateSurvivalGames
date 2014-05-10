@@ -6,14 +6,11 @@ import org.bukkit.entity.Player;
 
 public class User extends UserState {
 	
-	private Game game;
-	
 	private int spawnIndex = Integer.MIN_VALUE;
 	
 	public User(Player player, Game game) {
-		super(player);
+		super(player, game);
 		this.player = player;
-		this.game = game;
 	}
 
 	public void setSpawnIndex(int index) {
@@ -22,10 +19,6 @@ public class User extends UserState {
 	
 	public int getSpawnIndex() {
 		return spawnIndex;
-	}
-	
-	public Game getGame() {
-		return game;
 	}
 
 }

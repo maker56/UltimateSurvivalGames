@@ -42,6 +42,10 @@ public class IngamePhrase {
 		this.game = game;
 		this.period = game.getCurrentArena().getGracePeriod();
 		this.time = game.getCurrentArena().getAutomaticlyDeathmatchTime();
+	}
+	
+	public void load() {
+		game.setScoreboardPhase(SurvivalGames.getScoreboardManager().getNewScoreboardPhase(GameState.INGAME));
 		start();
 	}
 	
@@ -108,7 +112,7 @@ public class IngamePhrase {
 						return;
 					}
 				}
-				
+				game.updateScoreboard();
 				time--;
 			}
 		}, 0L, 20L);
@@ -147,8 +151,11 @@ public class IngamePhrase {
 				continue;
 			user.getPlayer().getWorld().dropItemNaturally(user.getPlayer().getLocation(), is);
 		}
-		Player p = user.getPlayer();
+		final Player p = user.getPlayer();
+
 		um.leaveGame(p);
+		game.setDeathAmount(game.getDeathAmount() + 1);
+		game.updateScoreboard();
 		
 		if(remain == 1) {
 			User winner = game.getUsers().get(0);
@@ -167,9 +174,15 @@ public class IngamePhrase {
 			um.leaveGame(winner.getPlayer());
 			game.end();
 		} else {
-			if(PermissionHandler.hasPermission(p, Permission.SPECTATE)) 
-				um.joinGameAsSpectator(p, game.getName());
-			if(remain == game.getCurrentArena().getPlayerDeathmatchAmount())
+			if(PermissionHandler.hasPermission(p, Permission.SPECTATE)) {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(SurvivalGames.instance, new Runnable() {
+					public void run() {
+						um.joinGameAsSpectator(p, game.getName());
+					}
+				}, 2L);
+			}
+
+			if(remain == game.getCurrentArena().getPlayerDeathmatchAmount() && game.getCurrentArena().isDeathmatchEnabled())
 				startDeathmatchTask();
 		}
 
@@ -199,6 +212,10 @@ public class IngamePhrase {
 				time--;
 			}
 		}, 0L, 20L);
+	}
+	
+	public int getTime() {
+		return time;
 	}
 	
 	public void startLightningTask() {

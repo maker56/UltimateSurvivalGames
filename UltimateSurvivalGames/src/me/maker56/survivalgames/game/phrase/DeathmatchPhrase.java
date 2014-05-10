@@ -23,6 +23,10 @@ public class DeathmatchPhrase {
 	
 	public DeathmatchPhrase(Game game) {
 		this.game = game;
+	}
+	
+	public void load() {
+		game.setScoreboardPhase(SurvivalGames.getScoreboardManager().getNewScoreboardPhase(GameState.DEATHMATCH));
 		start();
 	}
 	
@@ -68,12 +72,15 @@ public class DeathmatchPhrase {
 					}
 					
 				}
-				
+				game.updateScoreboard();
 				time--;
 			}
 		}, 0L, 20L);
 	}
 	
+	public int getTime() {
+		return time;
+	}
 	
 	
 	public void cancelTask() {

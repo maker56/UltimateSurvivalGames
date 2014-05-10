@@ -33,7 +33,7 @@ public class ConfigArgument {
 		
 		if(args.length == 1) {
 			p.sendMessage(MessageHandler.getMessage("prefix") + "Configuration §7§m---§r §6Helpsite");
-			p.sendMessage("§8/§6sg config reload [MESSAGES/SIGNS/DATABASE/CONFIG/CHESTLOOT] §7- §eCreates a game with the specify name!");
+			p.sendMessage("§8/§6sg config reload [MESSAGES/SIGNS/DATABASE/CONFIG/CHESTLOOT/SCOREBOARD] §7- §eReloads the specify config!");
 		} else {
 			if(args[1].equalsIgnoreCase("reload")) {
 				if(args.length == 2) {
@@ -41,6 +41,8 @@ public class ConfigArgument {
 					ConfigReloader.reloadConfig();
 					ConfigReloader.reloadDatabase();
 					ConfigReloader.reloadSigns();
+					ConfigReloader.reloadChestloot();
+					ConfigReloader.reloadScoreboard();
 					p.sendMessage(MessageHandler.getMessage("prefix") + "You've reloaded all configuration files successfully!");
 					return true;
 				}
@@ -62,6 +64,9 @@ public class ConfigArgument {
 				} else if(con.equalsIgnoreCase("chestloot")) {
 					ConfigReloader.reloadChestloot();
 					p.sendMessage(MessageHandler.getMessage("prefix") + "You've reloaded the chestloot.yml successfully!");
+				} else if(con.equalsIgnoreCase("scoreboard")) {
+					ConfigReloader.reloadScoreboard();
+					p.sendMessage(MessageHandler.getMessage("prefix") + "You've reloaded the scoreboard.yml successfully!");
 				} else {
 					p.sendMessage(MessageHandler.getMessage("config-error-name").replace("%0%", "/sg config reload [MESSAGES/SIGNS/DATABASE/CONFIG/CHESTLOOT]"));
 					return true;

@@ -21,10 +21,15 @@ public class CooldownPhrase {
 	
 	public CooldownPhrase(Game game, Arena arena) {
 		this.game = game;
-		game.setCurrentArena(arena);
 		this.arena = arena;
+	}
+	
+	public void load() {
+		game.setCurrentArena(arena);
 		time = game.getCooldownTime();
 		game.setState(GameState.COOLDOWN);
+		game.setScoreboardPhase(SurvivalGames.getScoreboardManager().getNewScoreboardPhase(GameState.COOLDOWN));
+		game.updateScoreboard();
 		start();
 	}
 	
@@ -77,9 +82,15 @@ public class CooldownPhrase {
 					game.startIngame();
 					return;
 				}
+				
+				game.updateScoreboard();
 				time--;
 			}
 		}, 0L, 20L);
+	}
+	
+	public int getTime() {
+		return time;
 	}
 	
 	public void cancelTask() {

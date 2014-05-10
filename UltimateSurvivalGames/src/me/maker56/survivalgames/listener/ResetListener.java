@@ -98,8 +98,10 @@ public class ResetListener implements Listener {
 			Location loc = blocks.get(0).getLocation();
 			for(Game game : gm.getGames()) {
 				for(Arena a : game.getArenas()) {
-					if(a.containsBlock(loc))
+					if(a.containsBlock(loc)) {
 						blocks.clear();
+						break;
+					}
 				}
 			}
 		}

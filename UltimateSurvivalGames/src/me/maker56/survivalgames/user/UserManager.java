@@ -2,12 +2,6 @@ package me.maker56.survivalgames.user;
 
 import java.util.Iterator;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.IllegalPluginAccessException;
-import org.bukkit.potion.PotionEffect;
-
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.Permission;
@@ -15,6 +9,12 @@ import me.maker56.survivalgames.commands.permission.PermissionHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameManager;
 import me.maker56.survivalgames.game.GameState;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.IllegalPluginAccessException;
+import org.bukkit.potion.PotionEffect;
 
 public class UserManager {
 	
@@ -28,6 +28,9 @@ public class UserManager {
 			u.getPlayer().showPlayer(su.getPlayer());
 		}
 		g.leaveSpectator(su);
+		if(g.getScoreboardPhase() != null) {
+			su.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+		}
 		setState(su.getPlayer(), su);
 	}
 	
@@ -152,6 +155,12 @@ public class UserManager {
 		if(game.getState() == GameState.WAITING || game.getState() == GameState.VOTING || game.getState() == GameState.COOLDOWN)
 			game.sendMessage(MessageHandler.getMessage("game-leave").replace("%0%", p.getName()).replace("%1%", Integer.valueOf(game.getPlayingUsers() - 1).toString()).replace("%2%", Integer.valueOf(game.getMaximumPlayers()).toString()));
 		game.leave(user);
+		
+		if(game.getScoreboardPhase() != null) {
+			p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+		}
+		
+		
 		if(p.isDead()) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(SurvivalGames.instance, new Runnable() {
 				public void run() {

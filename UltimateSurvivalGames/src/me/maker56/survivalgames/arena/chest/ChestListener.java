@@ -8,6 +8,7 @@ import me.maker56.survivalgames.user.User;
 import me.maker56.survivalgames.user.UserManager;
 
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,6 +50,7 @@ public class ChestListener implements Listener {
 							Chest chest = cm.getRandomChest(p, loc);
 							game.registerChest(chest);
 							p.openInventory(chest.getInventory());
+							p.playSound(p.getEyeLocation(), Sound.CHEST_OPEN, 1.0F, 1.0F);
 						}
 					}
 				}

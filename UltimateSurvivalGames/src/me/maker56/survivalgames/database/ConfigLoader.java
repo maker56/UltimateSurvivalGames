@@ -18,6 +18,7 @@ public class ConfigLoader {
 		reloadSigns();
 		reloadReset();
 		reloadChests();
+		reloadScoreboard();
 	}
 	
 	public static void reloadScoreboard() {
@@ -25,31 +26,69 @@ public class ConfigLoader {
 		SurvivalGames.scoreboard = c;
 		
 		String path = "Phase.Waiting.";
-		c.addDefault(path + "Title", "&lWaiting for players");
+		c.addDefault(path + "Enabled", true);
+		c.addDefault(path + "Title", "&b&lWaiting for players");
 		List<String> content = new ArrayList<>();
-		content.add("&aRequired&7://%requiredplayers%");
-		c.addDefault(path + "Content", content);
+		content.add("&eRequired players to start&7://%requiredplayers%");
+		content.add("&eCurrent player amount&7://%playing%");
+		c.addDefault(path + "Scores", content);
 		
 		path = "Phase.Voting.";
-		c.addDefault(path + "Title", "&lArena Voting &7%time%");
+		c.addDefault(path + "Enabled", true);
+		c.addDefault(path + "Title", "&b&lArena Voting");
 		content = new ArrayList<>();
-		content.add("%arena%//%votecount%");
-		content.add("%arena%//%votecount%");
-		content.add("%arena%//%votecount%");
-		c.addDefault(path + "Content", content);
+		content.add("&e%arena%//%votecount%");
+		content.add("&e%arena%//%votecount%");
+		content.add("&e%arena%//%votecount%");
+		c.addDefault(path + "Scores", content);
 		
 		path = "Phase.Cooldown.";
-		c.addDefault(path + "Title", "&lCooldown");
+		c.addDefault(path + "Enabled", true);
+		c.addDefault(path + "Title", "&b&lCooldown");
 		content = new ArrayList<>();
-		content.add("&aTime&7://%time%");
-		c.addDefault(path + "Content", content);
+		content.add("&eTime remaining&7://%time%");
+		content.add("&eTributes&7://%playing%");
+		c.addDefault(path + "Scores", content);
 		
 		path = "Phase.Ingame.";
-		c.addDefault(path + "Title", "&lIngame");
+		c.addDefault(path + "Enabled", true);
+		c.addDefault(path + "Title", "&b&lIngame");
 		content = new ArrayList<>();
-		content.add("&eAlive&7://%alive%");
-		content.add("&cDeath&7://%death%");
-		c.addDefault(path + "Content", content);
+		content.add("&e&lAlive&7://%playing%");
+		content.add("&c&lDeath&7://%death%");
+		c.addDefault(path + "Scores", content);
+		
+		path = "Phase.Deathmatch.";
+		c.addDefault(path + "Enabled", true);
+		c.addDefault(path + "Title", "&b&lDeathmatch");
+		content = new ArrayList<>();
+		content.add("&eTime remaining&7://%time%");
+		c.addDefault(path + "Scores", content);
+		
+		c.options().header(
+				"##### UltimateSurvivalGames Scoreboard Configuration #####\n" +
+				"\n" +
+				"How does this work?\n" +
+				"For each game phase (WAITING,VOTING,COOLDOWN,INGAME and DEATHMATHCH) is a scoreboard design.\n" +
+				"If you set \"Enabled\" for a phase to false, no scoreboard will shown!\n" +
+				"The title can be maximal 32 charakters long and cannot contain variables.\n" +
+				"\n" +
+				"In the \"Scores\" part, you can modify the content of the scoreboard. \"//\" splits the line in name and score.\n" +
+				"The left part is the name which can be maximal 48 charalters long.\n" +
+				"The right part is the amount of a score. Here you have to write the variables.\n" +
+				"\n" +
+				"What are the variables?\n" +
+				"You can use many variables. Here is a list:\n" +
+				"\n" +
+				"  %playing% - The current amount of players in a lobby!\n" +
+				"  %requiredplayers% - The amount of required players to start a game automaticly!\n" +
+				"  %death% - The amount of deaths in a round!\n" +
+				"  %spectators% - The amount of spectators in a round!\n" +
+				"  %time% - The remaining time of a game phase!\n" +
+				"  %votecount% - The amount of votes of an arena (Only works in the voting phase)\n" +
+	            "  %arena% - The name of the arena (Only works in the score name)\n" +
+	            "\n" +
+	            "More help on http://dev.bukkit.org/bukkit-plugins/ultimatesurvivalgames/\n");
 		
 		
 		c.options().copyDefaults(true);
@@ -101,7 +140,7 @@ public class ConfigLoader {
 		lvl3.add(Material.LEATHER_LEGGINGS + "");
 		lvl3.add(Material.ARROW + " 4");
 		lvl3.add(Material.GOLD_INGOT + " 2");
-		lvl3.add(Material.TNT + "");
+		lvl3.add(Material.TNT + " name:&eInstant_ignition_bomb");
 		lvl3.add(Material.DEAD_BUSH + "");
 		
 		c.addDefault("Chestloot.Level 3", lvl3);
@@ -130,7 +169,7 @@ public class ConfigLoader {
 		lvl5.add(Material.FERMENTED_SPIDER_EYE + "");
 		lvl5.add(Material.BOW + ":168");
 		lvl4.add(Material.STONE_SWORD + " name:&eSword_of_Herobrine enchant:KNOCKBACK,1 enchant:DAMAGE_ALL,1");
-		lvl5.add(Material.POTION + " effect:heal,1,1");
+		lvl5.add(Material.POTION + " effect:regeneration,10,1 name:&cRegeneration");
 		lvl5.add(Material.POTION + " effect:jump,18,1 effect:speed,18,2 name:&ePotion_of_a_rabbit lore:&7Give_you_the//&7abilities_of_a_rabbit!");
 		c.addDefault("Chestloot.Level 5", lvl5);
 		
@@ -271,7 +310,7 @@ public class ConfigLoader {
 		
 		c.addDefault("Voting.Item", Material.CHEST + " name:&eVote_for_an_arena lore:&7Rightclick_to_open//&7the_voting_menu!");
 		c.addDefault("Voting.InventoryTitle", "Vote for an arena!");
-		c.addDefault("Voting.ArenaItem", Material.MAP + " 0 lore:&7Click_to_vote//&7for_this_arena!");
+		c.addDefault("Voting.ArenaItem", Material.EMPTY_MAP + " 0 lore:&7Click_to_vote//&7for_this_arena!");
 		c.addDefault("Leave-Item", Material.MAGMA_CREAM + " name:&eLeave_the_lobby lore:&7Rightclick_to_leave//&7the_lobby!");
 		
 		c.addDefault("Spectating.Enabled", true);
@@ -290,6 +329,7 @@ public class ConfigLoader {
 		votePower.add("sg.donator.vip.iron//2");
 		votePower.add("sg.donator.vip.gold//2");
 		c.addDefault("Donator-Permissions.Extra-Vote-Power", votePower);
+		c.addDefault("TNT-Extra-Damage", 7.0);
 		
 		c.addDefault("Enable-Arena-Reset", true);
 		
@@ -347,10 +387,10 @@ public class ConfigLoader {
 		c.addDefault("game-player-die-killer", "%0% was killed by %1%!");
 		c.addDefault("game-player-die-damage", "%0% has died and gone from us!");
 		c.addDefault("game-player-left", "%0% left the lobby!");
-		c.addDefault("game-remainplayers", "%0% tributes remain.");
+		c.addDefault("game-remainplayers", "&b%0%&6 tributes remain.");
 		
-		c.addDefault("game-grace-period", "&bYou have %0% seconds Grace-Period!");
-		c.addDefault("game-grace-period-ended", "&bThe Grace-Period has been ended!");
+		c.addDefault("game-grace-period", "&bYou have %0% seconds grace-period!");
+		c.addDefault("game-grace-period-ended", "&bThe grace-period has been ended!");
 		
 		c.addDefault("game-voting-cooldown-big", "The voting ends in %0% seconds");
 		c.addDefault("game-voting-cooldown-little", "The voting ends in %0%");
@@ -382,7 +422,7 @@ public class ConfigLoader {
 		c.addDefault("game-already-exists", "&cThe lobby %0% already exist!");
 		c.addDefault("game-created", "You've created the lobby %0% successfully!");
 		c.addDefault("game-spawn-set", "You've set the spawn for game %0% successfully!");
-		c.addDefault("game-set-spawn", "To set the spawn of this lobby, type /sg game setspawn %0%");
+		c.addDefault("game-set-spawn", "To set the spawn of this lobby, type /sg game lobby %0%");
 		c.addDefault("game-not-found", "&cThe Game %0% does not exists!");
 		c.addDefault("game-must-enter", "&cYou must enter a name: %0%");
 		c.addDefault("game-vote", "Vote for an arena: &b/sg vote <ID>");

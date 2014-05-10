@@ -9,6 +9,7 @@ import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameManager;
 import me.maker56.survivalgames.game.phrase.VotingPhrase;
 import me.maker56.survivalgames.listener.PlayerListener;
+import me.maker56.survivalgames.scoreboard.ScoreBoardManager;
 
 public class ConfigReloader {
 	
@@ -18,7 +19,7 @@ public class ConfigReloader {
 		VotingPhrase.reinitializeDatabase();
 		Game.reinitializeDatabase();
         PermissionHandler.reinitializeDatabase();
-		PlayerListener.allowedCmds = SurvivalGames.instance.getConfig().getStringList("Allowed-Commands");
+        PlayerListener.reinitializeDatabase();
 	}
 	
 	public static void reloadDatabase() {
@@ -41,6 +42,10 @@ public class ConfigReloader {
 	public static void reloadChestloot() {
 		ConfigLoader.reloadChests();
 		ChestManager.reinitializeConfig();
+	}
+	
+	public static void reloadScoreboard() {
+		ScoreBoardManager.reinitializeDatabase();
 	}
 
 }

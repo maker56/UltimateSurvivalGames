@@ -12,6 +12,7 @@ import me.maker56.survivalgames.game.phrase.VotingPhrase;
 import me.maker56.survivalgames.user.SpectatorUser;
 import me.maker56.survivalgames.user.User;
 import me.maker56.survivalgames.user.UserManager;
+import me.maker56.survivalgames.user.UserState;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,11 +28,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -50,6 +54,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class PlayerListener implements Listener {
 	
 	private UserManager um = SurvivalGames.userManger;
+	
+	public PlayerListener() {
+		reinitializeDatabase();
+	}
 	
 	@EventHandler
 	public void onInventoryClickEvent(InventoryClickEvent event) {
@@ -115,11 +123,20 @@ public class PlayerListener implements Listener {
 			if(hand == null || hand.getType() == Material.AIR)
 				return;
 			
+			if(!um.isPlaying(p.getName()) && !um.isSpectator(p.getName()))
+				return;
+			UserState us = um.getUser(p.getName());
+			if(us == null)
+				us = um.getSpectator(p.getName());
+			
 			if(hand.equals(Game.getLeaveItem())) {
+				if(((System.currentTimeMillis() - us.getJoinTime()) / 1000) <= 2)
+					return;
 				um.leaveGame(p);
 				event.setCancelled(true);
 			}
 			
+
 			User u = um.getUser(p.getName());
 			
 			if(u != null) {
@@ -147,6 +164,36 @@ public class PlayerListener implements Listener {
 						su.getPlayer().openInventory(su.getGame().getPlayerNavigatorInventory());
 					}
 				}
+			}
+		}
+	}
+	
+	private static double tntdamage;
+	
+	public static void reinitializeDatabase() {
+		tntdamage = SurvivalGames.instance.getConfig().getDouble("TNT-Extra-Damage", 7.0);
+		allowedCmds = SurvivalGames.instance.getConfig().getStringList("Allowed-Commands");
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
+		if(!event.isCancelled()) {
+			if(event.getDamager() instanceof TNTPrimed && event.getEntity() instanceof Player) {
+				Player p = (Player) event.getEntity();
+				
+				if(um.isPlaying(p.getName())) {
+					event.setDamage(event.getDamage() + tntdamage);
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent event) {
+		if(event.getInventory().getType() == InventoryType.CHEST) {
+			Player p = (Player) event.getPlayer();
+			if(um.isPlaying(p.getName())) {
+				p.playSound(p.getEyeLocation(), Sound.CHEST_CLOSE, 1.0F, 1.0F);
 			}
 		}
 	}
@@ -488,12 +535,12 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
-	public static List<String> allowedCmds = SurvivalGames.instance.getConfig().getStringList("Allowed-Commands");
+	public static List<String> allowedCmds; 
 	
 	@EventHandler
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		Player p = event.getPlayer();
-		if(um.isPlaying(p.getName())) {
+		if(um.isPlaying(p.getName()) || um.isSpectator(p.getName())) {
 			String message = event.getMessage().toLowerCase();
 			
 			for(String cmd : allowedCmds) {
@@ -501,7 +548,10 @@ public class PlayerListener implements Listener {
 					return;
 			}
 			if(message.startsWith("/list")) {
-				Game g = um.getUser(p.getName()).getGame();
+				UserState u = um.getUser(p.getName());
+				if(u == null)
+					u = um.getSpectator(p.getName());
+				Game g = u.getGame();
 				p.sendMessage(MessageHandler.getMessage("game-player-list").replace("%0%", Integer.valueOf(g.getPlayingUsers()).toString()).replace("%1%", g.getAlivePlayers()));
 				event.setCancelled(true);
 			} else if(message.startsWith("/vote")) {

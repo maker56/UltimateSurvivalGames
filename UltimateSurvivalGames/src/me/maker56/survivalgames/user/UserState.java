@@ -3,6 +3,8 @@ package me.maker56.survivalgames.user;
 import java.util.Collection;
 import java.util.Iterator;
 
+import me.maker56.survivalgames.game.Game;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Damageable;
@@ -10,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-public class UserState {
+public abstract class UserState {
 	
 	protected Player player;
 	private double health;
@@ -25,8 +27,12 @@ public class UserState {
 	private boolean allowFlying, flying;
 	private Collection<PotionEffect> ape;
 	private float fall;
-
-	public UserState(Player p) {
+	
+	private long joinTime = System.currentTimeMillis();
+	private Game game;
+	
+	public UserState(Player p, Game game) {
+		this.game = game;
 		this.player = p;
 		this.health = ((Damageable) p).getHealth();
 		this.food = p.getFoodLevel();
@@ -46,6 +52,14 @@ public class UserState {
 		store[0] = p.getInventory().getContents();
 		store[1] = p.getInventory().getArmorContents();
 		this.inventory = store;
+	}
+	
+	public Game getGame() {
+		return game;
+	}
+	
+	public long getJoinTime() {
+		return joinTime;
 	}
 
 	public float getFallDistance() {
@@ -117,7 +131,7 @@ public class UserState {
 			player.removePotionEffect(i.next().getType());
 		}
 		player.setWalkSpeed(0.2F);
-		player.setFlySpeed(0.2F);
+		player.setFlySpeed(0.1F);
 		player.setHealth(20.0);
 		player.setFoodLevel(20);
 		player.setLevel(0);

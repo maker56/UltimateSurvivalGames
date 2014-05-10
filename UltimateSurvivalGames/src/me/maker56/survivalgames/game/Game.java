@@ -13,8 +13,11 @@ import me.maker56.survivalgames.game.phrase.DeathmatchPhrase;
 import me.maker56.survivalgames.game.phrase.IngamePhrase;
 import me.maker56.survivalgames.game.phrase.ResetPhrase;
 import me.maker56.survivalgames.game.phrase.VotingPhrase;
+import me.maker56.survivalgames.scoreboard.CustomScore;
+import me.maker56.survivalgames.scoreboard.ScoreboardPhase;
 import me.maker56.survivalgames.user.SpectatorUser;
 import me.maker56.survivalgames.user.User;
+import me.maker56.survivalgames.user.UserState;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,8 +29,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Scoreboard;
 
 public class Game {
 	
@@ -55,6 +56,7 @@ public class Game {
 	private int reqplayers, maxplayers;
 	private GameState state;
 	private int lobbytime, cooldown = 30;
+	private int death = 0;
 	
 	private VotingPhrase votingPhrase;
 	private CooldownPhrase cooldownPhrase;
@@ -83,8 +85,7 @@ public class Game {
 		this.reqplayers = reqplayers;
 		this.maxplayers = getFewestArena().getSpawns().size();
 		
-		scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-		scoreboard.registerNewObjective("sidebar", "dummy").setDisplaySlot(DisplaySlot.SIDEBAR);
+		setScoreboardPhase(SurvivalGames.getScoreboardManager().getNewScoreboardPhase(GameState.WAITING));
 		
 		setState(GameState.WAITING);
 	}
@@ -175,10 +176,12 @@ public class Game {
 		}, 2L);
 		
 		sendSpectators(MessageHandler.getMessage("spectator-join").replace("%0%", user.getName()));
+		updateScoreboard();
 	}
 	
 	public void leaveSpectator(SpectatorUser user) {
 		spectators.remove(user);
+		updateScoreboard();
 	}
 	
 	
@@ -200,6 +203,14 @@ public class Game {
 				return u;
 		}
 		return null;
+	}
+	
+	public int getDeathAmount() {
+		return death;
+	}
+	
+	public void setDeathAmount(int death) {
+		this.death = death;
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -236,6 +247,7 @@ public class Game {
 		
 		sendMessage(MessageHandler.getMessage("join-success").replace("%0%", p.getName()).replace("%1%", Integer.valueOf(users.size()).toString()).replace("%2%", Integer.valueOf(maxplayers).toString()));
 		SurvivalGames.signManager.updateSigns();
+		updateScoreboard();
 		checkForStart();
 	}
 	
@@ -260,6 +272,7 @@ public class Game {
 		if(getState() == GameState.INGAME || getState() == GameState.DEATHMATCH)
 			redefinePlayerNavigatorInventory();
 		checkForCancelStart();
+		updateScoreboard();
 		SurvivalGames.signManager.updateSigns();
 	}
 	
@@ -296,14 +309,17 @@ public class Game {
 	
 	public void startDeathmatch() {
 		deathmatchPhrase = new DeathmatchPhrase(this);
+		deathmatchPhrase.load();
 	}
 	
 	public void startIngame() {
 		ingamePhrase = new IngamePhrase(this);
+		ingamePhrase.load();
 	}
 	
 	public void startCooldown(Arena arena) {
 		cooldownPhrase = new CooldownPhrase(this, arena);
+		cooldownPhrase.load();
 	}
 	
 	public boolean isResetEnabled() {
@@ -319,12 +335,13 @@ public class Game {
 				return;
 			
 			if(getArenas().size() == 1) {
-				cooldownPhrase = new CooldownPhrase(this, getArenas().get(0));
+				startCooldown(getArenas().get(0));
 			} else {
 				if(cooldownPhrase != null) {
-					cooldownPhrase = new CooldownPhrase(this, getArenas().get(0));
+					startCooldown(getArenas().get(0));
 				} else {
 					votingPhrase = new VotingPhrase(this);
+					votingPhrase.load();
 				}
 			}
 		}
@@ -515,14 +532,50 @@ public class Game {
 	
 	// SCOREBOARD
 	
-	private Scoreboard scoreboard;
+	private ScoreboardPhase sp;
 	
-	public void setScoreboard(Scoreboard scoreboard) {
-		this.scoreboard = scoreboard;
+	public void setScoreboardPhase(ScoreboardPhase sp) {
+		if(this.sp != null && sp == null) {
+			for(User user : users) {
+				user.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+			}
+			
+			for(SpectatorUser user : spectators) {
+				user.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+			}
+		}
+		
+		this.sp = sp;
+		
+		if(sp != null) {
+			sp.initScoreboard(this);
+			updateScoreboard();
+		}
+
 	}
 	
-	public Scoreboard getScoreboard() {
-		return scoreboard;
+	public ScoreboardPhase getScoreboardPhase() {
+		return sp;
+	}
+	
+	public void updateScoreboard() {
+		if(sp != null) {
+			for(CustomScore cs : sp.getScores()) {
+				cs.update(this);
+			}
+			
+			for(User user : users) {
+				updateScoreboard(user);
+			}
+			
+			for(SpectatorUser su : spectators) {
+				updateScoreboard(su);
+			}
+		}
+	}
+	
+	public void updateScoreboard(UserState user) {
+		user.getPlayer().setScoreboard(sp.getScoreboard());
 	}
 
 }

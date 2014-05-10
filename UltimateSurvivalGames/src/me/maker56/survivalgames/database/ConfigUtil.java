@@ -86,7 +86,7 @@ public class ConfigUtil {
 			
 			return is;
 		} catch(Exception e) {
-			System.err.println("[SurvivalGames] Cannot parse ItemStack: " + s + " - Mabye this is the reason: " + e.getMessage());
+			System.err.println("[SurvivalGames] Cannot parse ItemStack: " + s + " - Mabye this is the reason: " + e.toString());
 			return null;
 		}
 	}

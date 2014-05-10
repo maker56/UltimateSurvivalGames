@@ -43,6 +43,10 @@ public class CommandSG implements CommandExecutor {
 					sender.sendMessage("§8/§6sg list §7- §eList of all available lobbys!");
 				}
 				
+				if(PermissionHandler.hasPermission(sender, Permission.START)) {
+					sender.sendMessage("§8/§6sg start §7- §eForce a lobby to start!");
+				}
+				
 				if(PermissionHandler.hasPermission(sender, Permission.GAME)) {
 					sender.sendMessage("§8/§6sg lobby §7- §eShows the lobby helpsite!");
 				}
