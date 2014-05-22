@@ -70,7 +70,7 @@ public class UserManager {
 		
 		GameState state = g.getState();
 		
-		if(state == GameState.VOTING || state == GameState.WAITING || state == GameState.COOLDOWN) {
+		if(state == GameState.VOTING || state == GameState.WAITING || state == GameState.COOLDOWN || state == GameState.RESET) {
 			p.sendMessage(MessageHandler.getMessage("spectator-game-running"));
 			return;
 		}
@@ -181,6 +181,8 @@ public class UserManager {
 		p.setFlying(state.isFlying());
 		p.setLevel(state.getLevel());
 		p.setExp(state.getExp());
+		p.setFireTicks(state.getFireTicks());
+		p.setMaxHealth(state.getMaxHealth());
 		p.setHealth(state.getHealth());
 		p.setFoodLevel(state.getFoodLevel());
 		p.setWalkSpeed(state.getWalkSpeed());
@@ -190,6 +192,7 @@ public class UserManager {
 			p.removePotionEffect(i.next().getType());
 		}
 		p.addPotionEffects(state.getActivePotionEffects());
+		p.getInventory().setHeldItemSlot(state.getHeldItemSlot());
 		
 		final String name = p.getName();
 		final ItemStack[] contents = state.getContents();

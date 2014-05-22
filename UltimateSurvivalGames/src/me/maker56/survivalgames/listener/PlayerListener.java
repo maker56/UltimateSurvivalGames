@@ -192,8 +192,10 @@ public class PlayerListener implements Listener {
 	public void onInventoryClose(InventoryCloseEvent event) {
 		if(event.getInventory().getType() == InventoryType.CHEST) {
 			Player p = (Player) event.getPlayer();
-			if(um.isPlaying(p.getName())) {
-				p.playSound(p.getEyeLocation(), Sound.CHEST_CLOSE, 1.0F, 1.0F);
+			User user = um.getUser(p.getName());
+			if(user != null && user.getCurrentChest() != null) {
+				Location loc = user.getCurrentChest().getLocation();
+				loc.getWorld().playSound(loc, Sound.CHEST_CLOSE, 1.0F, 1.0F);
 			}
 		}
 	}

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
-import me.maker56.survivalgames.database.ConfigUtil;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.listener.SelectionListener;
 import me.maker56.survivalgames.reset.Reset;
@@ -71,8 +71,8 @@ public class ArenaManager {
 		}
 		
 		
-		Location min = ConfigUtil.parseLocation(cfg.getString("Games." + gamename + ".Arenas." + arenaname + ".Min"));
-		Location max = ConfigUtil.parseLocation(cfg.getString("Games." + gamename + ".Arenas." + arenaname + ".Max"));
+		Location min = Util.parseLocation(cfg.getString("Games." + gamename + ".Arenas." + arenaname + ".Min"));
+		Location max = Util.parseLocation(cfg.getString("Games." + gamename + ".Arenas." + arenaname + ".Max"));
 		
 		if(min == null || max == null) {
 			p.sendMessage(MessageHandler.getMessage("prefix") + "The arena isn't defined yet.");
@@ -385,8 +385,13 @@ public class ArenaManager {
 		
 		String path = "Games." + game + ".Arenas." + arenaname + ".";
 		
-		Location min = ConfigUtil.parseLocation(cfg.getString(path + "Min"));
-		Location max = ConfigUtil.parseLocation(cfg.getString(path + "Max"));
+		Location min = Util.parseLocation(cfg.getString(path + "Min"));
+		Location max = Util.parseLocation(cfg.getString(path + "Max"));
+		
+		if(min == null || max == null) {
+			System.out.println("[SurvivalGames] Cannot load arena " + arenaname + " in lobby " + game + ": Minimum and maximum location of the arena aren't correct defined. Try to redefine it!");
+			return null;
+		}
 		
 		int graceperiod = cfg.getInt(path + "Grace-Period");
 		
@@ -396,7 +401,7 @@ public class ArenaManager {
 		List<Location> spawns = new ArrayList<>();
 		
 		for(String key : cfg.getStringList(path + "Spawns")) {
-			spawns.add(ConfigUtil.parseLocation(key));
+			spawns.add(Util.parseLocation(key));
 		}
 		
 		boolean deathmatch = cfg.getBoolean(path + "Enable-Deathmatch");
@@ -404,7 +409,7 @@ public class ArenaManager {
 		
 		if(deathmatch) {
 			for(String key : cfg.getStringList(path + "Deathmatch-Spawns")) {
-				deathmatchspawns.add(ConfigUtil.parseLocation(key));
+				deathmatchspawns.add(Util.parseLocation(key));
 			}
 		}
 		

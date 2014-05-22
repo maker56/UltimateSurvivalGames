@@ -49,8 +49,9 @@ public class ChestListener implements Listener {
 						} else {
 							Chest chest = cm.getRandomChest(p, loc);
 							game.registerChest(chest);
+							user.setCurrentChest(chest);
 							p.openInventory(chest.getInventory());
-							p.playSound(p.getEyeLocation(), Sound.CHEST_OPEN, 1.0F, 1.0F);
+							loc.getWorld().playSound(loc, Sound.CHEST_OPEN, 1.0F, 1.0F);
 						}
 					}
 				}

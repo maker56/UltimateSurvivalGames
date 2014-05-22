@@ -7,10 +7,10 @@ import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
-import me.maker56.survivalgames.database.ConfigUtil;
 import me.maker56.survivalgames.game.phrase.CooldownPhrase;
 import me.maker56.survivalgames.game.phrase.DeathmatchPhrase;
 import me.maker56.survivalgames.game.phrase.IngamePhrase;
@@ -51,7 +51,7 @@ public class GameManager {
 		cfg.set(path + "Lobby-Time", lobbytime);
 		cfg.set(path + "Max-Voting-Arenas", maxVotingArenas);
 		cfg.set(path + "Required-Players-to-start", reqPlayers);
-		cfg.set(path + "Lobby", ConfigUtil.serializeLocation(p.getLocation(), true));
+		cfg.set(path + "Lobby", Util.serializeLocation(p.getLocation(), true));
 		SurvivalGames.saveDataBase();
 		
 		p.sendMessage(MessageHandler.getMessage("game-created").replace("%0%", lobbyname));
@@ -136,7 +136,7 @@ public class GameManager {
 		if(SurvivalGames.reset.contains("Startup-Reset." + name)) {
 			for(String key : SurvivalGames.reset.getConfigurationSection("Startup-Reset." + name + ".").getKeys(false)) {
 				reset = true;
-				new Reset(ConfigUtil.parseLocation(cfg.getString(path + "Arenas." + key + ".Min")).getWorld(), name, key, SurvivalGames.reset.getStringList("Startup-Reset." + name + "." + key)).start();
+				new Reset(Util.parseLocation(cfg.getString(path + "Arenas." + key + ".Min")).getWorld(), name, key, SurvivalGames.reset.getStringList("Startup-Reset." + name + "." + key)).start();
 			}
 		}
 		
@@ -170,7 +170,7 @@ public class GameManager {
 			return false;
 		}
 		
-		Location lobby = ConfigUtil.parseLocation(cfg.getString(path + "Lobby"));
+		Location lobby = Util.parseLocation(cfg.getString(path + "Lobby"));
 		boolean voting = cfg.getBoolean(path + "Enable-Voting");
 		int lobbytime = cfg.getInt(path + "Lobby-Time");
 		int maxVotingArenas = cfg.getInt(path + "Max-Voting-Arenas");

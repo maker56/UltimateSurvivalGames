@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
-import me.maker56.survivalgames.database.ConfigUtil;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
 import me.maker56.survivalgames.user.User;
@@ -36,8 +36,8 @@ public class VotingPhrase {
 	}
 	
 	public static void reinitializeDatabase() {
-		voteItem = ConfigUtil.parseItemStack(SurvivalGames.instance.getConfig().getString("Voting.Item"));
-		arenaItem = ConfigUtil.parseItemStack(SurvivalGames.instance.getConfig().getString("Voting.ArenaItem"));
+		voteItem = Util.parseItemStack(SurvivalGames.instance.getConfig().getString("Voting.Item"));
+		arenaItem = Util.parseItemStack(SurvivalGames.instance.getConfig().getString("Voting.ArenaItem"));
 		title = SurvivalGames.instance.getConfig().getString("Voting.InventoryTitle");
 		if(title.length() > 32) {
 			title = title.substring(0, 32);

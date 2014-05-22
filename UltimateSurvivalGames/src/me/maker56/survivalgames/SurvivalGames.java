@@ -98,7 +98,17 @@ public class SurvivalGames extends JavaPlugin {
 		
 		signManager.updateSigns();
 		
-		new UpdateCheck(this, 61788);
+		startUpdateChecker();
+	}
+	
+	// UPDATE CHECKING
+
+	public void startUpdateChecker() {
+		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+			public void run() {
+				new UpdateCheck(SurvivalGames.instance, 61788);
+			}
+		}, 0L, 216000);
 	}
 	
 	// VAULT

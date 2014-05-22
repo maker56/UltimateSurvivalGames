@@ -3,11 +3,11 @@ package me.maker56.survivalgames.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.arena.chest.Chest;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
-import me.maker56.survivalgames.database.ConfigUtil;
 import me.maker56.survivalgames.game.phrase.CooldownPhrase;
 import me.maker56.survivalgames.game.phrase.DeathmatchPhrase;
 import me.maker56.survivalgames.game.phrase.IngamePhrase;
@@ -40,8 +40,8 @@ public class Game {
 	}
 	
 	public static void reinitializeDatabase() {
-		leaveItem = ConfigUtil.parseItemStack(SurvivalGames.instance.getConfig().getString("Leave-Item"));
-		playerNavigator = ConfigUtil.parseItemStack(SurvivalGames.instance.getConfig().getString("Spectating.Player-Navigator.Item"));
+		leaveItem = Util.parseItemStack(SurvivalGames.instance.getConfig().getString("Leave-Item"));
+		playerNavigator = Util.parseItemStack(SurvivalGames.instance.getConfig().getString("Spectating.Player-Navigator.Item"));
 		String s = SurvivalGames.instance.getConfig().getString("Spectating.Player-Navigator.Inventory-Title");
 		if(s.length() > 32)
 			s = s.substring(0, 32);

@@ -1,4 +1,4 @@
-package me.maker56.survivalgames.database;
+package me.maker56.survivalgames;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class ConfigUtil {
+public class Util {
 	
 	// ITEMSTACK
 	
@@ -39,11 +39,9 @@ public class ConfigUtil {
 			if(idsSplit.length > 1)
 				is.setDurability(Short.parseShort(idsSplit[1]));
 			
-			// ITEM SUBID
 			if(gSplit.length > 1) {
 				int metaStart = 2;
 				
-				// ITEM AMOUNT
 				try {
 					is.setAmount(Integer.parseInt(gSplit[1]));
 				} catch(NumberFormatException e) {
@@ -91,6 +89,13 @@ public class ConfigUtil {
 		}
 	}
 	
+	// TIME
+	
+	public static String getFormatedTime(int seconds) {
+		return Integer.valueOf(seconds).toString();
+		// TODO: Format of seconds in a string of time like 1m40s
+	}
+	
 	// LOCATION
 	
 	public static Location parseLocation(String s) {
@@ -122,10 +127,7 @@ public class ConfigUtil {
 	}
 	
 	public static String serializeLocation(Location l, boolean exact) {
-		String key = new String();
-		
-		key += l.getWorld().getName() + ",";
-		
+		String key = l.getWorld().getName() + ",";
 		if(exact) {
 			key += l.getX() + "," + l.getY() + "," + l.getZ() + "," + l.getYaw() + "," + l.getPitch();
 		} else {
@@ -133,7 +135,6 @@ public class ConfigUtil {
 		}
 		
 		return key;
-
 	}
 
 }

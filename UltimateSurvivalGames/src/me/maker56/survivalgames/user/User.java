@@ -1,5 +1,6 @@
 package me.maker56.survivalgames.user;
 
+import me.maker56.survivalgames.arena.chest.Chest;
 import me.maker56.survivalgames.game.Game;
 
 import org.bukkit.entity.Player;
@@ -7,6 +8,7 @@ import org.bukkit.entity.Player;
 public class User extends UserState {
 	
 	private int spawnIndex = Integer.MIN_VALUE;
+	private Chest currentChest;
 	
 	public User(Player player, Game game) {
 		super(player, game);
@@ -19,6 +21,18 @@ public class User extends UserState {
 	
 	public int getSpawnIndex() {
 		return spawnIndex;
+	}
+	
+	public Chest getCurrentChest() {
+		return currentChest;
+	}
+	
+	public void setCurrentChest(Chest chest) {
+		this.currentChest = chest;
+	}
+	
+	public boolean isInChest() {
+		return currentChest != null;
 	}
 
 }

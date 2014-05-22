@@ -15,12 +15,10 @@ import org.bukkit.potion.PotionEffect;
 public abstract class UserState {
 	
 	protected Player player;
-	private double health;
+	private double health, maxhealth;
 	private float walk, fly;
-	private int food;
+	private int food, level, fireticks, heldslot;
 	private float exp;
-	private int level;
-	private int fireticks;
 	private ItemStack[][] inventory;
 	private Location loc;
 	private GameMode gamemode;
@@ -34,6 +32,7 @@ public abstract class UserState {
 	public UserState(Player p, Game game) {
 		this.game = game;
 		this.player = p;
+		this.maxhealth = ((Damageable) p).getMaxHealth();
 		this.health = ((Damageable) p).getHealth();
 		this.food = p.getFoodLevel();
 		this.exp = p.getExp();
@@ -47,11 +46,20 @@ public abstract class UserState {
 		this.fall = p.getFallDistance();
 		this.walk = p.getWalkSpeed();
 		this.fly = p.getFlySpeed();
+		this.heldslot = p.getInventory().getHeldItemSlot();
 
 		ItemStack[][] store = new ItemStack[2][1];
 		store[0] = p.getInventory().getContents();
 		store[1] = p.getInventory().getArmorContents();
 		this.inventory = store;
+	}
+	
+	public double getMaxHealth() {
+		return maxhealth;
+	}
+	
+	public int getHeldItemSlot() {
+		return heldslot;
 	}
 	
 	public Game getGame() {
@@ -132,7 +140,8 @@ public abstract class UserState {
 		}
 		player.setWalkSpeed(0.2F);
 		player.setFlySpeed(0.1F);
-		player.setHealth(20.0);
+		player.setMaxHealth(20D);
+		player.setHealth(20D);
 		player.setFoodLevel(20);
 		player.setLevel(0);
 		player.setExp(0);
@@ -140,6 +149,7 @@ public abstract class UserState {
 		player.setGameMode(GameMode.SURVIVAL);
 		player.setFlying(false);
 		player.setAllowFlight(false);
+		player.getInventory().setHeldItemSlot(0);
 
 		clearInventory();
 	}

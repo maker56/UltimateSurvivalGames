@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
-import me.maker56.survivalgames.database.ConfigUtil;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
 
@@ -55,7 +55,7 @@ public class SignManager {
 		for(String key : s) {
 			String[] split = key.split(":");
 			
-			Location loc = ConfigUtil.parseLocation(split[0]);
+			Location loc = Util.parseLocation(split[0]);
 			if(loc != null) {
 				signs.put(loc, split[1]);
 			}
@@ -68,7 +68,7 @@ public class SignManager {
 	public void addSign(Player p, final Location loc, final String lobby) {
 		if(!signs.containsKey(loc)) {
 			List<String> signs = SurvivalGames.signs.getStringList("Sign.List");
-			signs.add(ConfigUtil.serializeLocation(loc, false) + ":" + lobby);
+			signs.add(Util.serializeLocation(loc, false) + ":" + lobby);
 			SurvivalGames.signs.set("Sign.List", signs);
 			SurvivalGames.saveSigns();
 			this.signs.put(loc, lobby);
@@ -87,7 +87,7 @@ public class SignManager {
 			String lobby = signs.get(loc);
 			this.signs.remove(loc);
 			List<String> signs = SurvivalGames.signs.getStringList("Sign.List");
-			signs.remove(ConfigUtil.serializeLocation(loc, false) + ":" + lobby);
+			signs.remove(Util.serializeLocation(loc, false) + ":" + lobby);
 			SurvivalGames.signs.set("Sign.List", signs);
 			SurvivalGames.saveSigns();
 			p.sendMessage(MessageHandler.getMessage("prefix") + "You've removed the join sign successfully!");
