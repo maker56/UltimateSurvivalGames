@@ -3,6 +3,7 @@ package me.maker56.survivalgames.user;
 import java.util.Collection;
 import java.util.Iterator;
 
+import me.maker56.survivalgames.chat.JSONMessage;
 import me.maker56.survivalgames.game.Game;
 
 import org.bukkit.GameMode;
@@ -175,6 +176,10 @@ public abstract class UserState {
 	
 	public String getName() {
 		return player.getName();
+	}
+	
+	public void sendMessage(JSONMessage message) {
+		message.send(player);
 	}
 	
 	public void sendMessage(String message) {

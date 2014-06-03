@@ -92,8 +92,25 @@ public class Util {
 	// TIME
 	
 	public static String getFormatedTime(int seconds) {
-		return Integer.valueOf(seconds).toString();
-		// TODO: Format of seconds in a string of time like 1m40s
+		int minutes = seconds / 60;
+		int hours = minutes / 60;
+		int days = hours / 24;
+		
+		seconds -= minutes * 60;
+		minutes -= hours * 60;
+		hours -= days * 24;
+		
+		String s = "";
+		if(days > 0)
+			s += days + "d";
+		if(hours > 0)
+			s += hours + "h";
+		if(minutes > 0)
+			s += minutes + "m";
+		if(seconds > 0) 
+			s += seconds + "s";
+	
+		return s;
 	}
 	
 	// LOCATION

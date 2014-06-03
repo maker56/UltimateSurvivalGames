@@ -1,6 +1,7 @@
-package me.maker56.survivalgames.game.phrase;
+package me.maker56.survivalgames.game.phases;
 
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.arena.chest.Chest;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.Permission;
@@ -18,7 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
-public class IngamePhrase {
+public class IngamePhase {
 
 	private Game game;
 	public BukkitTask task;
@@ -38,7 +39,7 @@ public class IngamePhrase {
 	
 	private BukkitTask deathmatch, chestrefill, gracetask;
 	
-	public IngamePhrase(Game game) {
+	public IngamePhase(Game game) {
 		this.game = game;
 		this.period = game.getCurrentArena().getGracePeriod();
 		this.time = game.getCurrentArena().getAutomaticlyDeathmatchTime();
@@ -97,14 +98,14 @@ public class IngamePhrase {
 			public void run() {
 				
 				if(game.getCurrentArena().isDeathmatchEnabled()) {
-					if(time % 600 == 0 && time != 0) {
-						game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown-big-minutes").replace("%0%", Integer.valueOf(time / 60).toString()));
-					} else if(time < 301 && time % 300 == 0 && time != 0) {
-						game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown-big-minutes").replace("%0%", Integer.valueOf(time / 60).toString()));
-					} else if(time < 60 && time % 10 == 0 && time > 10) {
-						game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown-big-seconds").replace("%0%", Integer.valueOf(time).toString()));
+					if(time % 600 == 0 && time > 300) {
+						game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown").replace("%0%", Util.getFormatedTime(time)));
+					} else if(time <= 300 && time % 60 == 0 && time > 60) {
+						game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown").replace("%0%", Util.getFormatedTime(time)));
+					} else if(time <= 60 && time % 10 == 0 && time > 10) {
+						game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown").replace("%0%", Util.getFormatedTime(time)));
 					} else if(time <= 10 && time > 0) {
-						game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown-little").replace("%0%", Integer.valueOf(time).toString()));
+						game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown").replace("%0%", Util.getFormatedTime(time)));
 					} else if(time == 0) {
 						cancelTask();
 						cancelLightningTask();
@@ -199,9 +200,9 @@ public class IngamePhrase {
 			public void run() {
 				
 				if(time % 10 == 0 && time > 10) {
-					game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown-big-seconds").replace("%0%", Integer.valueOf(time).toString()));
+					game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown").replace("%0%", Util.getFormatedTime(time)));
 				} else if(time <= 10 && time > 0) {
-					game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown-little").replace("%0%", Integer.valueOf(time).toString()));
+					game.sendMessage(MessageHandler.getMessage("game-deathmatch-cooldown").replace("%0%", Util.getFormatedTime(time)));
 				} else if(time == 0) {
 					cancelDeathmatchTask();
 					cancelLightningTask();

@@ -1,4 +1,4 @@
-package me.maker56.survivalgames.game.phrase;
+package me.maker56.survivalgames.game.phases;
 
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.game.Game;
@@ -12,11 +12,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Monster;
 
-public class ResetPhrase {
+public class ResetPhase {
 	
 	private Game game;
 	
-	public ResetPhrase(Game game) {
+	public ResetPhase(Game game) {
 		this.game = game;
 		start();
 	}

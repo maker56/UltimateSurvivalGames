@@ -1,9 +1,10 @@
-package me.maker56.survivalgames.game.phrase;
+package me.maker56.survivalgames.game.phases;
 
 import java.util.Collections;
 import java.util.List;
 
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
@@ -15,13 +16,13 @@ import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-public class DeathmatchPhrase {
+public class DeathmatchPhase {
 	
 	private int time = 600;
 	private BukkitTask task;
 	private Game game;
 	
-	public DeathmatchPhrase(Game game) {
+	public DeathmatchPhase(Game game) {
 		this.game = game;
 	}
 	
@@ -57,11 +58,11 @@ public class DeathmatchPhrase {
 				}
 				
 				if(time % 60 == 0 && time != 0) {
-					game.sendMessage(MessageHandler.getMessage("game-deathmatch-timeout").replace("%0%", Integer.valueOf(time).toString()));
+					game.sendMessage(MessageHandler.getMessage("game-deathmatch-timeout").replace("%0%", Util.getFormatedTime(time)));
 				} else if(time % 10 == 0 && time < 60 && time > 10) {
-					game.sendMessage(MessageHandler.getMessage("game-deathmatch-timeout").replace("%0%", Integer.valueOf(time).toString()));
+					game.sendMessage(MessageHandler.getMessage("game-deathmatch-timeout").replace("%0%", Util.getFormatedTime(time)));
 				} else if(time <= 10 && time > 0) {
-					game.sendMessage(MessageHandler.getMessage("game-deathmatch-timeout").replace("%0%", Integer.valueOf(time).toString()));
+					game.sendMessage(MessageHandler.getMessage("game-deathmatch-timeout").replace("%0%", Util.getFormatedTime(time)));
 				} else if(time == 0) {
 					
 					List<User> users = game.getUsers();

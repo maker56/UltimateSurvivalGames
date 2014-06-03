@@ -12,8 +12,8 @@ import me.maker56.survivalgames.commands.permission.Permission;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
-import me.maker56.survivalgames.game.phrase.IngamePhrase;
-import me.maker56.survivalgames.game.phrase.VotingPhrase;
+import me.maker56.survivalgames.game.phases.IngamePhase;
+import me.maker56.survivalgames.game.phases.VotingPhase;
 import me.maker56.survivalgames.user.User;
 import me.maker56.survivalgames.user.UserManager;
 
@@ -99,7 +99,7 @@ public class CommandSG implements CommandExecutor {
 						SurvivalGames.userManger.leaveGame(p);
 						return true;
 					} else {
-						IngamePhrase ip = game.getIngamePhrase();
+						IngamePhase ip = game.getIngamePhrase();
 						ip.killUser(user, null, true);
 					}
 					
@@ -131,7 +131,7 @@ public class CommandSG implements CommandExecutor {
 						return true;
 					}
 					
-					VotingPhrase vp = user.getGame().getVotingPhrase();
+					VotingPhase vp = user.getGame().getVotingPhrase();
 					
 					if(!vp.canVote(p.getName())) {
 						p.sendMessage(MessageHandler.getMessage("game-already-vote"));

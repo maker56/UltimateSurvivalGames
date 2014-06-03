@@ -7,8 +7,9 @@ import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameManager;
-import me.maker56.survivalgames.game.phrase.VotingPhrase;
+import me.maker56.survivalgames.game.phases.VotingPhase;
 import me.maker56.survivalgames.listener.PlayerListener;
+import me.maker56.survivalgames.listener.SeparatingListener;
 import me.maker56.survivalgames.scoreboard.ScoreBoardManager;
 
 public class ConfigReloader {
@@ -16,10 +17,11 @@ public class ConfigReloader {
 	public static void reloadConfig() {
 		ConfigLoader.reloadConfig();
 		PermissionHandler.reinitializeUsePermission();
-		VotingPhrase.reinitializeDatabase();
+		VotingPhase.reinitializeDatabase();
 		Game.reinitializeDatabase();
         PermissionHandler.reinitializeDatabase();
         PlayerListener.reinitializeDatabase();
+        SeparatingListener.reinitializeConfig();
 	}
 	
 	public static void reloadDatabase() {

@@ -4,6 +4,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.maker56.survivalgames.user.SpectatorUser;
+import me.maker56.survivalgames.user.User;
+import me.maker56.survivalgames.user.UserState;
+
 import org.bukkit.Achievement;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -204,15 +208,7 @@ public class JSONMessage {
 	}
 	
 	public void send(Player player) {
-		try {
-			Object handle = ReflectionUtil.getHandle(player);
-			Object connection = ReflectionUtil.getField(handle.getClass(), "playerConnection").get(handle);
-			Object serialized = ReflectionUtil.getMethod(nmsChatSerializer, "a", String.class).invoke(null, toJSONString());
-			Object packet = nmsPacketPlayOutChat.getConstructor(ReflectionUtil.getNMSClass("IChatBaseComponent")).newInstance(serialized);
-			ReflectionUtil.getMethod(connection.getClass(), "sendPacket").invoke(connection, packet);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		send(player, toJSONString());
 	}
 	
 	public void send(Player player, String json) {
@@ -224,6 +220,20 @@ public class JSONMessage {
 			ReflectionUtil.getMethod(connection.getClass(), "sendPacket").invoke(connection, packet);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public void send(List<User> users) {
+		String json = toJSONString();
+		for (UserState user : users) {
+			send(user.getPlayer(), json);
+		}
+	}
+	
+	public void sendToSpectators(List<SpectatorUser> users) {
+		String json = toJSONString();
+		for (UserState user : users) {
+			send(user.getPlayer(), json);
 		}
 	}
 	

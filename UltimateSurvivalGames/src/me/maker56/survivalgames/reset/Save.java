@@ -1,9 +1,7 @@
 package me.maker56.survivalgames.reset;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -13,192 +11,169 @@ import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.events.SaveDoneEvent;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+
+import com.sk89q.worldedit.CuboidClipboard;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.schematic.SchematicFormat;
+
 public class Save extends Thread {
 	
-	private PrintWriter pw;
 	private String lobby, arena;
 	
-	private Location min, max;
+	private Selection sel;
 	private long start;
-	
-	private BukkitTask task;
-	private double writeStepsDone, writeSteps;
-	private String player;
-	
-	public Save(String lobby, String arena, Location min, Location max, String player) {
-		this.lobby = lobby;
-		this.arena = arena;
-		this.min = min;
-		this.max = max;
-		this.player = player;
+
+	public Save(String lobby, String arena, Selection sel) {
+		this(lobby, arena, sel, null);
 	}
 	
-	private void startPercentTask() {
+	public Save(String lobby, String arena, Selection sel, String pname) {
+		this.lobby = lobby;
+		this.sel = sel;
+		this.arena = arena;
+		this.pname = pname;
+	}
+	
+	// PERCENT CALCULATION
+	private double maxSteps, stepsDone = 0;
+	private BukkitTask task;
+	private String pname;
+	
+	public void startPercentInfoScheduler() {
 		task = Bukkit.getScheduler().runTaskTimer(SurvivalGames.instance, new Runnable() {
 			@SuppressWarnings("deprecation")
 			public void run() {
-				float percent = Math.round((float) (writeStepsDone / (writeSteps / 100)));
-				if(percent > 100)
-					return;
-				Player p = Bukkit.getPlayer(player); // TODO
-				if(p != null)
-					p.sendMessage(MessageHandler.getMessage("prefix") + "§eArena save lobby " + lobby + " arena " + arena + ": " + percent + "% done...");
+				Player p = Bukkit.getPlayer(pname);
+				if(p != null) {
+					double percent = stepsDone / (maxSteps / 100);
+					double rounded = Math.round( percent * 100. ) / 100.;
+					if(rounded <= 100) {
+						p.sendMessage(MessageHandler.getMessage("prefix") + "§eMap save of arena " + arena + " in lobby " + lobby + " " + rounded + "% completed!");
+					}
+				}
 			}
-		}, 100, 200);
+		}, 70, 60);
 	}
 	
-	private List<Chunk> chunks = new ArrayList<>();
-	private Chunk chunk;
-	private World world;
 	
 	@Override
 	public void run() {
-		saves.add(lobby + arena);
 		start = System.currentTimeMillis();
-		while(Reset.isResetting(lobby, arena)) {
-			try {
-				sleep(50);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-		}
-		
 		File file = new File("plugins/SurvivalGames/reset/" + lobby + arena + ".map");
 		
 		file.mkdirs();
 		if(file.exists()) {
 			file.delete();
-		}
-		
-		
-		
-		try {
-			 pw = new PrintWriter(new FileWriter("plugins/SurvivalGames/reset/" + lobby + arena + ".map", true), true);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-			pw.close();
-			return;
-		}
-		
-		final int xMin = Math.min(min.getBlockX(), max.getBlockX());
-		final int zMin = Math.min(min.getBlockZ(), max.getBlockZ());
-		
-		final int xMax = Math.max(min.getBlockX(), max.getBlockX());
-		final int zMax = Math.max(min.getBlockZ(), max.getBlockZ());
-		
-		Bukkit.getScheduler().callSyncMethod(SurvivalGames.instance, new Callable<Void>() {
-			@Override
-			public Void call() throws Exception {
-				Location chunkloc = new Location(min.getWorld(), 0, 0, 0);
-				for(int x = xMin; x <= xMax; x++) {
-					chunkloc.setX(x);
-					for(int z = zMin; z <= zMax; z++) {
-						chunkloc.setZ(z);
-						Chunk c = min.getWorld().getChunkAt(chunkloc);
-						if(!chunks.contains(c))
-							chunks.add(c);
-					}
-				}
-				world = min.getWorld();
-				return null;
-			}
-		});
-		
-		while(world == null) {
 			try {
-				sleep(1);
-			} catch (InterruptedException e) {
+				file.createNewFile();
+			} catch (IOException e) {
 				e.printStackTrace();
+				return;
 			}
 		}
 		
-		writeSteps = chunks.size();
-		startPercentTask();
+		SchematicFormat sf = SchematicFormat.MCEDIT;
+		Location min = sel.getMinimumLocation();
+		Location max = sel.getMaximumLocation();
 		
-		for(Chunk c : chunks) {
-			chunk = c;
+		WorldEdit we = SurvivalGames.getWorldEdit().getWorldEdit();
+		try {
+			for(LocalWorld lw : we.getServer().getWorlds()) {
+				if(lw.getName().equals(min.getWorld().getName())) {
+					es = we.getEditSessionFactory().getEditSession(lw, 0);
+					break;
+				}
+			}
 			
-			Bukkit.getScheduler().callSyncMethod(SurvivalGames.instance, new Callable<Void>() {
-				@SuppressWarnings("deprecation")
-				@Override
-				public Void call() throws Exception {
-					pw.println(";" + chunk.getX() + "," + chunk.getZ());
-					for(int x = 0; x < 16; x++) {
-						for(int z = 0; z < 16; z++) {
-							for(int y = 0; y < world.getMaxHeight(); y++) {
-								Block b = chunk.getBlock(x, y, z);
-								Location loc = b.getLocation();
-								String save = loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
-								int id = b.getTypeId();
-								if(id != 0) {
-									save += "," + id;
-									short data = b.getData();
-									if(data != 0) {
-										save += "," + data;
-									}
+			cc = new CuboidClipboard(new Vector(sel.getLength(), sel.getHeight(), sel.getWidth()), new Vector(min.getBlockX(), min.getY(), min.getZ()), new Vector(max.getBlockX(), max.getBlockY(), max.getBlockZ()));
+			Vector size = cc.getSize();
+			origin = cc.getOrigin();
+			
+			int maxSize = 4 * 16 * 16 * cc.getHeight();
+			maxSteps = (cc.getHeight() * cc.getLength() * cc.getWidth()) / maxSize;
+			
+			if(pname != null)
+				startPercentInfoScheduler();
+			
+			for(int x = 0; x < size.getBlockX(); x++) {
+				for(int z = 0; z < size.getBlockZ(); z++) {
+					for(int y = 0; y < size.getBlockY(); y++) {
+						if(cSave.size() == maxSize) {
+							nextSave();
+							while(save) { 
+								try {
+									sleep(1);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
 								}
-								pw.println(save);
 							}
 						}
+
+						cSave.add(new Vector(x, y, z));
 					}
-					writeStepsDone++;
-					chunk = null;
-					return null;
-				}
-			});
-			
-			while(chunk != null) {
-				try {
-					sleep(20);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+		        }     
 			}
+			nextSave();
+			
+			sf.save(cc, file);
+		} catch (IOException | DataException e) {
+			e.printStackTrace();
 		}
-		chunks.clear();
-		task.cancel();
-		pw.close();
-		saves.remove(lobby + arena);
-		size = (int) (file.length() / 1000);
-		format = "KiloByte";
+		
+		size = file.length();
+		format = "Bytes";
 		if(size >= 1000) {
 			size = size / 1000;
-			format = "MegaByte";
+			format = "KiloBytes";
+			if(size >= 1000) {
+				size = size / 1000;
+				format = "MegaBytes";
+			}
 		}
 
-		
+		if(task != null)
+			task.cancel();
 		Bukkit.getScheduler().callSyncMethod(SurvivalGames.instance, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
-				Bukkit.getPluginManager().callEvent(new SaveDoneEvent(lobby, arena, (System.currentTimeMillis() - start) / 1000, size, format));
+				Bukkit.getPluginManager().callEvent(new SaveDoneEvent(lobby, arena,  (System.currentTimeMillis() - start), size, format));
 				return null;
 			}
 		});
 	}
 	
-	int size;
-	String format;
+	private long size;
+	private String format;
 	
-	// STATIC
-	private static List<String> saves = new ArrayList<>();
-	public static boolean isSaveing(String lobby, String arena) {
-		return saves.contains(lobby + arena);
+	private boolean save = false;
+	private CuboidClipboard cc;
+	private Vector origin;
+	private EditSession es;
+	private List<Vector> cSave = new ArrayList<>();
+	
+	public void nextSave() {
+		save = true;
+		Bukkit.getScheduler().callSyncMethod(SurvivalGames.instance, new Callable<Void>() {
+			@Override
+			public Void call() throws Exception {
+				for(Vector v : cSave) {
+					cc.setBlock(v, es.getBlock(v.add(origin)));
+				}
+				cSave.clear();
+				stepsDone++;
+				save = false;
+				return null;
+			}
+		});
 	}
-	
 	
 
 }

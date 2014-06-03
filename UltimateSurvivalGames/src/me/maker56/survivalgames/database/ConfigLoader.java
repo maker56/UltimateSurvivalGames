@@ -318,6 +318,8 @@ public class ConfigLoader {
 		c.addDefault("Spectating.Player-Navigator.Item", Material.COMPASS + " name:&ePlayer Navigator lore:&7Rightclick_to_open//&7the_player_navigator!");
 		c.addDefault("Spectating.Player-Navigator.Inventory-Title", "Click on a item to spectate!");
 		
+		c.addDefault("Separating.Chat.Enabled", true);
+		
 		List<String> joinfull = new ArrayList<>();
 		joinfull.add("sg.donator.vip.iron");
 		joinfull.add("sg.donator.vip.gold");
@@ -363,8 +365,7 @@ public class ConfigLoader {
 		c.addDefault("join-already-playing", "&cYou're already playing!");
 		c.addDefault("leave-not-playing", "&cYou aren't playing!");
 		c.addDefault("game-leave", "%0% left the lobby! &7(&e%1%&7/&e%2%&7)");
-		c.addDefault("game-cooldown-big", "The game starts in %0% seconds");
-		c.addDefault("game-cooldown-little", "The game starts in %0%");
+		c.addDefault("game-cooldown", "The game starts in &b%0%");
 		
 		c.addDefault("spectator-join", "%0% joined the game as spectator!");
 		c.addDefault("spectator-full", "&cThe lobby is full. There can be up to %0% spectators in a lobby!");
@@ -377,9 +378,7 @@ public class ConfigLoader {
 		c.addDefault("game-waiting-cooldown-little", "The voting ends in %0%");
 		c.addDefault("game-waiting-end", "The waiting phase has been ended!");
 		
-		c.addDefault("game-deathmatch-cooldown-big-minutes", "&7The final deathmatch starts in %0% minutes!");
-		c.addDefault("game-deathmatch-cooldown-big-seconds", "The final deathmatch starts in %0% seconds");
-		c.addDefault("game-deathmatch-cooldown-little", "The final deathmatch starts in %0%");
+		c.addDefault("game-deathmatch-cooldown", "The final deathmatch starts in &b%0%");
 		c.addDefault("game-deathmatch-start", "Let's start the final deathmatch!");
 		c.addDefault("game-deathmatch-timeout", "The deathmatch ends automaticly in %0% seconds!");
 		c.addDefault("game-deathmatch-timeout-warning", "When the deathmatch ends automaticly, the winner will be choosed random!");
@@ -392,8 +391,7 @@ public class ConfigLoader {
 		c.addDefault("game-grace-period", "&bYou have %0% seconds grace-period!");
 		c.addDefault("game-grace-period-ended", "&bThe grace-period has been ended!");
 		
-		c.addDefault("game-voting-cooldown-big", "The voting ends in %0% seconds");
-		c.addDefault("game-voting-cooldown-little", "The voting ends in %0%");
+		c.addDefault("game-voting-cooldown", "The voting ends in &b%0%");
 		c.addDefault("game-voting-end", "The voting phrase has been ended!");
 		c.addDefault("game-no-vote", "&cYou can only vote in the voting phase of the game!");
 		c.addDefault("game-bad-vote", "&cThis isn't a valid vote ID!");

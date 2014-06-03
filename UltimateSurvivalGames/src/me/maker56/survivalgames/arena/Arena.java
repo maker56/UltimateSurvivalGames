@@ -43,7 +43,8 @@ public class Arena implements Cloneable {
 		this.moneyWin = moneyWin;
 		this.refill = chestrefill;
 		
-		min.getWorld().setStorm(false);
+		if(min != null)
+			min.getWorld().setStorm(false);
 	}
 	
 	public int getAutomaticlyDeathmatchTime() {

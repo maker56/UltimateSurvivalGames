@@ -1,6 +1,7 @@
-package me.maker56.survivalgames.game.phrase;
+package me.maker56.survivalgames.game.phases;
 
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.game.Game;
@@ -11,7 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitTask;
 
-public class CooldownPhrase {
+public class CooldownPhase {
 	
 	private Game game;
 	private BukkitTask task;
@@ -19,7 +20,7 @@ public class CooldownPhrase {
 	private int time;
 	private Arena arena;
 	
-	public CooldownPhrase(Game game, Arena arena) {
+	public CooldownPhase(Game game, Arena arena) {
 		this.game = game;
 		this.arena = arena;
 	}
@@ -62,14 +63,13 @@ public class CooldownPhrase {
 					game.sendMessage(MessageHandler.getMessage("prefix") + "MAPINFO §7- §eName: §b" + arena.getName());
 				}
 				
-				if(time % 5 == 0 && time != 10 && time != 5 && time != 0) {
-					game.sendMessage(MessageHandler.getMessage("game-cooldown-big").replace("%0%", Integer.valueOf(time).toString()));
-				} else if(time <= 10 && time > 0) {
-					game.sendMessage(MessageHandler.getMessage("game-cooldown-little").replace("%0%", Integer.valueOf(time).toString()));
-					if(time <= 5) {
-						for(User user : game.getUsers()) {
-							user.getPlayer().playSound(user.getPlayer().getLocation(), Sound.NOTE_STICKS, 8.0F, 1.0F);
-						}
+				if(time > 0 && (time % 5 == 0 || (time <= 10 && time > 0))) {
+					game.sendMessage(MessageHandler.getMessage("game-cooldown").replace("%0%", Util.getFormatedTime(time)));
+				}
+				
+				if(time <= 5 && time > 0) {
+					for(User user : game.getUsers()) {
+						user.getPlayer().playSound(user.getPlayer().getLocation(), Sound.NOTE_STICKS, 8.0F, 1.0F);
 					}
 				} else if(time == 0) {
 					for(User user : game.getUsers()) {

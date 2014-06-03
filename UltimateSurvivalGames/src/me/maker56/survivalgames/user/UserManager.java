@@ -143,6 +143,12 @@ public class UserManager {
 			return;
 		}
 		
+		if(p.getVehicle() != null)
+			p.getVehicle().setPassenger(null);
+		if(p.getPassenger() != null) {
+			p.setPassenger(null);
+		}
+		
 		final User user = getUser(p.getName());
 		user.clear();
 		Game game = user.getGame();
@@ -233,6 +239,10 @@ public class UserManager {
 	
 	public boolean isPlaying(String name) {
 		return getUser(name) != null;
+	}
+	
+	public User getUser(Player player) {
+		return getUser(player.getName());
 	}
 	
 	public User getUser(String name) {

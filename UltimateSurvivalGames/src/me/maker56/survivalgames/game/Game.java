@@ -3,16 +3,19 @@ package me.maker56.survivalgames.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.arena.chest.Chest;
+import me.maker56.survivalgames.chat.JSONMessage;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
-import me.maker56.survivalgames.game.phrase.CooldownPhrase;
-import me.maker56.survivalgames.game.phrase.DeathmatchPhrase;
-import me.maker56.survivalgames.game.phrase.IngamePhrase;
-import me.maker56.survivalgames.game.phrase.ResetPhrase;
-import me.maker56.survivalgames.game.phrase.VotingPhrase;
+import me.maker56.survivalgames.events.UserLobbyJoinedEvent;
+import me.maker56.survivalgames.events.UserLobbyLeftEvent;
+import me.maker56.survivalgames.game.phases.CooldownPhase;
+import me.maker56.survivalgames.game.phases.DeathmatchPhase;
+import me.maker56.survivalgames.game.phases.IngamePhase;
+import me.maker56.survivalgames.game.phases.ResetPhase;
+import me.maker56.survivalgames.game.phases.VotingPhase;
 import me.maker56.survivalgames.scoreboard.CustomScore;
 import me.maker56.survivalgames.scoreboard.ScoreboardPhase;
 import me.maker56.survivalgames.user.SpectatorUser;
@@ -58,10 +61,10 @@ public class Game {
 	private int lobbytime, cooldown = 30;
 	private int death = 0;
 	
-	private VotingPhrase votingPhrase;
-	private CooldownPhrase cooldownPhrase;
-	private IngamePhrase ingamePhrase;
-	private DeathmatchPhrase deathmatchPhrase;
+	private VotingPhase votingPhase;
+	private CooldownPhase cooldownPhase;
+	private IngamePhase ingamePhase;
+	private DeathmatchPhase deathmatchPhase;
 	
 	private Arena arena;
 	private List<User> users = new ArrayList<>();
@@ -249,6 +252,7 @@ public class Game {
 		SurvivalGames.signManager.updateSigns();
 		updateScoreboard();
 		checkForStart();
+		Bukkit.getPluginManager().callEvent(new UserLobbyJoinedEvent(user, this));
 	}
 	
 	public void forceStart(Player p) {
@@ -274,6 +278,7 @@ public class Game {
 		checkForCancelStart();
 		updateScoreboard();
 		SurvivalGames.signManager.updateSigns();
+		Bukkit.getPluginManager().callEvent(new UserLobbyLeftEvent(user.getPlayer(), this));
 	}
 	
 	public void kickall() {
@@ -300,26 +305,26 @@ public class Game {
 	}
 	
 	public void end() {
-		new ResetPhrase(this);
+		new ResetPhase(this);
 	}
 	
-	public DeathmatchPhrase getDeathmatch() {
-		return deathmatchPhrase;
+	public DeathmatchPhase getDeathmatch() {
+		return deathmatchPhase;
 	}
 	
 	public void startDeathmatch() {
-		deathmatchPhrase = new DeathmatchPhrase(this);
-		deathmatchPhrase.load();
+		deathmatchPhase = new DeathmatchPhase(this);
+		deathmatchPhase.load();
 	}
 	
 	public void startIngame() {
-		ingamePhrase = new IngamePhrase(this);
-		ingamePhrase.load();
+		ingamePhase = new IngamePhase(this);
+		ingamePhase.load();
 	}
 	
 	public void startCooldown(Arena arena) {
-		cooldownPhrase = new CooldownPhrase(this, arena);
-		cooldownPhrase.load();
+		cooldownPhase = new CooldownPhase(this, arena);
+		cooldownPhase.load();
 	}
 	
 	public boolean isResetEnabled() {
@@ -329,19 +334,23 @@ public class Game {
 	private boolean forcedStart = false;
 	public void checkForStart() {
 		if(users.size() == reqplayers || forcedStart) {
-			if(cooldownPhrase != null && cooldownPhrase.isRunning())
+			if(cooldownPhase != null && cooldownPhase.isRunning())
 				return;
-			if(votingPhrase != null && votingPhrase.isRunning())
+			if(votingPhase != null && votingPhase.isRunning())
 				return;
 			
 			if(getArenas().size() == 1) {
 				startCooldown(getArenas().get(0));
 			} else {
-				if(cooldownPhrase != null) {
+				if(cooldownPhase != null) {
 					startCooldown(getArenas().get(0));
 				} else {
-					votingPhrase = new VotingPhrase(this);
-					votingPhrase.load();
+					votingPhase = new VotingPhase(this);
+					votingPhase.load();
+					if(forcedStart) {
+						if(votingPhase.getTime() > 30)
+							votingPhase.setTime(30);
+					}
 				}
 			}
 		}
@@ -354,10 +363,10 @@ public class Game {
 		if(forcedStart) {
 			if(users.size() == 1) {
 				if(getState() == GameState.COOLDOWN) {
-					cooldownPhrase.cancelTask();
+					cooldownPhase.cancelTask();
 					sendMessage(MessageHandler.getMessage("game-start-canceled"));
 				} else if(getState() == GameState.VOTING){
-					votingPhrase.cancelTask();
+					votingPhase.cancelTask();
 					sendMessage(MessageHandler.getMessage("game-start-canceled"));
 				}
 				forcedStart = false;
@@ -366,26 +375,26 @@ public class Game {
 		} else {
 			if(users.size() == reqplayers - 1) {
 				if(getState() == GameState.COOLDOWN) {
-					cooldownPhrase.cancelTask();
+					cooldownPhase.cancelTask();
 					sendMessage(MessageHandler.getMessage("game-start-canceled"));
 				} else if(getState() == GameState.VOTING){
-					votingPhrase.cancelTask();
+					votingPhase.cancelTask();
 					sendMessage(MessageHandler.getMessage("game-start-canceled"));
 				}
 			}
 		}
 	}
 	
-	public IngamePhrase getIngamePhrase() {
-		return ingamePhrase;
+	public IngamePhase getIngamePhrase() {
+		return ingamePhase;
 	}
 	
-	public VotingPhrase getVotingPhrase() {
-		return votingPhrase;
+	public VotingPhase getVotingPhrase() {
+		return votingPhase;
 	}
 	
-	public CooldownPhrase getCooldownPhrase() {
-		return cooldownPhrase;
+	public CooldownPhase getCooldownPhrase() {
+		return cooldownPhase;
 	}
 	
 	public Arena getFewestArena() {
@@ -471,6 +480,11 @@ public class Game {
 	
 	public int getCooldownTime() {
 		return cooldown;
+	}
+	
+	public void sendMessage(JSONMessage message) {
+		message.send(users);
+		message.sendToSpectators(spectators);
 	}
 	
 	public void sendMessage(String message) {

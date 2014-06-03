@@ -11,10 +11,10 @@ import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
-import me.maker56.survivalgames.game.phrase.CooldownPhrase;
-import me.maker56.survivalgames.game.phrase.DeathmatchPhrase;
-import me.maker56.survivalgames.game.phrase.IngamePhrase;
-import me.maker56.survivalgames.game.phrase.VotingPhrase;
+import me.maker56.survivalgames.game.phases.CooldownPhase;
+import me.maker56.survivalgames.game.phases.DeathmatchPhase;
+import me.maker56.survivalgames.game.phases.IngamePhase;
+import me.maker56.survivalgames.game.phases.VotingPhase;
 import me.maker56.survivalgames.reset.Reset;
 
 public class GameManager {
@@ -91,20 +91,20 @@ public class GameManager {
 		if(game != null) {
 			if(game.getPlayingUsers() > 0)
 				game.kickall();
-			VotingPhrase vp = game.getVotingPhrase();
+			VotingPhase vp = game.getVotingPhrase();
 			if(vp != null) {
 				vp.cancelTask();
 			}
-			CooldownPhrase cp = game.getCooldownPhrase();
+			CooldownPhase cp = game.getCooldownPhrase();
 			if(cp != null)
 				cp.cancelTask();
-			IngamePhrase ip = game.getIngamePhrase();
+			IngamePhase ip = game.getIngamePhrase();
 			if(ip != null) {
 				ip.cancelDeathmatchTask();
 				ip.cancelLightningTask();
 				ip.cancelTask();
 			}
-			DeathmatchPhrase dp = game.getDeathmatch();
+			DeathmatchPhase dp = game.getDeathmatch();
 			if(dp != null) {
 				dp.cancelTask();
 			}

@@ -5,22 +5,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.listener.SelectionListener;
-import me.maker56.survivalgames.reset.Reset;
 import me.maker56.survivalgames.reset.Save;
+import me.maker56.survivalgames.reset.Selection;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class ArenaManager {
 	
@@ -55,12 +53,6 @@ public class ArenaManager {
 		String gamename = selectedarena.get(p.getName())[0];
 		String arenaname = selectedarena.get(p.getName())[1];
 		
-		if(Save.isSaveing(gamename, arenaname) || Reset.isResetting(gamename, arenaname)) {
-			Bukkit.broadcastMessage(Boolean.valueOf(Save.isSaveing(gamename, arenaname)).toString() + " " + Boolean.valueOf(Reset.isResetting(gamename, arenaname)));
-			p.sendMessage(MessageHandler.getMessage("prefix") + "§cThis arena is already saveing or resetting.");
-			return;
-		}
-		
 		Game game = SurvivalGames.gameManager.getGame(gamename);
 		if(game != null) {
 			Arena arena = game.getArena(arenaname);
@@ -70,7 +62,6 @@ public class ArenaManager {
 			}
 		}
 		
-		
 		Location min = Util.parseLocation(cfg.getString("Games." + gamename + ".Arenas." + arenaname + ".Min"));
 		Location max = Util.parseLocation(cfg.getString("Games." + gamename + ".Arenas." + arenaname + ".Max"));
 		
@@ -79,8 +70,10 @@ public class ArenaManager {
 			return;
 		}
 		
-		p.sendMessage(MessageHandler.getMessage("prefix") + "Saveing arena... This may take a while. Laggs can be occure. You'll get a message, if the save is completed.");
-		new Save(gamename, arenaname, min, max, p.getName()).start();
+		Selection sel = new Selection(min, max);
+		
+		p.sendMessage(MessageHandler.getMessage("prefix") + "Saveing arena... This may take a while. Laggs can occure. You'll get a message, when the save is completed.");
+		new Save(gamename, arenaname, sel, p.getName()).start();
 	}
 	
 	// ARENA LÖSCHEN
@@ -286,34 +279,26 @@ public class ArenaManager {
 		}
 		
 		WorldEditPlugin we = SurvivalGames.getWorldEdit();
-		
-		Location min = null, max = null;
-		
-		if(we == null) {
-			if(SelectionListener.selection.containsKey(p.getName())) {
-				Location[] loc = SelectionListener.selection.get(p.getName());
+		Selection sel = null;
+		if(we != null) {
+			com.sk89q.worldedit.bukkit.selections.Selection s = we.getSelection(p);
+			if(s == null || s.getMinimumPoint() == null || s.getMaximumPoint() == null) {
+				p.sendMessage(MessageHandler.getMessage("arena-no-selection").replace("%0%", "/sg arena tools"));
+				return;
+			}
+			sel = new Selection(s.getMinimumPoint(), s.getMaximumPoint());
+		} else {
+			if(SelectionListener.selections.containsKey(p.getName())) {
+				sel = SelectionListener.selections.get(p.getName());
 				
-				if(loc[0] == null || loc[1] == null) {
+				if(sel == null || !sel.isFullDefined()) {
 					p.sendMessage(MessageHandler.getMessage("arena-no-selection").replace("%0%", "/sg arena tools"));
 					return;
-				} else {
-					min = new Location(loc[0].getWorld(), Math.min(loc[0].getBlockX(), loc[1].getBlockX()), Math.min(loc[0].getBlockY(), loc[1].getBlockY()), Math.min(loc[0].getBlockZ(), loc[1].getBlockZ()));
-					min = new Location(loc[0].getWorld(), Math.max(loc[0].getBlockX(), loc[1].getBlockX()), Math.max(loc[0].getBlockY(), loc[1].getBlockY()), Math.max(loc[0].getBlockZ(), loc[1].getBlockZ()));
 				}
 			} else {
 				p.sendMessage(MessageHandler.getMessage("arena-no-selection").replace("%0%", "/sg arena tools"));
 				return;
 			}
-		} else {
-			Selection sel = we.getSelection(p);
-			
-			if(sel == null || sel.getMinimumPoint() == null || sel.getMaximumPoint() == null) {
-				p.sendMessage(MessageHandler.getMessage("arena-no-selection").replace("%0%", "/sg arena tools"));
-				return;
-			}
-			
-			min = sel.getMinimumPoint();
-			max = sel.getMaximumPoint();
 		}
 		
 		int chesttype = SurvivalGames.instance.getConfig().getInt("Default.Arena.Chests.TypeID");
@@ -325,8 +310,8 @@ public class ArenaManager {
 		
 		cfg.set(path + "Grace-Period", SurvivalGames.instance.getConfig().getInt("Default.Arena.Grace-Period"));
 		
-		cfg.set(path + "Min", min.getWorld().getName() + "," + min.getBlockX() + "," + min.getBlockY() + "," + min.getBlockZ());
-		cfg.set(path + "Max", max.getWorld().getName() + "," + max.getBlockX() + "," + max.getBlockY() + "," + max.getBlockZ());
+		cfg.set(path + "Min", Util.serializeLocation(sel.getMinimumLocation(), false));
+		cfg.set(path + "Max", Util.serializeLocation(sel.getMaximumLocation(), false));
 		
 		cfg.set(path + "Allowed-Blocks", SurvivalGames.instance.getConfig().getIntegerList("Default.Arena.Allowed-Blocks"));
 		

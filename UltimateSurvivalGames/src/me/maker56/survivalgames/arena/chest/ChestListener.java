@@ -50,6 +50,8 @@ public class ChestListener implements Listener {
 							Chest chest = cm.getRandomChest(p, loc);
 							game.registerChest(chest);
 							user.setCurrentChest(chest);
+							b.getState().update(true);
+							
 							p.openInventory(chest.getInventory());
 							loc.getWorld().playSound(loc, Sound.CHEST_OPEN, 1.0F, 1.0F);
 						}

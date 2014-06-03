@@ -7,8 +7,8 @@ import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
-import me.maker56.survivalgames.game.phrase.IngamePhrase;
-import me.maker56.survivalgames.game.phrase.VotingPhrase;
+import me.maker56.survivalgames.game.phases.IngamePhase;
+import me.maker56.survivalgames.game.phases.VotingPhase;
 import me.maker56.survivalgames.user.SpectatorUser;
 import me.maker56.survivalgames.user.User;
 import me.maker56.survivalgames.user.UserManager;
@@ -144,7 +144,7 @@ public class PlayerListener implements Listener {
 
 				
 				
-				if(hand.equals(VotingPhrase.getVotingOpenItemStack())) {
+				if(hand.equals(VotingPhase.getVotingOpenItemStack())) {
 					if(g.getState() != GameState.VOTING) {
 						p.sendMessage(MessageHandler.getMessage("prefix") + "§cVoting isn't active right now!");
 						return;
@@ -218,7 +218,7 @@ public class PlayerListener implements Listener {
 					return;
 				}
 				
-				IngamePhrase ip = game.getIngamePhrase();
+				IngamePhase ip = game.getIngamePhrase();
 				
 				for(Entity entity : p.getWorld().getEntities()) {
 					if(entity instanceof Projectile) {
@@ -251,7 +251,7 @@ public class PlayerListener implements Listener {
 					return;
 				}
 				
-				IngamePhrase ip = game.getIngamePhrase();
+				IngamePhase ip = game.getIngamePhrase();
 				
 				for(ItemStack is : event.getDrops()) {
 					p.getLocation().getWorld().dropItemNaturally(p.getLocation(), is);
@@ -268,8 +268,9 @@ public class PlayerListener implements Listener {
 		User u = um.getUser(event.getPlayer().getName());
 		if(u != null) {
 			GameState gs = u.getGame().getState();
-			if(gs == GameState.WAITING || gs == GameState.VOTING || gs == GameState.COOLDOWN)
+			if(gs == GameState.WAITING || gs == GameState.VOTING || gs == GameState.COOLDOWN) {
 				event.setCancelled(true);
+			}
 		}
 	}
 	
@@ -306,12 +307,21 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerRightClick(PlayerInteractEntityEvent event) {
-		for(Game game : SurvivalGames.gameManager.getGames()) {
-			for(Arena arena : game.getArenas()) {
-				if(arena.containsBlock(event.getRightClicked().getLocation()))
-					event.setCancelled(true);
+		User user = um.getUser(event.getPlayer().getName());
+		if(user != null) {
+			GameState state = user.getGame().getState();
+			if(event.getRightClicked() instanceof ItemFrame || state == GameState.WAITING || state == GameState.VOTING || state == GameState.COOLDOWN) {
+				event.setCancelled(true);
+			}
+		} else {
+			for(Game game : SurvivalGames.gameManager.getGames()) {
+				for(Arena arena : game.getArenas()) {
+					if(arena.containsBlock(event.getRightClicked().getLocation()))
+						event.setCancelled(true);
+				}
 			}
 		}
+
 	}
 	
 	@EventHandler
@@ -397,7 +407,7 @@ public class PlayerListener implements Listener {
 				um.leaveGame(p);
 				return;
 			} else {
-				IngamePhrase ip = game.getIngamePhrase();
+				IngamePhase ip = game.getIngamePhrase();
 				ip.killUser(user, null, true);
 			}
 		}

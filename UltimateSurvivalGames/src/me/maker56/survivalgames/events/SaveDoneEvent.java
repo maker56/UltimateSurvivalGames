@@ -16,19 +16,23 @@ public class SaveDoneEvent extends Event {
         return handlers;
     }
 	
-    private long time;
-    private int size;
+    private long millis, size;
+    private int seconds;
     private String arena, lobby, format;
     
-	public SaveDoneEvent(String lobby, String arena, long time, int size, String format) {
+	public SaveDoneEvent(String lobby, String arena, long time, long size, String format) {
 		this.lobby = lobby;
 		this.arena = arena;
-		this.time = time;
 		this.size = size;
 		this.format = format;
+		
+		int seconds = (int) (time / 1000);
+		time -= seconds * 1000;
+		this.seconds = seconds;
+		this.millis = time;
 	}
 	
-	public int getFileSize() {
+	public long getFileSize() {
 		return size;
 	}
 	
@@ -36,8 +40,8 @@ public class SaveDoneEvent extends Event {
 		return format;
 	}
 	
-	public long getTime() {
-		return time;
+	public String getTime() {
+		return seconds + " second and " + millis + " milliseconds";
 	}
 	
 	public String getLobby() {

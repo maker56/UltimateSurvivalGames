@@ -134,7 +134,7 @@ public class ResetListener implements Listener {
 	public void onSaveComplete(SaveDoneEvent event) {
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			if(PermissionHandler.hasPermission(p, Permission.ARENA)) {
-				p.sendMessage(MessageHandler.getMessage("prefix") + "Done saveing arena " + event.getArena() + " in lobby " + event.getLobby() + "! It took " + event.getTime() + " seconds! The file is " + event.getFileSize() + " " + event.getFileSizeFormat() + " big.");
+				p.sendMessage(MessageHandler.getMessage("prefix") + "Done saveing arena " + event.getArena() + " in lobby " + event.getLobby() + "! It tooks " + event.getTime() + "! The file is " + event.getFileSize() + " " + event.getFileSizeFormat() + " big.");
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package me.maker56.survivalgames.listener;
 import java.util.HashMap;
 
 import me.maker56.survivalgames.commands.messages.MessageHandler;
+import me.maker56.survivalgames.reset.Selection;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,7 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class SelectionListener implements Listener {
 	
-	public static HashMap<String, Location[]> selection = new HashMap<>();
+	public static HashMap<String, Selection> selections = new HashMap<>();
 	
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -36,29 +37,32 @@ public class SelectionListener implements Listener {
 		
 		if(im.getDisplayName().equals("SurvivalGames Selection Tool")) {
 			event.setCancelled(true);
-			
+			String message = MessageHandler.getMessage("prefix");
 			if(event.getAction() == Action.LEFT_CLICK_BLOCK) {
-				if(selection.containsKey(p.getName())) {
-					Location[] loc = selection.get(p.getName());
-					loc[0] = event.getClickedBlock().getLocation();
+				Location loc = event.getClickedBlock().getLocation();
+				message += "First point set!";
+				if(selections.containsKey(p.getName())) {
+					Selection sel = selections.get(p.getName());
+					sel.setMinimumLocation(loc);
+					message += " (" + sel.getSize() + " blocks)";
 				} else {
-					Location[] loc = { event.getClickedBlock().getLocation(), null };
-					selection.put(p.getName(), loc);
+					Selection sel = new Selection(loc, null);
+					selections.put(p.getName(), sel);
 				}
-				
-				p.sendMessage(MessageHandler.getMessage("prefix") + "First point set!");
 				
 			} else if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				if(selection.containsKey(p.getName())) {
-					Location[] loc = selection.get(p.getName());
-					loc[1] = event.getClickedBlock().getLocation();
+				Location loc = event.getClickedBlock().getLocation();
+				message += "Second point set!";
+				if(selections.containsKey(p.getName())) {
+					Selection sel = selections.get(p.getName());
+					sel.setMaximumLocation(loc);
+					message += " (" + sel.getSize() + " blocks)";
 				} else {
-					Location[] loc = { null, event.getClickedBlock().getLocation() };
-					selection.put(p.getName(), loc);
+					Selection sel = new Selection(null, loc);
+					selections.put(p.getName(), sel);
 				}
-				
-				p.sendMessage(MessageHandler.getMessage("prefix") + "Second point set!");
 			}
+			p.sendMessage(message);
 		}
 		
 

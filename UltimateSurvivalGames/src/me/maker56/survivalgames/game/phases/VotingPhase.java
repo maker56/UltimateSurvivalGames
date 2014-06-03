@@ -1,4 +1,4 @@
-package me.maker56.survivalgames.game.phrase;
+package me.maker56.survivalgames.game.phases;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +7,7 @@ import java.util.List;
 import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.Arena;
+import me.maker56.survivalgames.chat.JSONMessage;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
 import me.maker56.survivalgames.game.Game;
@@ -21,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
-public class VotingPhrase {
+public class VotingPhase {
 	
 	// STATIC VARIABLES
 	private static ItemStack voteItem, arenaItem;
@@ -54,7 +55,7 @@ public class VotingPhrase {
 	private Inventory voteInventory;
 	
 	
-	public VotingPhrase(Game game) {
+	public VotingPhase(Game game) {
 		reinitializeDatabase();
 		this.game = game;
 		time = game.getLobbyTime();
@@ -90,12 +91,14 @@ public class VotingPhrase {
 					user.getPlayer().setExp(0);
 				}
 				
-				if(time % 10 == 0 && time != 10 && time != 0 && time != game.getLobbyTime()) {
-					game.sendMessage(MessageHandler.getMessage("game-voting-cooldown-big").replace("%0%", Integer.valueOf(time).toString()));
-				} else if(time % 15 == 0 && time != 0) {
+				if(time % 10 == 0 && time > 10) {
+					game.sendMessage(MessageHandler.getMessage("game-voting-cooldown").replace("%0%", Util.getFormatedTime(time)));
+				}
+				
+				if(time % 15 == 0 && time != 0) {
 					sendVoteMessage();
 				} else if(time <= 10 && time > 0){
-					game.sendMessage(MessageHandler.getMessage("game-voting-cooldown-little").replace("%0%", Integer.valueOf(time).toString()));
+					game.sendMessage(MessageHandler.getMessage("game-voting-cooldown").replace("%0%", Util.getFormatedTime(time)));
 				} else if(time == 0) {
 					for(User user : game.getUsers()) {
 						user.getPlayer().getInventory().setItem(1, null);
@@ -187,6 +190,10 @@ public class VotingPhrase {
 		return time;
 	}
 	
+	public void setTime(int time) {
+		this.time = time;
+	}
+	
 	public Arena getMostVotedArena() {
 		Arena mostVoted = null;
 
@@ -236,7 +243,7 @@ public class VotingPhrase {
 			
 			int i = 1;
 			for(Arena arena : voteArenas) {
-				game.sendMessage("§3" + i + "§7. §6" + arena.getName() + " §7(§e" + arena.getVotes() + "§7)");
+				game.sendMessage(new JSONMessage("§3" + i + "§7. §6" + arena.getName() + " §7(§e" + arena.getVotes() + "§7)").tooltip("Click to vote for arena " + arena.getName()).command("/sg vote " + i));
 				i++;
 			}
 		}
