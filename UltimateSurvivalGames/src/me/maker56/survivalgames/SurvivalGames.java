@@ -60,12 +60,18 @@ public class SurvivalGames extends JavaPlugin {
 		version += getDescription().getVersion();
 		
 		new ConfigLoader().load();
+		
+		startUpdateChecker();
+		
 		PermissionHandler.reinitializeDatabase();
 		Game.reinitializeDatabase();
 		MessageHandler.reload();
 		
 		if(setupEconomy())
 			System.out.println("[SurvivalGames] Vault found!");
+		
+		// TEMPORARY
+		Util.checkForOutdatedArenaSaveFiles();
 
 		chestManager = new ChestManager();
 		scoreBoardManager = new ScoreBoardManager();
@@ -97,8 +103,6 @@ public class SurvivalGames extends JavaPlugin {
 		}
 		
 		signManager.updateSigns();
-		
-		startUpdateChecker();
 	}
 	
 	// UPDATE CHECKING

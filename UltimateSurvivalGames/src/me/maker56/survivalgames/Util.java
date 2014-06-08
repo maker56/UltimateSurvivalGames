@@ -1,7 +1,11 @@
 package me.maker56.survivalgames;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import me.maker56.survivalgames.commands.messages.MessageHandler;
+import me.maker56.survivalgames.listener.UpdateListener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -18,9 +23,12 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.sk89q.worldedit.schematic.SchematicFormat;
+
 public class Util {
 	
 	// ITEMSTACK
+	private static boolean debug = false;
 	
 	@SuppressWarnings("deprecation")
 	public static ItemStack parseItemStack(String s) {
@@ -152,6 +160,49 @@ public class Util {
 		}
 		
 		return key;
+	}
+	
+	public static void debug(Object object) {
+		if(debug) {
+			System.out.println("[SurvivalGames] [Debug] " + object.toString());
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				if(p.isOp()) 
+					p.sendMessage("§7[Debug] " + object.toString());
+			}
+		}
+	}
+	
+	// TEMPORARY UPDATE METHODS
+	
+	public static void checkForOutdatedArenaSaveFiles() {
+		File f = new File("plugins/SurvivalGames/reset/");
+		List<String> outdated = new ArrayList<>();
+		if(f.exists()) {
+			for(String key : f.list()) {
+				if(!key.endsWith(".map"))
+					continue;
+				File file = new File("plugins/SurvivalGames/reset/" + key);
+				SchematicFormat sf = SchematicFormat.getFormat(file);
+				if(sf == null) {
+					outdated.add(key);
+				}
+			}
+		}
+		String s = null;
+		if(!outdated.isEmpty()) {
+			s = MessageHandler.getMessage("prefix") + "§cThe format of " + outdated.size() + " map saves is outdated§7: §e";
+			for(int i = 0; i < outdated.size(); i++) {
+				s+= outdated.get(i);
+				if(i != outdated.size() - 1) {
+					s+= "§7, §e";
+				} else {
+					s+= " §c! ";
+				}
+
+			}
+			s+= "Select all the arenas with §l/sg arena select §cand type §c§l/sg arena save§c! In the old format, the arenas will not reset!";
+		}
+		UpdateListener.setOutdatedMaps(s);
 	}
 
 }

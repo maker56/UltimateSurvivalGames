@@ -42,19 +42,19 @@ public class ChestManager {
 		reinitializeConfig();
 	}
 	
-	public Chest getRandomChest(Player p, Location loc) {
+	public Chest getRandomChest(Player p, Location loc, boolean rare) {
 		Inventory i = Bukkit.createInventory(p, 27, title);
-		equipInventory(i);
+		equipInventory(i, rare);
 		return new Chest(i, loc);
 	}
 	
-	private void equipInventory(Inventory inv) {
-		int stacks = r.nextInt(8) + 1;
+	private void equipInventory(Inventory inv, boolean rare) {
+		int stacks = r.nextInt(rare ? 4 : 8) + 1;
 		
 		List<List<ItemStack>> groups = new ArrayList<>();
 		
 		for(int i = 0; i < stacks; i++) {
-			groups.add(getRandomList());
+			groups.add(getRandomList(rare));
 		}
 		
 		List<ItemStack> items = new ArrayList<>();
@@ -68,20 +68,30 @@ public class ChestManager {
 		}
 	}
 	
-	private List<ItemStack> getRandomList() {
+	private List<ItemStack> getRandomList(boolean rare) {
 		int ri = r.nextInt(100) + 1;
-
-		if(ri <= 40) {
-			return items.get(0);
-		} else if(ri > 40 & ri <= 70) {
-			return items.get(1);
-		} else if(ri > 70 & ri <= 85) {
-			return items.get(2);
-		} else if(ri > 85 & ri <= 95) {
-			return items.get(3);
+		if(!rare) {
+			if(ri <= 40) {
+				return items.get(0);
+			} else if(ri <= 70) {
+				return items.get(1);
+			} else if(ri <= 85) {
+				return items.get(2);
+			} else if(ri <= 95) {
+				return items.get(3);
+			} else {
+				return items.get(4);
+			}
 		} else {
-			return items.get(4);
+			if(ri <= 60) {
+				return items.get(3);
+			} else if(ri <= 80) {
+				return items.get(2);
+			} else {
+				return items.get(4);
+			}
 		}
+		
 	}
 
 }

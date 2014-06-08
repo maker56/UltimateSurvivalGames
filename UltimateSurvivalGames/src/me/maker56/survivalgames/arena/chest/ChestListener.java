@@ -8,6 +8,7 @@ import me.maker56.survivalgames.user.User;
 import me.maker56.survivalgames.user.UserManager;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -39,22 +40,21 @@ public class ChestListener implements Listener {
 				
 				Arena arena = game.getCurrentArena();
 				Block b = event.getClickedBlock();
+				Material type = b.getType();
 				
-				if(b.getType() == arena.getChestType()) {
-					if((arena.getChestData() >= 0 && b.getData() == arena.getChestData()) || arena.getChestData() < 0) {
-						Location loc = b.getLocation();
-						event.setCancelled(true);
-						if(game.isChestRegistered(loc)) {
-							p.openInventory(game.getChest(loc).getInventory());
-						} else {
-							Chest chest = cm.getRandomChest(p, loc);
-							game.registerChest(chest);
-							user.setCurrentChest(chest);
-							b.getState().update(true);
-							
-							p.openInventory(chest.getInventory());
-							loc.getWorld().playSound(loc, Sound.CHEST_OPEN, 1.0F, 1.0F);
-						}
+				if((type == arena.getChestType() && ((arena.getChestData() >= 0 && b.getData() == arena.getChestData()) || arena.getChestData() < 0)) || b.getType() == Material.ENDER_CHEST) {
+					Location loc = b.getLocation();
+					event.setCancelled(true);
+					if(game.isChestRegistered(loc)) {
+						p.openInventory(game.getChest(loc).getInventory());
+					} else {
+						Chest chest = cm.getRandomChest(p, loc, type == Material.ENDER_CHEST);
+						game.registerChest(chest);
+						user.setCurrentChest(chest);
+						b.getState().update(true);
+						
+						p.openInventory(chest.getInventory());
+						loc.getWorld().playSound(loc, Sound.CHEST_OPEN, 1.0F, 1.0F);
 					}
 				}
 			}

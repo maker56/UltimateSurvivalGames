@@ -84,7 +84,7 @@ public class Reset extends Thread {
 				}
 			}
 			int next = 16 * 16 * world.getMaxHeight();
-			es = we.getEditSessionFactory().getEditSession(lw, Integer.MAX_VALUE);
+			es = we.getEditSessionFactory().getEditSession(lw, -1);
 
 			Vector pos = cc.getOrigin();
 			
@@ -94,7 +94,7 @@ public class Reset extends Thread {
 						if(cReset.size() >= next) {
 							resetNext();
 							while(build) {
-								sleep(10);
+								sleep(100);
 							}
 						}
 						

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.events.SaveDoneEvent;
 
@@ -56,7 +57,8 @@ public class Save extends Thread {
 					double percent = stepsDone / (maxSteps / 100);
 					double rounded = Math.round( percent * 100. ) / 100.;
 					if(rounded <= 100) {
-						p.sendMessage(MessageHandler.getMessage("prefix") + "§eMap save of arena " + arena + " in lobby " + lobby + " " + rounded + "% completed!");
+						p.sendMessage(MessageHandler.getMessage("prefix") + "§eMap save of arena " + arena + " in lobby " + lobby + " " + Double.valueOf(rounded).toString().replace(".", ",") + "% completed!");
+						Util.debug(stepsDone + "/" + maxSteps);
 					}
 				}
 			}
@@ -84,6 +86,7 @@ public class Save extends Thread {
 		Location min = sel.getMinimumLocation();
 		Location max = sel.getMaximumLocation();
 		
+		setPriority(MIN_PRIORITY);
 		WorldEdit we = SurvivalGames.getWorldEdit().getWorldEdit();
 		try {
 			for(LocalWorld lw : we.getServer().getWorlds()) {
@@ -97,8 +100,11 @@ public class Save extends Thread {
 			Vector size = cc.getSize();
 			origin = cc.getOrigin();
 			
-			int maxSize = 4 * 16 * 16 * cc.getHeight();
+			int maxSize = 16 * 16 * cc.getHeight();
 			maxSteps = (cc.getHeight() * cc.getLength() * cc.getWidth()) / maxSize;
+			long sleep = 125;
+			
+			Util.debug("SurvivalGames Map save - length:" + cc.getLength() + " width:" + cc.getWidth() + " height:" + cc.getHeight() + " perStep:" + maxSize + " maxSteps:" + maxSteps + " sleep:" + sleep);
 			
 			if(pname != null)
 				startPercentInfoScheduler();
@@ -110,7 +116,7 @@ public class Save extends Thread {
 							nextSave();
 							while(save) { 
 								try {
-									sleep(1);
+									sleep(sleep);
 								} catch (InterruptedException e) {
 									e.printStackTrace();
 								}
@@ -144,6 +150,8 @@ public class Save extends Thread {
 		Bukkit.getScheduler().callSyncMethod(SurvivalGames.instance, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
+				// TEMPORARY
+				Util.checkForOutdatedArenaSaveFiles();
 				Bukkit.getPluginManager().callEvent(new SaveDoneEvent(lobby, arena,  (System.currentTimeMillis() - start), size, format));
 				return null;
 			}

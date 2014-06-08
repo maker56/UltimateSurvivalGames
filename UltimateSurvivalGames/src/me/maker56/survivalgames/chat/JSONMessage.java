@@ -2,14 +2,15 @@ package me.maker56.survivalgames.chat;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.maker56.survivalgames.user.SpectatorUser;
 import me.maker56.survivalgames.user.User;
-import me.maker56.survivalgames.user.UserState;
 
 import org.bukkit.Achievement;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.Statistic.Type;
@@ -19,6 +20,29 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class JSONMessage {
+	
+	/* The MIT License (MIT)
+	 * 
+	 * Copyright (c) 2013-2014 Max Kreminski
+	 * 
+	 * Permission is hereby granted, free of charge, to any person obtaining a
+	 * copy of this software and associated documentation files (the
+	 * "Software"), to deal in the Software without restriction, including
+	 * without limitation the rights to use, copy, modify, merge, publish,
+	 * distribute, sublicense, and/or sell copies of the Software, and to permit
+	 * persons to whom the Software is furnished to do so, subject to the
+	 * following conditions:
+	 * 
+	 * The above copyright notice and this permission notice shall be included
+	 * in all copies or substantial portions of the Software.
+	 * 
+	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+	 * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+	 * NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+	 * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+	 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+	 * USE OR OTHER DEALINGS IN THE SOFTWARE. */
 	
 	private final List<MessagePart> messageParts;
 	private String jsonString;
@@ -41,6 +65,23 @@ public class JSONMessage {
 		dirty = false;
 	}
 	
+	public JSONMessage() {
+		messageParts = new ArrayList<MessagePart>();
+		messageParts.add(new MessagePart());
+		jsonString = null;
+		dirty = false;
+	}
+	
+	public JSONMessage text(String text) {
+		MessagePart latest = latest();
+		if (latest.hasText()) {
+			throw new IllegalStateException("text for this message part is already set");
+		}
+		latest.text = text;
+		dirty = true;
+		return this;
+	}
+	
 	public JSONMessage color(final ChatColor color) {
 		if (!color.isColor()) {
 			throw new IllegalArgumentException(color.name() + " is not a color");
@@ -50,13 +91,13 @@ public class JSONMessage {
 		return this;
 	}
 	
-	public JSONMessage style(final ChatColor... styles) {
+	public JSONMessage style(ChatColor... styles) {
 		for (final ChatColor style : styles) {
 			if (!style.isFormat()) {
 				throw new IllegalArgumentException(style.name() + " is not a style");
 			}
 		}
-		latest().styles = styles;
+		latest().styles.addAll(Arrays.asList(styles));
 		dirty = true;
 		return this;
 	}
@@ -177,7 +218,19 @@ public class JSONMessage {
 	}
 	
 	public JSONMessage then(final Object obj) {
+		if (!latest().hasText()) {
+			throw new IllegalStateException("previous message part has no text");
+		}
 		messageParts.add(new MessagePart(obj.toString()));
+		dirty = true;
+		return this;
+	}
+	
+	public JSONMessage then() {
+		if (!latest().hasText()) {
+			throw new IllegalStateException("previous message part has no text");
+		}
+		messageParts.add(new MessagePart());
 		dirty = true;
 		return this;
 	}
@@ -207,39 +260,41 @@ public class JSONMessage {
 		return jsonString;
 	}
 	
-	public void send(Player player) {
-		send(player, toJSONString());
-	}
-	
-	public void send(Player player, String json) {
+	public void send(Player player){
 		try {
 			Object handle = ReflectionUtil.getHandle(player);
 			Object connection = ReflectionUtil.getField(handle.getClass(), "playerConnection").get(handle);
-			Object serialized = ReflectionUtil.getMethod(nmsChatSerializer, "a", String.class).invoke(null, json);
+			Object serialized = ReflectionUtil.getMethod(nmsChatSerializer, "a", String.class).invoke(null, toJSONString());
 			Object packet = nmsPacketPlayOutChat.getConstructor(ReflectionUtil.getNMSClass("IChatBaseComponent")).newInstance(serialized);
 			ReflectionUtil.getMethod(connection.getClass(), "sendPacket").invoke(connection, packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void send(List<User> users) {
-		String json = toJSONString();
-		for (UserState user : users) {
-			send(user.getPlayer(), json);
+
+	public void send(CommandSender sender) {
+		if (sender instanceof Player) {
+			send((Player) sender);
+		} else {
+			sender.sendMessage(toOldMessageFormat());
+		}
+	}
+
+	public void send(final Iterable<? extends CommandSender> senders) {
+		for (final CommandSender sender : senders) {
+			send(sender);
 		}
 	}
 	
 	public void sendToSpectators(List<SpectatorUser> users) {
-		String json = toJSONString();
-		for (UserState user : users) {
-			send(user.getPlayer(), json);
+		for (final SpectatorUser su : users) {
+			send(su.getPlayer());
 		}
 	}
 	
-	public void send(final Iterable<Player> players) {
-		for (final Player player : players) {
-			send(player, toJSONString());
+	public void send(List<User> users) {
+		for (final User u : users) {
+			send(u.getPlayer());
 		}
 	}
 	
@@ -291,16 +346,22 @@ public class JSONMessage {
 	
 }
 
-final class MessagePart {
+class MessagePart {
 
 	ChatColor color = ChatColor.WHITE;
-	ChatColor[] styles = {};
+	ArrayList<ChatColor> styles = new ArrayList<ChatColor>();
 	String clickActionName = null, clickActionData = null,
 		   hoverActionName = null, hoverActionData = null;
-	final String text;
+	String text = null;
 
 	MessagePart(final String text) {
 		this.text = text;
+	}
+
+	MessagePart() {}
+
+	boolean hasText() {
+		return text != null;
 	}
 
 	JsonWriter writeJson(JsonWriter json) {
@@ -308,11 +369,16 @@ final class MessagePart {
 			json.beginObject().name("text").value(text);
 			json.name("color").value(color.name().toLowerCase());
 			for (final ChatColor style : styles) {
-				if (style == ChatColor.MAGIC) {
-                    			json.name("obfuscated").value(true);
-                		} else {
-                    			json.name(style.name().toLowerCase()).value(true);
-                		}
+				String styleName;
+				switch (style) {
+				case MAGIC:
+					styleName = "obfuscated"; break;
+				case UNDERLINE:
+					styleName = "underlined"; break;
+				default:
+					styleName = style.name().toLowerCase(); break;
+				}
+				json.name(styleName).value(true);
 			}
 			if (clickActionName != null && clickActionData != null) {
 				json.name("clickEvent")
