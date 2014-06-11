@@ -419,9 +419,9 @@ public class ConfigLoader {
 		
 		c.addDefault("game-already-exists", "&cThe lobby %0% already exist!");
 		c.addDefault("game-created", "You've created the lobby %0% successfully!");
-		c.addDefault("game-spawn-set", "You've set the spawn for game %0% successfully!");
-		c.addDefault("game-set-spawn", "To set the spawn of this lobby, type /sg game lobby %0%");
-		c.addDefault("game-not-found", "&cThe Game %0% does not exists!");
+		c.addDefault("game-spawn-set", "You've set the spawn for lobby %0% successfully!");
+		c.addDefault("game-set-spawn", "To set the spawn of this lobby, type /sg lobby setspawn %0%");
+		c.addDefault("game-not-found", "&cThe lobby %0% does not exists!");
 		c.addDefault("game-must-enter", "&cYou must enter a name: %0%");
 		c.addDefault("game-vote", "Vote for an arena: &b/sg vote <ID>");
 		c.addDefault("forbidden-command", "&cYou can't execute this command in SurvivalGames!");
