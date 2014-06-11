@@ -28,7 +28,7 @@ import com.sk89q.worldedit.schematic.SchematicFormat;
 public class Util {
 	
 	// ITEMSTACK
-	private static boolean debug = true;
+	public static boolean debug = false;
 	
 	@SuppressWarnings("deprecation")
 	public static ItemStack parseItemStack(String s) {

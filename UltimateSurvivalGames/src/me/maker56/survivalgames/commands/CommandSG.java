@@ -3,6 +3,7 @@ package me.maker56.survivalgames.commands;
 import java.util.List;
 
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.arguments.ArenaArgument;
 import me.maker56.survivalgames.commands.arguments.ConfigArgument;
@@ -196,6 +197,17 @@ public class CommandSG implements CommandExecutor {
 					}
 					
 					game.forceStart(p);
+					return true;
+					
+				// DEBUG
+				} else if(args[0].equalsIgnoreCase("debug")) {
+					if(!PermissionHandler.hasPermission(sender, Permission.LOBBY)) {
+						sender.sendMessage(MessageHandler.getMessage("no-permission"));
+						return true;
+					}
+					boolean nV = !Util.debug;
+					Util.debug = nV;
+					sender.sendMessage(MessageHandler.getMessage("prefix") + "Debug Mode§7: " + (nV ? "§aENABLED" : "§cDISABLED"));
 					return true;
 				}
 				

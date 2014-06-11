@@ -50,12 +50,22 @@ public class SurvivalGames extends JavaPlugin {
 	private static PluginManager pm = Bukkit.getPluginManager();
 	
 	public void onDisable() {
-		for(Game game : gameManager.getGames()) {
-			game.kickall();
+		if(gameManager != null) {
+			for(Game game : gameManager.getGames()) {
+				game.kickall();
+			}
 		}
 	}
 	
 	public void onEnable() {
+		if(!Bukkit.getPluginManager().isPluginEnabled("WorldEdit")) {
+			System.err.println("[SurvivalGames] ##########################################################");
+			System.err.println("[SurvivalGames] ######### NO WORLDEDIT FOUND! DISABLE PLUGIN... ##########");
+			System.err.println("[SurvivalGames] ##########################################################");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
+		}
+		
 		instance = this;
 		version += getDescription().getVersion();
 		
