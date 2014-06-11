@@ -1,9 +1,13 @@
 package me.maker56.survivalgames.reset;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import me.maker56.survivalgames.SurvivalGames;
@@ -16,14 +20,22 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-
+import com.sk89q.jnbt.ByteArrayTag;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.IntTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.NBTOutputStream;
+import com.sk89q.jnbt.ShortTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.data.DataException;
-import com.sk89q.worldedit.schematic.SchematicFormat;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.TileEntityBlock;
 
 public class Save extends Thread {
 	
@@ -81,66 +93,104 @@ public class Save extends Thread {
 				return;
 			}
 		}
-		
-		SchematicFormat sf = SchematicFormat.MCEDIT;
+
 		Location min = sel.getMinimumLocation();
 		Location max = sel.getMaximumLocation();
 		
-		setPriority(MIN_PRIORITY);
-		WorldEdit we = SurvivalGames.getWorldEdit().getWorldEdit();
-		try {
-			for(LocalWorld lw : we.getServer().getWorlds()) {
-				if(lw.getName().equals(min.getWorld().getName())) {
-					es = we.getEditSessionFactory().getEditSession(lw, 0);
-					break;
-				}
+		cc = new CuboidClipboard(new Vector(sel.getLength(), sel.getHeight(), sel.getWidth()), new Vector(min.getBlockX(), min.getY(), min.getZ()), new Vector(max.getBlockX(), max.getBlockY(), max.getBlockZ()));
+		
+
+		if(pname != null)
+			startPercentInfoScheduler();
+		
+	    width = cc.getWidth();
+	    length = cc.getLength();
+	    height = cc.getHeight();
+	    origin = cc.getOrigin();
+
+	    HashMap<String, Tag> schematic = new HashMap<>();
+	    schematic.put("Width", new ShortTag("Width", (short)width));
+	    schematic.put("Length", new ShortTag("Length", (short)length));
+	    schematic.put("Height", new ShortTag("Height", (short)height));
+	    schematic.put("Materials", new StringTag("Materials", "Alpha"));
+	    schematic.put("WEOriginX", new IntTag("WEOriginX", cc.getOrigin().getBlockX()));
+	    schematic.put("WEOriginY", new IntTag("WEOriginY", cc.getOrigin().getBlockY()));
+	    schematic.put("WEOriginZ", new IntTag("WEOriginZ", cc.getOrigin().getBlockZ()));
+	    schematic.put("WEOffsetX", new IntTag("WEOffsetX", cc.getOffset().getBlockX()));
+	    schematic.put("WEOffsetY", new IntTag("WEOffsetY", cc.getOffset().getBlockY()));
+	    schematic.put("WEOffsetZ", new IntTag("WEOffsetZ", cc.getOffset().getBlockZ()));
+
+	    blocks = new byte[width * height * length];
+	    addBlocks = null;
+	    blockData = new byte[width * height * length];
+	    tileEntities = new ArrayList<>();
+
+		int maxSize = 6 * 16 * 16 * cc.getHeight();
+		maxSteps = (cc.getHeight() * cc.getLength() * cc.getWidth()) / maxSize;
+		long sleep = 625;
+		
+		Util.debug("SurvivalGames Map save - length:" + cc.getLength() + " width:" + cc.getWidth() + " height:" + cc.getHeight() + " perStep:" + maxSize + " maxSteps:" + maxSteps + " sleep:" + sleep);
+		
+		for(LocalWorld lw : WorldEdit.getInstance().getServer().getWorlds()) {
+			if(lw.getName().equals(min.getWorld().getName())) {
+				es = WorldEdit.getInstance().getEditSessionFactory().getEditSession(lw, 0);
+				break;
 			}
-			
-			cc = new CuboidClipboard(new Vector(sel.getLength(), sel.getHeight(), sel.getWidth()), new Vector(min.getBlockX(), min.getY(), min.getZ()), new Vector(max.getBlockX(), max.getBlockY(), max.getBlockZ()));
-			Vector size = cc.getSize();
-			origin = cc.getOrigin();
-			
-			int maxSize = 16 * 16 * cc.getHeight();
-			maxSteps = (cc.getHeight() * cc.getLength() * cc.getWidth()) / maxSize;
-			long sleep = 125;
-			
-			Util.debug("SurvivalGames Map save - length:" + cc.getLength() + " width:" + cc.getWidth() + " height:" + cc.getHeight() + " perStep:" + maxSize + " maxSteps:" + maxSteps + " sleep:" + sleep);
-			
-			if(pname != null)
-				startPercentInfoScheduler();
-			
-			for(int x = 0; x < size.getBlockX(); x++) {
-				for(int z = 0; z < size.getBlockZ(); z++) {
-					for(int y = 0; y < size.getBlockY(); y++) {
-						if(cSave.size() == maxSize) {
-							nextSave();
-							while(save) { 
-								try {
-									sleep(sleep);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
+		}
+	    
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				for (int z = 0; z < length; z++) {
+					if(cSave.size() == maxSize) {
+						nextSave();
+						while(save) { 
+							try {
+								sleep(sleep);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
 							}
 						}
-
-						cSave.add(new Vector(x, y, z));
 					}
-		        }     
+
+					cSave.add(new Vector(x, y, z));
+				}
 			}
-			nextSave();
-			
-			sf.save(cc, file);
-		} catch (IOException | DataException e) {
+		}
+		nextSave();
+		while(save) {
+			try {
+				sleep(sleep);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+	    schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
+	    schematic.put("Data", new ByteArrayTag("Data", blockData));
+	    schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<CompoundTag>()));
+	    schematic.put("TileEntities", new ListTag("TileEntities", CompoundTag.class, tileEntities));
+	    if (addBlocks != null) {
+	      schematic.put("AddBlocks", new ByteArrayTag("AddBlocks", addBlocks));
+	    }
+
+	    CompoundTag schematicTag = new CompoundTag("Schematic", schematic);
+	    NBTOutputStream stream;
+		try {
+			stream = new NBTOutputStream(new FileOutputStream(file));
+		    stream.writeTag(schematicTag);
+		    stream.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		
-		size = file.length();
+		sizeB = file.length();
 		format = "Bytes";
-		if(size >= 1000) {
-			size = size / 1000;
+		if(sizeB >= 1000) {
+			sizeB = sizeB / 1000;
 			format = "KiloBytes";
-			if(size >= 1000) {
-				size = size / 1000;
+			if(sizeB >= 1000) {
+				sizeB = sizeB / 1000;
 				format = "MegaBytes";
 			}
 		}
@@ -152,31 +202,89 @@ public class Save extends Thread {
 			public Void call() throws Exception {
 				// TEMPORARY
 				Util.checkForOutdatedArenaSaveFiles();
-				Bukkit.getPluginManager().callEvent(new SaveDoneEvent(lobby, arena,  (System.currentTimeMillis() - start), size, format));
+				Bukkit.getPluginManager().callEvent(new SaveDoneEvent(lobby, arena,  (System.currentTimeMillis() - start), sizeB, format));
 				return null;
 			}
 		});
 	}
 	
-	private long size;
+	private long sizeB;
 	private String format;
 	
 	private boolean save = false;
 	private CuboidClipboard cc;
-	private Vector origin;
 	private EditSession es;
+	private Vector origin;
 	private List<Vector> cSave = new ArrayList<>();
+	
+	byte[] blocks;
+	byte[] addBlocks;
+	byte[] blockData;
+	ArrayList<CompoundTag> tileEntities;
+	int width;
+    int height;
+    int length;
 	
 	public void nextSave() {
 		save = true;
 		Bukkit.getScheduler().callSyncMethod(SurvivalGames.instance, new Callable<Void>() {
 			@Override
-			public Void call() throws Exception {
-				for(Vector v : cSave) {
-					cc.setBlock(v, es.getBlock(v.add(origin)));
+			public Void call() {
+				try {
+					Util.debug("Start save: " + cSave.size() + " blocks");
+					for(Vector v : cSave) {
+						int x = v.getBlockX();
+						int y = v.getBlockY();
+						int z = v.getBlockZ();
+						
+						int index = y * width * length + z * width + x;
+						
+	                    BaseBlock block = es.getBlock(new BlockVector(x, y, z).add(origin));
+
+	                    // Save 4096 IDs in an AddBlocks section
+	                    if (block.getType() > 255) {
+	                        if (addBlocks == null) { // Lazily create section
+	                            addBlocks = new byte[(blocks.length >> 1) + 1];
+	                        }
+
+	                        addBlocks[index >> 1] = (byte) (((index & 1) == 0) ?
+	                                addBlocks[index >> 1] & 0xF0 | (block.getType() >> 8) & 0xF
+	                                : addBlocks[index >> 1] & 0xF | ((block.getType() >> 8) & 0xF) << 4);
+	                    }
+
+	                    blocks[index] = (byte) block.getType();
+	                    blockData[index] = (byte) block.getData();
+
+	                    // Store TileEntity data
+	                    if (block instanceof TileEntityBlock) {
+	                        TileEntityBlock tileEntityBlock = block;
+
+	                        // Get the list of key/values from the block
+	                        CompoundTag rawTag = tileEntityBlock.getNbtData();
+	                        if (rawTag != null) {
+	                            Map<String, Tag> values = new HashMap<String, Tag>();
+	                            for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
+	                                values.put(entry.getKey(), entry.getValue());
+	                            }
+	                            
+	                            values.put("id", new StringTag("id", tileEntityBlock.getNbtId()));
+	                            values.put("x", new IntTag("x", x));
+	                            values.put("y", new IntTag("y", y));
+	                            values.put("z", new IntTag("z", z));
+	                            
+	                            CompoundTag tileEntityTag = new CompoundTag("TileEntity", values);
+	                            tileEntities.add(tileEntityTag);
+	                        }
+	                    }
+					}
+					stepsDone++;
+					cSave.clear();
+				} catch(Exception e) {
+					e.printStackTrace();
+					
 				}
-				cSave.clear();
-				stepsDone++;
+
+				Util.debug("end save");
 				save = false;
 				return null;
 			}

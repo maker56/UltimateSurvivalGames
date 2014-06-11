@@ -93,17 +93,19 @@ public class ResetListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockExplode(EntityExplodeEvent event) {
-		List<Block> blocks = event.blockList();
-		if(blocks.size() > 0) {
-			Location loc = blocks.get(0).getLocation();
-			for(Game game : gm.getGames()) {
-				for(Arena a : game.getArenas()) {
-					if(a.containsBlock(loc)) {
-						blocks.clear();
-						break;
+		if(!event.isCancelled()) {
+			List<Block> blocks = event.blockList();
+			if(blocks.size() > 0) {
+				Location loc = blocks.get(0).getLocation();
+				for(Game game : gm.getGames()) {
+					for(Arena a : game.getArenas()) {
+						if(a.containsBlock(loc)) {
+							blocks.clear();
+							return;
+						}
 					}
 				}
-			}
+			}	
 		}
 	}
 	 

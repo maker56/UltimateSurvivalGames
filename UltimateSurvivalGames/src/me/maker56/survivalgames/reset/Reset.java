@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.events.ResetDoneEvent;
 
 import org.bukkit.Bukkit;
@@ -85,8 +86,11 @@ public class Reset extends Thread {
 			}
 			int next = 16 * 16 * world.getMaxHeight();
 			es = we.getEditSessionFactory().getEditSession(lw, -1);
-
+			long sleep = 100;
 			Vector pos = cc.getOrigin();
+			
+			Util.debug("SurvivalGames Map Reset - length:" + cc.getLength() + " width:" + cc.getWidth() + " height:" + cc.getHeight() + " perStep:" + next + " sleep:" + sleep);
+			
 			
 			for(int x = 0; x < size.getBlockX(); x++) {
 				for(int z = 0; z < size.getBlockZ(); z++) {
@@ -94,7 +98,7 @@ public class Reset extends Thread {
 						if(cReset.size() >= next) {
 							resetNext();
 							while(build) {
-								sleep(100);
+								sleep(sleep);
 							}
 						}
 						
@@ -114,7 +118,7 @@ public class Reset extends Thread {
 			}
 			resetNext();
 			while(build) {
-				sleep(10);
+				sleep(sleep);
 			}
 			
 		} catch (InterruptedException e) {
@@ -150,9 +154,7 @@ public class Reset extends Thread {
 					try {
 						es.setBlock(map.getKey(), map.getValue());
 					} catch (MaxChangedBlocksException e) {
-						System.err.println(e.getBlockLimit());
-						build = false;
-						return null;
+						e.printStackTrace();
 					}
 				}
 				cReset.clear();

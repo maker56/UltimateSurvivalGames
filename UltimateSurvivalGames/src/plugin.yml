@@ -1,7 +1,7 @@
 name: SurvivalGames
 author: maker56
 main: me.maker56.survivalgames.SurvivalGames
-version: Beta dev1.9
+version: Beta dev1.9.1
 softdepend: [WorldEdit,Vault,Multiverse-Core]
 
 commands:

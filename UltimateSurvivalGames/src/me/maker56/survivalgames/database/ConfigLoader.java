@@ -431,7 +431,7 @@ public class ConfigLoader {
 		c.addDefault("arena-must-select", "&cPlease select an arena with %0%!");
 		c.addDefault("arena-created", "You've created arena %0% in lobby %1% successfully!");
 		c.addDefault("arena-selected", "You've selected arena %0% in lobby %1%!");
-		c.addDefault("arena-not-found", "The arena %0% does not exists in lobby %1%!");
+		c.addDefault("arena-not-found", "&cThe arena %0% does not exists in lobby %1%!");
 		c.addDefault("arena-no-selection", "&cPlease select two points with the selection item: %0%");
 		c.addDefault("arena-check", "Type %0% to see what you have to do to complete the arena setup!");
 		c.addDefault("arena-spawn-added", "You've added Spawn %0% successfully!");
