@@ -726,6 +726,8 @@ public class Save extends Thread {
 		this.sel = sel;
 		this.arena = arena;
 		this.pname = pname;
+		
+		Util.debug("init arena save - min:" + Util.serializeLocation(sel.getMinimumLocation(), false) + " max:" + Util.serializeLocation(sel.getMaximumLocation(), false));
 	}
 	
 	// PERCENT CALCULATION

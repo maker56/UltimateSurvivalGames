@@ -265,7 +265,7 @@ public class ConfigLoader {
 		c.addDefault("Default.Enable-Voting", true);
 		c.addDefault("Default.Lobby-Time", 120);
 		c.addDefault("Default.Max-Voting-Arenas", 3);
-		c.addDefault("Default.Required-Players-to-start", 3);
+		c.addDefault("Default.Required-Players-to-start", 2);
 		
 		c.addDefault("Default.Arena.Chests.TypeID", 54);
 		c.addDefault("Default.Arena.Chests.Data", -1);

@@ -16,7 +16,12 @@ import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.events.ResetDoneEvent;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
@@ -739,6 +744,24 @@ public class Reset extends Thread {
 		this.lobby = lobby;
 		this.arena = arena;
 		this.chunks = chunks;
+		
+		for(String key : chunks) {
+			String[] split = key.split(",");
+			Chunk c = world.getChunkAt(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+			
+			boolean l = c.isLoaded();
+			if(!l)
+				c.load();
+			
+			for(Entity e : c.getEntities()) {
+				if(e instanceof Item || e instanceof LivingEntity || e instanceof Arrow) {
+					e.remove();
+				}
+			}
+			
+			if(!l)
+				c.unload();
+		}
 	}
 	
 	@Override

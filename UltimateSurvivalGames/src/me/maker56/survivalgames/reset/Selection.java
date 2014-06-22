@@ -3,6 +3,8 @@ package me.maker56.survivalgames.reset;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.maker56.survivalgames.Util;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -29,11 +31,13 @@ public class Selection {
 	}
 	
 	public void setMinimumLocation(Location min) {
+		Util.debug("set selection min location: " + Util.serializeLocation(min, false));
 		this.min = min;
 		redefineLocations();
 	}
 	
 	public void setMaximumLocation(Location max) {
+		Util.debug("set selection max location: " + Util.serializeLocation(max, false));
 		this.max = max;
 		redefineLocations();
 	}

@@ -14,6 +14,7 @@ import me.maker56.survivalgames.user.User;
 import me.maker56.survivalgames.user.UserManager;
 import me.maker56.survivalgames.user.UserState;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -87,7 +88,11 @@ public class PlayerListener implements Listener {
 				String[] split = name.split(". ");
 				if(split.length >= 2) {
 					p.closeInventory();
-					Arena a = g.getVotingPhrase().vote(p, Integer.parseInt(split[0]));
+					Arena a = null;
+					try {
+						a = g.getVotingPhrase().vote(p, Integer.parseInt(ChatColor.stripColor(split[0])));
+					} catch(NumberFormatException e) { }
+					
 					if(a != null) {
 						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 4.0F, 2.0F);
 					} else {

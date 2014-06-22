@@ -124,42 +124,46 @@ public class Util {
 	// LOCATION
 	
 	public static Location parseLocation(String s) {
+		String[] split = s.split(",");
+		Location loc = null;
+		
+		
 		try {
-			String[] split = s.split(",");
-			
 			World world = Bukkit.getWorld(split[0]);
-			
-			try {
+			if(split.length == 6) {
 				double x = Double.parseDouble(split[1]);
 				double y = Double.parseDouble(split[2]);
 				double z = Double.parseDouble(split[3]);
 				
 				float yaw = Float.parseFloat(split[4]);
 				float pitch = Float.parseFloat(split[5]);
-				return new Location(world, x, y, z, yaw, pitch);
-				
-			} catch(ArrayIndexOutOfBoundsException e) {
-				
+				loc = new Location(world, x, y, z, yaw, pitch);
+			} else if(split.length == 4) {
 				int x = Integer.parseInt(split[1]);
 				int y = Integer.parseInt(split[2]);
 				int z = Integer.parseInt(split[3]);
 				
-				return new Location(world, x, y, z);
+				loc = new Location(world, x, y, z);
 			}
-		} catch(Exception e) {
-			return null;
+		} catch(NumberFormatException | ArrayIndexOutOfBoundsException e) {
+			System.err.println("[SurvivalGames] Cannot parse location from string: " + s);
 		}
+		
+		return loc;
 	}
 	
 	public static String serializeLocation(Location l, boolean exact) {
-		String key = l.getWorld().getName() + ",";
-		if(exact) {
-			key += l.getX() + "," + l.getY() + "," + l.getZ() + "," + l.getYaw() + "," + l.getPitch();
-		} else {
-			key += l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ();
+		if(l != null) {
+			String key = l.getWorld().getName() + ",";
+			if(exact) {
+				key += l.getX() + "," + l.getY() + "," + l.getZ() + "," + l.getYaw() + "," + l.getPitch();
+			} else {
+				key += l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ();
+			}
+			
+			return key;
 		}
-		
-		return key;
+		return null;
 	}
 	
 	public static void debug(Object object) {

@@ -35,7 +35,7 @@ public class CommandSG implements CommandExecutor {
 				sender.sendMessage(MessageHandler.getMessage("prefix") + "Version " + SurvivalGames.instance.getDescription().getVersion() + " §7§m--§r §ePlugin developed by maker56");
 				
 				if(PermissionHandler.hasPermission(sender, Permission.JOIN)) {
-					sender.sendMessage("§8/§6sg join <LOBBY> §7- §eJoin a game!");
+					sender.sendMessage("§8/§6sg join [LOBBY] §7- §eJoin a game!");
 					sender.sendMessage("§8/§6sg leave §7- §eLeave a game!");
 					sender.sendMessage("§8/§6sg vote <ID> §7- §eVote for an arena!");
 				}
@@ -76,7 +76,10 @@ public class CommandSG implements CommandExecutor {
 					
 					Player p = (Player)sender;
 					
-					if(args.length == 1) {
+					if(args.length == 1 && SurvivalGames.gameManager.getGames().size() == 1) {
+						SurvivalGames.userManger.joinGame(p, SurvivalGames.gameManager.getGames().get(0).getName());
+						return true;
+					} else if(args.length == 1) {
 						p.sendMessage(MessageHandler.getMessage("game-must-enter").replace("%0%", "/sg join <GAMENAME>"));
 						return true;
 					}

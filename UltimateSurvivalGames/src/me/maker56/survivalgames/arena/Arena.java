@@ -96,17 +96,10 @@ public class Arena implements Cloneable {
 	}
 	
 	public boolean containsBlock(Location loc) {
-		if(!loc.getWorld().equals(min.getWorld()))
-			return false;
-		
-		if(loc.getBlockX() >= min.getBlockX() && loc.getBlockX() <= max.getBlockX()) {
-			if(loc.getBlockY() >= min.getBlockY() && loc.getBlockY() <= max.getBlockY()) {
-				if(loc.getBlockZ() >= min.getBlockZ() && loc.getBlockX() <= max.getBlockZ()) {
-					return true;
-				}
-			}
-		}
-		return false;
+		double x = loc.getX();
+		double y = loc.getY();
+		double z = loc.getZ();
+		return (loc.getWorld().equals(min.getWorld()) && x >= min.getX() && x <= max.getX() && y >= min.getY() && y <= max.getY() && z >= min.getZ() && z <= max.getZ());
 	}
 	
 	public Location getMinimumLocation() {

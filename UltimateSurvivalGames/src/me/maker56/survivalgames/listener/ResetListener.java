@@ -29,10 +29,18 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 
 public class ResetListener implements Listener {
 	
 	private GameManager gm = SurvivalGames.gameManager;
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onItemDrop(PlayerDropItemEvent event) {
+		if(!event.isCancelled()) {
+			logChunk(event.getItemDrop().getLocation());
+		}
+	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockBreak(BlockBreakEvent event) {
@@ -112,18 +120,17 @@ public class ResetListener implements Listener {
 	private void logChunk(Location loc) {
 		for(Game game : gm.getGames()) {
 			if(game.getState() == GameState.INGAME || game.getState() == GameState.DEATHMATCH) {
-				for(Arena a : game.getArenas()) {
-					if(a.containsBlock(loc)) {
-						String chunkKey = loc.getChunk().getX() + "," + loc.getChunk().getZ();
-						if(!game.getChunksToReset().contains(chunkKey)) {
-							game.getChunksToReset().add(chunkKey);
-							List<String> reset = SurvivalGames.reset.getStringList("Startup-Reset." + game.getName() + "." + a.getName());
-							reset.add(chunkKey);
-							SurvivalGames.reset.set("Startup-Reset." + game.getName() + "." + a.getName(), reset);
-							SurvivalGames.saveReset();
-						}
-						return;
+				Arena a = game.getCurrentArena();
+				if(a.containsBlock(loc)) {
+					String chunkKey = loc.getChunk().getX() + "," + loc.getChunk().getZ();
+					if(!game.getChunksToReset().contains(chunkKey)) {
+						game.getChunksToReset().add(chunkKey);
+						List<String> reset = SurvivalGames.reset.getStringList("Startup-Reset." + game.getName() + "." + a.getName());
+						reset.add(chunkKey);
+						SurvivalGames.reset.set("Startup-Reset." + game.getName() + "." + a.getName(), reset);
+						SurvivalGames.saveReset();
 					}
+					return;
 				}
 			}
 		}
