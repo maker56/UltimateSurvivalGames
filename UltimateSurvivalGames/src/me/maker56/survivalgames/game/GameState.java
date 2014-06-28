@@ -13,5 +13,9 @@ public enum GameState {
 	DEATHMATCH,
 	
 	RESET;
+	
+	public boolean isIngame() {
+		return this == INGAME || this == DEATHMATCH;
+	}
 
 }

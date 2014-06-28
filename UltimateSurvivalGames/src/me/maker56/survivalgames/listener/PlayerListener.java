@@ -240,9 +240,9 @@ public class PlayerListener implements Listener {
 				event.getDrops().clear();
 				
 				if(um.isPlaying(pkiller.getName())) {
-					ip.killUser(user, um.getUser(pkiller.getName()), false);
+					ip.killUser(user, um.getUser(pkiller.getName()), false, true);
 				} else {
-					ip.killUser(user, null, false);
+					ip.killUser(user, null, false, true);
 				}
 			}
 		} else {
@@ -263,7 +263,7 @@ public class PlayerListener implements Listener {
 				}
 				event.getDrops().clear();
 				
-				ip.killUser(user, null, false);
+				ip.killUser(user, null, false, true);
 			}
 		}
 	}
@@ -413,7 +413,7 @@ public class PlayerListener implements Listener {
 				return;
 			} else {
 				IngamePhase ip = game.getIngamePhrase();
-				ip.killUser(user, null, true);
+				ip.killUser(user, null, true, false);
 			}
 		}
 	}

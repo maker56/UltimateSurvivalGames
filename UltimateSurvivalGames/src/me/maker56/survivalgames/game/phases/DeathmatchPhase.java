@@ -13,6 +13,8 @@ import me.maker56.survivalgames.user.User;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
@@ -68,10 +70,9 @@ public class DeathmatchPhase {
 					List<User> users = game.getUsers();
 					Collections.shuffle(users);
 					
-					for(int i = 1; i < users.size(); i++) {
-						game.getIngamePhrase().killUser(users.get(i), users.get(0), false);
+					if(users.size() > 0) {
+						users.get(0).getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 10000, 3));
 					}
-					
 				}
 				game.updateScoreboard();
 				time--;

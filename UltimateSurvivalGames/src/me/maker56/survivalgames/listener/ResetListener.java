@@ -29,6 +29,7 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 
 public class ResetListener implements Listener {
@@ -40,6 +41,11 @@ public class ResetListener implements Listener {
 		if(!event.isCancelled()) {
 			logChunk(event.getItemDrop().getLocation());
 		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerDeath(PlayerDeathEvent event) {
+		logChunk(event.getEntity().getLocation());
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)

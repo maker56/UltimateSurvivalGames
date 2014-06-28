@@ -753,7 +753,7 @@ public class Reset extends Thread {
 			if(!l)
 				c.load();
 			
-			for(Entity e : c.getEntities()) {
+			for(Entity e : world.getEntities()) {
 				if(e instanceof Item || e instanceof LivingEntity || e instanceof Arrow) {
 					e.remove();
 				}

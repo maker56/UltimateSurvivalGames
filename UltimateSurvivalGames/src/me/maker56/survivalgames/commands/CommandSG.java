@@ -17,6 +17,7 @@ import me.maker56.survivalgames.game.phases.IngamePhase;
 import me.maker56.survivalgames.game.phases.VotingPhase;
 import me.maker56.survivalgames.user.User;
 import me.maker56.survivalgames.user.UserManager;
+import me.maker56.survivalgames.user.UserState;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -90,11 +91,14 @@ public class CommandSG implements CommandExecutor {
 				// LEAVE
 				} else if(args[0].equalsIgnoreCase("leave")) {
 					Player p = (Player)sender;
-					User user = SurvivalGames.userManger.getUser(p.getName());
+					UserState user = SurvivalGames.userManger.getUser(p.getName());
 					
 					if(user == null) {
-						p.sendMessage(MessageHandler.getMessage("leave-not-playing"));
-						return true;
+						user = SurvivalGames.userManger.getSpectator(p.getName());
+						if(user == null) {
+							p.sendMessage(MessageHandler.getMessage("leave-not-playing"));
+							return true;
+						}
 					}
 					
 					Game game = user.getGame();
@@ -102,9 +106,9 @@ public class CommandSG implements CommandExecutor {
 					if(game.getState() != GameState.INGAME && game.getState() != GameState.DEATHMATCH) {
 						SurvivalGames.userManger.leaveGame(p);
 						return true;
-					} else {
+					} else if(user instanceof User){
 						IngamePhase ip = game.getIngamePhrase();
-						ip.killUser(user, null, true);
+						ip.killUser((User)user, null, true, false);
 					}
 					
 					return true;
@@ -212,8 +216,7 @@ public class CommandSG implements CommandExecutor {
 					Util.debug = nV;
 					sender.sendMessage(MessageHandler.getMessage("prefix") + "Debug Mode§7: " + (nV ? "§aENABLED" : "§cDISABLED"));
 					return true;
-				}
-				
+				} 
 				
 				sender.sendMessage(MessageHandler.getMessage("prefix") + "§cCommand not found! Type /sg for help!");
 				return true;

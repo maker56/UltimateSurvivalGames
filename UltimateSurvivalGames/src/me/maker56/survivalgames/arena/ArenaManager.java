@@ -119,7 +119,7 @@ public class ArenaManager {
 		String gamename = selectedarena.get(p.getName())[0];
 		String arenaname = selectedarena.get(p.getName())[1];
 		
-		p.sendMessage(MessageHandler.getMessage("prefix") + "Arena-Check: Arena §e" + arenaname + "§6, Game §e" + gamename);
+		p.sendMessage(MessageHandler.getMessage("prefix") + "Arena-Check: arena §e" + arenaname + "§6, lobby §e" + gamename);
 		String path = "Games." + gamename + ".Arenas." + arenaname + ".";
 		
 		boolean enabled = cfg.getBoolean(path + "Enabled");
@@ -139,7 +139,7 @@ public class ArenaManager {
 		boolean deathmatch = cfg.getBoolean(path + "Enable-Deathmatch");
 		int dspawns = cfg.getStringList(path + "Deathmatch-Spawns").size();
 		
-		p.sendMessage(" §8§l–º §bDeathmatch §7(§a" + deathmatch + "§7) §e(optional)");
+		p.sendMessage(" §8§l➥ §bDeathmatch §7(§a" + deathmatch + "§7) §e(optional)");
 		
 		if(deathmatch == true) {
 			if(dspawns < 1) {

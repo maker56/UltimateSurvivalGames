@@ -119,7 +119,7 @@ public class IngamePhase {
 		}, 0L, 20L);
 	}
 	
-	public void killUser(User user, User killer, boolean leave) {
+	public void killUser(User user, User killer, boolean leave, boolean spectate) {
 		int remain = game.getUsers().size() - 1;
 		
 		if(leave) {
@@ -172,15 +172,16 @@ public class IngamePhase {
 				winner.sendMessage(MessageHandler.getMessage("arena-money-win").replace("%0%", Double.valueOf(winMoney).toString()));
 			}
 			
-			um.leaveGame(winner.getPlayer());
-			game.end();
+			game.startFinish();
 		} else {
-			if(PermissionHandler.hasPermission(p, Permission.SPECTATE)) {
-				Bukkit.getScheduler().scheduleSyncDelayedTask(SurvivalGames.instance, new Runnable() {
-					public void run() {
-						um.joinGameAsSpectator(p, game.getName());
-					}
-				}, 2L);
+			if(spectate) {
+				if(PermissionHandler.hasPermission(p, Permission.SPECTATE)) {
+					Bukkit.getScheduler().scheduleSyncDelayedTask(SurvivalGames.instance, new Runnable() {
+						public void run() {
+							um.joinGameAsSpectator(p, game.getName());
+						}
+					}, 2L);
+				}
 			}
 
 			if(remain == game.getCurrentArena().getPlayerDeathmatchAmount() && game.getCurrentArena().isDeathmatchEnabled())

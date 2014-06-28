@@ -403,7 +403,8 @@ public class ConfigLoader {
 		c.addDefault("game-start", "The round begins, &b%0% &6players are playing! &bGood luck&6!");
 		c.addDefault("game-chestrefill", "It's midnight! All chests are refilled!");
 		c.addDefault("game-win", "%0% won the SurvivalGames in arena %1% in lobby %2%!");
-		c.addDefault("game-win-winner-message", "&bCongratulations!&6 You've won the SurvivalGames in arena &b%0%&6!");
+		c.addDefault("game-win-winner-message", "&bCongratulations!&6 You won the SurvivalGames in arena &b%0%&6!");
+		c.addDefault("game-end", "&cThe round ends in %0%!");
 		
 		c.addDefault("game-sign-info", "&7&m-----&r &6Lobby info: &e%0% &7&m-----");
 		c.addDefault("game-sign-arena", "Arena&7: &e%0%");

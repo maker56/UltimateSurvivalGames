@@ -13,6 +13,7 @@ import me.maker56.survivalgames.events.UserLobbyJoinedEvent;
 import me.maker56.survivalgames.events.UserLobbyLeftEvent;
 import me.maker56.survivalgames.game.phases.CooldownPhase;
 import me.maker56.survivalgames.game.phases.DeathmatchPhase;
+import me.maker56.survivalgames.game.phases.FinishPhase;
 import me.maker56.survivalgames.game.phases.IngamePhase;
 import me.maker56.survivalgames.game.phases.ResetPhase;
 import me.maker56.survivalgames.game.phases.VotingPhase;
@@ -65,6 +66,7 @@ public class Game {
 	private CooldownPhase cooldownPhase;
 	private IngamePhase ingamePhase;
 	private DeathmatchPhase deathmatchPhase;
+	private FinishPhase finishPhase;
 	
 	private Arena arena;
 	private List<User> users = new ArrayList<>();
@@ -325,6 +327,15 @@ public class Game {
 	public void startCooldown(Arena arena) {
 		cooldownPhase = new CooldownPhase(this, arena);
 		cooldownPhase.load();
+	}
+	
+	public FinishPhase getFinishPhase() {
+		return finishPhase;
+	}
+	
+	public void startFinish() {
+		finishPhase = new FinishPhase(this);
+		finishPhase.load();
 	}
 	
 	public boolean isResetEnabled() {

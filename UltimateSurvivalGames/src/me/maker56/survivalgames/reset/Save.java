@@ -737,7 +737,6 @@ public class Save extends Thread {
 	
 	public void startPercentInfoScheduler() {
 		task = Bukkit.getScheduler().runTaskTimer(SurvivalGames.instance, new Runnable() {
-			@SuppressWarnings("deprecation")
 			public void run() {
 				Player p = Bukkit.getPlayer(pname);
 				if(p != null) {
