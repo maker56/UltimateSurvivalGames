@@ -273,7 +273,7 @@ public class PlayerListener implements Listener {
 		User u = um.getUser(event.getPlayer().getName());
 		if(u != null) {
 			GameState gs = u.getGame().getState();
-			if(gs == GameState.WAITING || gs == GameState.VOTING || gs == GameState.COOLDOWN) {
+			if(gs == GameState.WAITING || gs == GameState.VOTING || gs == GameState.COOLDOWN || u.getGame().isFinishing()) {
 				event.setCancelled(true);
 			}
 		}
@@ -284,7 +284,7 @@ public class PlayerListener implements Listener {
 		User u = um.getUser(event.getPlayer().getName());
 		if(u != null) {
 			GameState gs = u.getGame().getState();
-			if(gs == GameState.WAITING || gs == GameState.VOTING || gs == GameState.COOLDOWN)
+			if(gs == GameState.WAITING || gs == GameState.VOTING || gs == GameState.COOLDOWN || u.getGame().isFinishing())
 				event.setCancelled(true);
 		}
 	}
@@ -391,7 +391,7 @@ public class PlayerListener implements Listener {
 					event.setCancelled(true);
 					return;
 				} else {
-					if(game.getIngamePhrase().grace) {
+					if(game.getIngamePhrase().grace || game.isFinishing()) {
 						event.setCancelled(true);
 						return;
 					}
@@ -437,7 +437,7 @@ public class PlayerListener implements Listener {
 			if(um.isPlaying(p.getName())) {
 				Game game = um.getUser(p.getName()).getGame();
 				
-				if(game.getState() == GameState.WAITING || game.getState() == GameState.VOTING || game.getState() == GameState.COOLDOWN) {
+				if(game.getState() == GameState.WAITING || game.getState() == GameState.VOTING || game.getState() == GameState.COOLDOWN || game.isFinishing()) {
 					event.setCancelled(true);
 				}
 			}
@@ -488,7 +488,7 @@ public class PlayerListener implements Listener {
 			if(game.getState() != GameState.INGAME && game.getState() != GameState.DEATHMATCH) {
 				event.setCancelled(true);
 			} else {
-				if(game.getCurrentArena().getAllowedMaterials().contains(event.getBlock().getTypeId())) {
+				if(game.getCurrentArena().getAllowedMaterials().contains(event.getBlock().getTypeId()) && !game.isFinishing()) {
 					return;
 				} else {
 					event.setCancelled(true);

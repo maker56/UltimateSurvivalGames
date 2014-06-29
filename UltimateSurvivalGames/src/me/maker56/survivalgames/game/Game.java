@@ -338,6 +338,10 @@ public class Game {
 		finishPhase.load();
 	}
 	
+	public boolean isFinishing() {
+		return getFinishPhase() != null;
+	}
+	
 	public boolean isResetEnabled() {
 		return reset;
 	}

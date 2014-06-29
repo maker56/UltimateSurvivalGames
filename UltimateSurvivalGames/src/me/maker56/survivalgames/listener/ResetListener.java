@@ -29,24 +29,22 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 
 public class ResetListener implements Listener {
 	
 	private GameManager gm = SurvivalGames.gameManager;
 	
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onItemDrop(PlayerDropItemEvent event) {
-		if(!event.isCancelled()) {
-			logChunk(event.getItemDrop().getLocation());
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerDeath(PlayerDeathEvent event) {
-		logChunk(event.getEntity().getLocation());
-	}
+//	@EventHandler(priority = EventPriority.MONITOR)
+//	public void onItemDrop(PlayerDropItemEvent event) {
+//		if(!event.isCancelled()) {
+//			logChunk(event.getItemDrop().getLocation());
+//		}
+//	}
+//	
+//	@EventHandler(priority = EventPriority.MONITOR)
+//	public void onPlayerDeath(PlayerDeathEvent event) {
+//		logChunk(event.getEntity().getLocation());
+//	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockBreak(BlockBreakEvent event) {

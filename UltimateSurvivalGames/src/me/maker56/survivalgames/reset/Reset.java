@@ -744,24 +744,6 @@ public class Reset extends Thread {
 		this.lobby = lobby;
 		this.arena = arena;
 		this.chunks = chunks;
-		
-		for(String key : chunks) {
-			String[] split = key.split(",");
-			Chunk c = world.getChunkAt(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
-			
-			boolean l = c.isLoaded();
-			if(!l)
-				c.load();
-			
-			for(Entity e : world.getEntities()) {
-				if(e instanceof Item || e instanceof LivingEntity || e instanceof Arrow) {
-					e.remove();
-				}
-			}
-			
-			if(!l)
-				c.unload();
-		}
 	}
 	
 	@Override
@@ -916,22 +898,28 @@ public class Reset extends Thread {
 	                    int cx = (int) Math.floor(pos.getBlockX() / 16.0D);
 						int cz = (int) Math.floor(pos.getBlockZ() / 16.0D);
 						
-	                    
-	                    int index = y * width * length + z * width + x;
-	                    BaseBlock block = new BaseBlock(blocks[index], blockData[index]);
+						String chunkString = cx + "," + cz;
+						
+						if(!chunkString.equals(currentItemChunk)) {
+							currentItemChunk = chunkString;
+							resetEntities(chunkString);
+						}
+						
+						if(chunks.contains(chunkString)) {
+							int index = y * width * length + z * width + x;
+							BaseBlock block = new BaseBlock(blocks[index], blockData[index]);
 
-	                    if (block instanceof TileEntityBlock && tileEntitiesMap.containsKey(pt)) {
-	                        try {
-	                            ((TileEntityBlock) block).setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
-	                        } catch (DataException e) {
-	                            throw new DataException(e.getMessage());
-	                        }
-	                    }
-	                    
-	                    if(chunks.contains(cx + "," + cz)) {
+							if (block instanceof TileEntityBlock && tileEntitiesMap.containsKey(pt)) {
+								try {
+									((TileEntityBlock) block).setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
+								} catch (DataException e) {
+									throw new DataException(e.getMessage());
+								}
+							}
 							cReset.put(pos, block);
 						}
-	                    
+						
+						
 	                }
 	            }
 	        }
@@ -964,6 +952,7 @@ public class Reset extends Thread {
 	WorldEdit we = SurvivalGames.getWorldEdit().getWorldEdit();
 	LocalWorld lw = null;
 	EditSession es = null;
+	String currentItemChunk = "";
 
 	public void resetNext() {
 		build = true;
@@ -980,6 +969,30 @@ public class Reset extends Thread {
 				}
 				cReset.clear();
 				build = false;
+				return null;
+			}
+		});
+	}
+	
+	public void resetEntities(final String chunk) {
+		Bukkit.getScheduler().callSyncMethod(SurvivalGames.instance, new Callable<Void>() {
+			@Override
+			public Void call() {
+				String[] split = chunk.split(",");
+				Chunk c = world.getChunkAt(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+				boolean l = c.isLoaded();
+				if(!l)
+					c.load();
+				
+				for(Entity e : c.getEntities()) {
+					if(e instanceof Item || e instanceof LivingEntity || e instanceof Arrow) {
+						e.remove();
+					}
+				}
+				
+				if(!l)
+					c.unload();
+				
 				return null;
 			}
 		});
