@@ -83,7 +83,6 @@ public class VotingPhase {
 		}
 		
 		task = Bukkit.getScheduler().runTaskTimer(SurvivalGames.instance, new Runnable() {
-			@SuppressWarnings("deprecation")
 			public void run() {
 				
 				for(User user : game.getUsers()) {
@@ -132,7 +131,6 @@ public class VotingPhase {
 		return voteInventory;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void equipPlayer(User user) {
 		user.getPlayer().getInventory().setItem(1, voteItem);
 		user.getPlayer().updateInventory();

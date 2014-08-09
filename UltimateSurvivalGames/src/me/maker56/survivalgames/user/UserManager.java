@@ -178,7 +178,6 @@ public class UserManager {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void setState(Player p, UserState state) {
 		p.teleport(state.getLocation());
 		p.setFallDistance(state.getFallDistance());

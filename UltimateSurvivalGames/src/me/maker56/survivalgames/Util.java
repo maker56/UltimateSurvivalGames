@@ -261,6 +261,7 @@ public class Util {
 		return null;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void debug(Object object) {
 		if(debug) {
 			System.out.println("[SurvivalGames] [Debug] " + object.toString());

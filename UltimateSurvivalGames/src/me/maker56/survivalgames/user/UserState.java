@@ -155,7 +155,6 @@ public abstract class UserState {
 		clearInventory();
 	}
 
-	@SuppressWarnings("deprecation")
 	public void clearInventory() {
 		ItemStack[] inv = player.getInventory().getContents();
 		for (int i = 0; i < inv.length; i++) {

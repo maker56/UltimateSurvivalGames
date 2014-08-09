@@ -154,7 +154,6 @@ public class Game {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void joinSpectator(final SpectatorUser user) {
 		spectators.add(user);
 		Arena a = getCurrentArena();
@@ -218,7 +217,6 @@ public class Game {
 		this.death = death;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void join(User user) {
 		users.add(user);
 		Player p = user.getPlayer();

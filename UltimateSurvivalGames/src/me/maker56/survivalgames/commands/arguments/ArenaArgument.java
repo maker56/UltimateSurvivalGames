@@ -158,6 +158,7 @@ public class ArenaArgument {
 			
 		}
 		
+		
 		p.sendMessage(MessageHandler.getMessage("prefix") + "§cCommand not found! Type /sg arena for help!");
 		return true;
 		

@@ -900,12 +900,12 @@ public class Reset extends Thread {
 						
 						String chunkString = cx + "," + cz;
 						
-						if(!chunkString.equals(currentItemChunk)) {
-							currentItemChunk = chunkString;
-							resetEntities(chunkString);
-						}
-						
 						if(chunks.contains(chunkString)) {
+							if(!chunkString.equals(currentItemChunk)) {
+								currentItemChunk = chunkString;
+								resetEntities(chunkString);
+							}
+							
 							int index = y * width * length + z * width + x;
 							BaseBlock block = new BaseBlock(blocks[index], blockData[index]);
 

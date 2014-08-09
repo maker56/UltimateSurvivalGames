@@ -17,6 +17,7 @@ public class UpdateListener implements Listener {
 	private static String version = null, updateInfo = null;;
 	
 	
+	@SuppressWarnings("deprecation")
 	public static void update(String version) {
 		UpdateListener.version = version;
 		System.out.println("[SurvivalGames] A newer version of survivalgames is available. (" + version + ") You can download it here: http://dev.bukkit.org/bukkit-plugins/ultimatesurvivalgames/ You're using " + SurvivalGames.version);
@@ -44,6 +45,7 @@ public class UpdateListener implements Listener {
 	
 	// TEMPORARY UPDATE STUFF
 	private static String outdated = null;
+	@SuppressWarnings("deprecation")
 	public static void setOutdatedMaps(String s) {
 		outdated = s;
 		for(Player p : Bukkit.getOnlinePlayers()) {
