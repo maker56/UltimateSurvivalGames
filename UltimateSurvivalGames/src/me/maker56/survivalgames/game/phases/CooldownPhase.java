@@ -56,7 +56,7 @@ public class CooldownPhase {
 				
 				for(User user : game.getUsers()) {
 					user.getPlayer().setLevel(time);
-					user.getPlayer().setExp(0);
+					user.getPlayer().setExp(Util.getExpPercent((float)time, (float)game.getCooldownTime()));
 				}
 				
 				if(time == 27) {

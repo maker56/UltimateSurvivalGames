@@ -123,6 +123,14 @@ public class Util {
 		f.setFireworkMeta(fm);
 	}
 	
+	// EXP PERCENT
+	
+	public static float getExpPercent(float value, float max) {
+		if(value == 0)
+			return 0;
+		return value / max;
+	}
+	
 	// ENCHANTMENT
 	public static Enchantment getEnchantment(String enc) {
 		enc = enc.toUpperCase();

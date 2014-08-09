@@ -216,7 +216,8 @@ public class CommandSG implements CommandExecutor {
 					Util.debug = nV;
 					sender.sendMessage(MessageHandler.getMessage("prefix") + "Debug Mode§7: " + (nV ? "§aENABLED" : "§cDISABLED"));
 					return true;
-				} 
+					
+				}
 				
 				sender.sendMessage(MessageHandler.getMessage("prefix") + "§cCommand not found! Type /sg for help!");
 				return true;

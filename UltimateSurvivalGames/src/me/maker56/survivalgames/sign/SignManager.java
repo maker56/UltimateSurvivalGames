@@ -82,6 +82,10 @@ public class SignManager {
 		}
 	}
 	
+	public boolean isSign(Location loc) {
+		return signs.containsKey(loc);
+	}
+	
 	public void removeSign(Player p, Location loc) {
 		if(signs.containsKey(loc)) {
 			String lobby = signs.get(loc);

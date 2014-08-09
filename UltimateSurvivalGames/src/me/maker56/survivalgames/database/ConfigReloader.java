@@ -3,6 +3,7 @@ package me.maker56.survivalgames.database;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.arena.ArenaManager;
 import me.maker56.survivalgames.arena.chest.ChestManager;
+import me.maker56.survivalgames.barapi.BarAPIManager;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
 import me.maker56.survivalgames.game.Game;
@@ -47,7 +48,12 @@ public class ConfigReloader {
 	}
 	
 	public static void reloadScoreboard() {
+		ConfigLoader.reloadScoreboard();
 		ScoreBoardManager.reinitializeDatabase();
+	}
+	
+	public static void reloadBarAPI() {
+		BarAPIManager.reinitializeDatabase();
 	}
 
 }

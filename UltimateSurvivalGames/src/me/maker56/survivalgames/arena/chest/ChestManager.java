@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.Util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -93,5 +93,6 @@ public class ChestManager {
 		}
 		
 	}
+
 
 }

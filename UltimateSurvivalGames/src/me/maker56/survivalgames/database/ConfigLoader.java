@@ -6,6 +6,7 @@ import java.util.List;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.game.GameState;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -19,6 +20,37 @@ public class ConfigLoader {
 		reloadReset();
 		reloadChests();
 		reloadScoreboard();
+		reloadBarAPI();
+	}
+	
+	public static void reloadBarAPI() {
+		if(!Bukkit.getPluginManager().isPluginEnabled("BarAPI"))
+			return;
+		System.out.println("[SurvivalGames] BarAPI found!");
+		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "barapi.yml").getFileConfiguration();
+		SurvivalGames.barapi = c;
+		
+		c.options().header("This configuration is for the barapi support.\n" +
+				"This function works only if the plugin barapi is installed! (http://dev.bukkit.org/bukkit-plugins/bar-api/)\n" +
+				"You can disable the barapi for one gamestate if you set it blank.\n" +
+				"\n" +
+				"### VARIABLES ###\n" +
+				"%0% - required players to start\n" +
+				"%1% - current amount of playing players\n" +
+				"%2% - maximum limit of players\n" +
+				"%3% - name of the lobby\n" +
+				"%4% - name of the current arena (return a empty text if no arena is selected)");
+	
+		c.addDefault("State.WAITING", "&eWaiting for &b%0% &eplayers to start the game");
+		c.addDefault("State.VOTING", "&eYou're in lobby &b%3%&e!");
+		c.addDefault("State.COOLDOWN", "&ePrepare for start! &b%1% &etributes are playing!");
+		c.addDefault("State.INGAME", "");
+		c.addDefault("State.DEATHMATCH", "");
+		
+		c.addDefault("Enabled", true);
+		
+		c.options().copyDefaults(true);
+		SurvivalGames.saveBarAPI();
 	}
 	
 	public static void reloadScoreboard() {
@@ -252,6 +284,8 @@ public class ConfigLoader {
 	public static void reloadConfig() {
 		SurvivalGames.instance.reloadConfig();
 		FileConfiguration c = SurvivalGames.instance.getConfig();
+		
+		c.options().header("Explanation for the configuration:\nhttp://dev.bukkit.org/bukkit-plugins/ultimatesurvivalgames/pages/config/");
 		
 		c.addDefault("enable-update-check", true);
 		c.addDefault("use-permissions", true);

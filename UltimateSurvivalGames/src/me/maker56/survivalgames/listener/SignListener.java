@@ -76,13 +76,21 @@ public class SignListener implements Listener {
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBlockBreak(BlockBreakEvent event) {
 		if(event.isCancelled())
 			return;
 		Block b = event.getBlock();
 		if(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST) {
-			sm.removeSign(event.getPlayer(), b.getLocation());
+			if(sm.isSign(b.getLocation())) {
+				if(event.getPlayer().isSneaking()) {
+					sm.removeSign(event.getPlayer(), b.getLocation());
+				} else {
+					event.getPlayer().sendMessage(MessageHandler.getMessage("prefix") + "§cYou have to sneak if you want to delete this survivalgames sign.");
+					event.setCancelled(true);
+				}
+			}
+			
 		}
 	}
 

@@ -58,7 +58,6 @@ public class VotingPhase {
 	public VotingPhase(Game game) {
 		reinitializeDatabase();
 		this.game = game;
-		time = game.getLobbyTime();
 
 	}
 	
@@ -66,7 +65,7 @@ public class VotingPhase {
 		game.setState(GameState.VOTING);
 		chooseRandomArenas();
 		game.setScoreboardPhase(SurvivalGames.getScoreboardManager().getNewScoreboardPhase(GameState.VOTING));
-		
+		time = game.getLobbyTime();
 		start();
 	}
 	
@@ -87,7 +86,7 @@ public class VotingPhase {
 				
 				for(User user : game.getUsers()) {
 					user.getPlayer().setLevel(time);
-					user.getPlayer().setExp(0);
+					user.getPlayer().setExp(Util.getExpPercent((float)time, (float)game.getLobbyTime()));
 				}
 				
 				if(time % 10 == 0 && time > 10) {

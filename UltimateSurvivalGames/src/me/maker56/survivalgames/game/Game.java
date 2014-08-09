@@ -3,10 +3,12 @@ package me.maker56.survivalgames.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.confuser.barapi.BarAPI;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.arena.chest.Chest;
+import me.maker56.survivalgames.barapi.BarAPIManager;
 import me.maker56.survivalgames.chat.JSONMessage;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.events.UserLobbyJoinedEvent;
@@ -252,6 +254,7 @@ public class Game {
 		SurvivalGames.signManager.updateSigns();
 		updateScoreboard();
 		checkForStart();
+		updateBossBarMessage();
 		Bukkit.getPluginManager().callEvent(new UserLobbyJoinedEvent(user, this));
 	}
 	
@@ -278,6 +281,10 @@ public class Game {
 		checkForCancelStart();
 		updateScoreboard();
 		SurvivalGames.signManager.updateSigns();
+		updateBossBarMessage();
+		if(Bukkit.getPluginManager().isPluginEnabled("BarAPI")) {
+			BarAPI.removeBar(user.getPlayer());
+		}
 		Bukkit.getPluginManager().callEvent(new UserLobbyLeftEvent(user.getPlayer(), this));
 	}
 	
@@ -435,6 +442,8 @@ public class Game {
 	
 	public void setCurrentArena(Arena arena) {
 		this.arena = arena;
+		if(arena != null)
+			updateBossBarMessage();
 	}
 	
 	public Arena getCurrentArena() {
@@ -445,6 +454,7 @@ public class Game {
 		this.state = state;
 		if(SurvivalGames.signManager != null)
 			SurvivalGames.signManager.updateSigns();
+		updateBossBarMessage();
 	}
 	
 	public List<User> getUsers() {
@@ -603,6 +613,67 @@ public class Game {
 	
 	public void updateScoreboard(UserState user) {
 		user.getPlayer().setScoreboard(sp.getScoreboard());
+	}
+	
+	// BARAPI
+	
+	private String cBarapi = null;
+	private float cPercentBarapi = 100;
+	
+	public void updateBossBarMessage() {
+		if(Bukkit.getPluginManager().isPluginEnabled("BarAPI")) {
+			GameState state = getState();
+			if(BarAPIManager.messages.containsKey(state)) {
+				
+				String str = BarAPIManager.messages.get(state);
+				
+				str = str.replace("%0%", Integer.valueOf(getRequiredPlayers()).toString());
+				str = str.replace("%1%", Integer.valueOf(getPlayingUsers()).toString());
+				str = str.replace("%2%", Integer.valueOf(getMaximumPlayers()).toString());
+				str = str.replace("%3%", getName());
+				str = str.replace("%5%", getCurrentArena() == null ? "" : getCurrentArena().getName());
+				
+				cBarapi = str;
+				
+				
+				Util.debug("Updated bossbar in game " + getName() + ": " + str);
+				if(str.isEmpty()) {
+					for(User user : getUsers()) {
+						BarAPI.removeBar(user.getPlayer());
+					}
+				} else {
+					for(User user : getUsers()) {
+						BarAPI.setMessage(user.getPlayer(), str, cPercentBarapi);
+					}
+				}
+				
+			} else {
+				if(cBarapi != null) {
+					for(User user : getUsers()) {
+						BarAPI.removeBar(user.getPlayer());
+					}
+					cBarapi = null;
+				}
+			}
+		}
+	}
+	
+	public String getCurrentBossBarMessage() {
+		return cBarapi;
+	}
+	
+	public float getCurrentBossBarPercentage() {
+		return cPercentBarapi;
+	}
+	
+	public void updateBossBar(User user) {
+		if(cBarapi != null && Bukkit.getPluginManager().isPluginEnabled("BarAPI")) {
+			if(cBarapi.isEmpty()) {
+				BarAPI.removeBar(user.getPlayer());
+			} else {
+				BarAPI.setMessage(user.getPlayer(), cBarapi, cPercentBarapi);
+			}	
+		}
 	}
 
 }

@@ -21,7 +21,7 @@ public class Helper {
 	
 	public static void showConfigHelpsite(Player p) {
 		p.sendMessage(MessageHandler.getMessage("prefix") + "Configuration §7§m---§r §6Helpsite");
-		new JSONMessage("§8/§6sg config reload [MESSAGES/SIGNS/DATABASE/CONFIG/CHESTLOOT/SCOREBOARD] §7- §eReloads the specify config!").color(ChatColor.YELLOW).tooltip("Prepare command").suggest("/sg config reload ").send(p);
+		new JSONMessage("§8/§6sg config reload [MESSAGES/SIGNS/DATABASE/CONFIG/CHESTLOOT/SCOREBOARD/BARAPI] §7- §eReloads the specify config!").color(ChatColor.YELLOW).tooltip("Prepare command").suggest("/sg config reload ").send(p);
 		p.sendMessage("");
 		new JSONMessage("§7Need more help? Click here!").tooltip("Click here to open the official bukkit site!").link("http://dev.bukkit.org/bukkit-plugins/ultimatesurvivalgames/").send(p);
 	}
