@@ -74,6 +74,7 @@ public class SurvivalGames extends JavaPlugin {
 		
 		new ConfigLoader().load();
 		DatabaseManager.open();
+		DatabaseManager.load();
 		
 		startUpdateChecker();
 		
@@ -235,6 +236,10 @@ public class SurvivalGames extends JavaPlugin {
 	
 	public static ScoreBoardManager getScoreboardManager() {
 		return scoreBoardManager;
+	}
+	
+	public static SurvivalGames getInstance() {
+		return instance;
 	}
 
 }

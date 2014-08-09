@@ -44,4 +44,34 @@ public class DatabaseManager {
 		run = false;
 		thread = null;
 	}
+	
+	// OTHER STUFF
+	
+	public static void load() {
+		DatabaseThread.addTask(new DatabaseTask("CREATE TABLE IF NOT EXISTS `" + tablePrefix + "players` (" +
+						" `uuid` varchar(36) NOT NULL," +
+						" `lastname` varchar(16) NOT NULL," +
+						" `kills` int(100) default '0'," +
+						" `deaths` int(100) default '0'," +
+						" `kdr` float default '0'," +
+						" `points` int(100) default '0');"));
+		
+		DatabaseThread.addTask(new DatabaseTask("CREATE TABLE IF NOT EXISTS `" + tablePrefix + "games` (" +
+				" `id` bigint(20)," +
+				" `arena` varchar(100) NOT NULL," +
+				" `duration` int(100)," +
+				" `end` datetime," +
+				" `players` int(100)," +
+				" PRIMARY KEY (`id`) );"));
+		
+		DatabaseThread.addTask(new DatabaseTask("CREATE TABLE IF NOT EXISTS `" + tablePrefix + "kills` (" +
+				" `player` varchar(36) NOT NULL," +
+				" `victim` varchar(36) NOT NULL," +
+				" `health` int(100)," +
+				" `time` datetime);"));
+	}
+	
+	public static String getTablePrefix() {
+		return tablePrefix;
+	}
 }
