@@ -22,7 +22,7 @@ public class ConfigLoader {
 	}
 	
 	public static void reloadScoreboard() {
-		FileConfiguration c = new DatabaseLoader("plugins/SurvivalGames", "scoreboard.yml").getFileConfiguration();
+		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "scoreboard.yml").getFileConfiguration();
 		SurvivalGames.scoreboard = c;
 		
 		String path = "Phase.Waiting.";
@@ -96,7 +96,7 @@ public class ConfigLoader {
 	}
 	
 	public static void reloadChests() {
-		FileConfiguration c = new DatabaseLoader("plugins/SurvivalGames", "chestloot.yml").getFileConfiguration();
+		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "chestloot.yml").getFileConfiguration();
 		SurvivalGames.chestloot = c;
 		
 		List<String> lvl1 = new ArrayList<>();
@@ -214,7 +214,7 @@ public class ConfigLoader {
 	}
 	
 	public static void reloadSigns() {
-		FileConfiguration c = new DatabaseLoader("plugins/SurvivalGames", "signs.yml").getFileConfiguration();
+		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "signs.yml").getFileConfiguration();
 		SurvivalGames.signs = c;
 		
 		c.addDefault("Sign.LeftClick.Show current arena", true);
@@ -240,7 +240,7 @@ public class ConfigLoader {
 	}
 	
 	public static void reloadReset() {
-		FileConfiguration c = new DatabaseLoader("plugins/SurvivalGames", "reset.yml").getFileConfiguration();
+		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "reset.yml").getFileConfiguration();
 		SurvivalGames.reset = c;
 		
 		c.options().header("This is the file for the startup reset.\n" +
@@ -256,6 +256,14 @@ public class ConfigLoader {
 		c.addDefault("enable-update-check", true);
 		c.addDefault("use-permissions", true);
 		c.addDefault("broadcast-win", true);
+		
+		c.addDefault("SQL.Type", "SQLITE");
+		c.addDefault("SQL.TablePrefix", "sg_");
+		c.addDefault("SQL.MySQL.Host", "localhost");
+		c.addDefault("SQL.MySQL.Port", 3306);
+		c.addDefault("SQL.MySQL.Database", "database");
+		c.addDefault("SQL.MySQL.Username", "username");
+		c.addDefault("SQL.MySQL.Password", "password");
 		
 		c.addDefault("Lightning.on-death", true);
 		c.addDefault("Lightning.on-few-players", true);
@@ -297,8 +305,6 @@ public class ConfigLoader {
 			c.set("Chest", null);
 		if(c.contains("Chestloot"))
 			c.set("Chestloot", null);
-		
-
 		
 		ArrayList<String> allowedCmds = new ArrayList<>();
 		allowedCmds.add("/sg");
@@ -344,12 +350,12 @@ public class ConfigLoader {
 	}
 	
 	public static void reloadDatabase() {
-		FileConfiguration c = new DatabaseLoader("plugins/SurvivalGames", "database.yml").getFileConfiguration();
+		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "database.yml").getFileConfiguration();
 		SurvivalGames.database = c;
 	}
 	
 	public static void reloadMessages() {
-		FileConfiguration c = new DatabaseLoader("plugins/SurvivalGames", "messages.yml").getFileConfiguration();
+		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "messages.yml").getFileConfiguration();
 		SurvivalGames.messages = c;
 		
 		c.addDefault("prefix", "&7[&3SG&7] &6");

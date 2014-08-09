@@ -9,6 +9,7 @@ import me.maker56.survivalgames.commands.CommandSG;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
 import me.maker56.survivalgames.database.ConfigLoader;
+import me.maker56.survivalgames.database.sql.DatabaseManager;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameManager;
 import me.maker56.survivalgames.listener.PlayerListener;
@@ -55,6 +56,7 @@ public class SurvivalGames extends JavaPlugin {
 				game.kickall();
 			}
 		}
+		DatabaseManager.close();
 	}
 	
 	public void onEnable() {
@@ -70,6 +72,7 @@ public class SurvivalGames extends JavaPlugin {
 		version += getDescription().getVersion();
 		
 		new ConfigLoader().load();
+		DatabaseManager.open();
 		
 		startUpdateChecker();
 		
