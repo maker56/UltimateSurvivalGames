@@ -358,7 +358,12 @@ public class ConfigLoader {
 		c.addDefault("Spectating.Player-Navigator.Item", Material.COMPASS + " name:&ePlayer Navigator lore:&7Rightclick_to_open//&7the_player_navigator!");
 		c.addDefault("Spectating.Player-Navigator.Inventory-Title", "Click on a item to spectate!");
 		
-		c.addDefault("Separating.Chat.Enabled", true);
+		if(c.contains("Separating.Chat.Enabled"))
+			c.set("Separating.Chat.Enabled", null);
+		
+		
+		c.addDefault("Chat.Enabled", true);
+		c.addDefault("Chat.Design", "{STATE}{PREFIX}{PLAYERNAME}{SUFFIX}{MESSAGE}");
 		
 		List<String> joinfull = new ArrayList<>();
 		joinfull.add("sg.donator.vip.iron");

@@ -15,9 +15,7 @@ public enum Permission {
 	
 	JOIN("sg.join"),
 	
-	SPECTATE("sg.spectate"),
-	
-	READCHAT("sg.readchat");
+	SPECTATE("sg.spectate");
 	
 	private final String permission;
 	

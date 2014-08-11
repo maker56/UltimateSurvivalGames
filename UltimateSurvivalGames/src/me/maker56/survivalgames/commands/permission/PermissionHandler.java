@@ -23,20 +23,12 @@ public class PermissionHandler {
 	
 	public static boolean hasPermission(CommandSender sender, Permission permission) {
 		if(usePermission) {
-			if(sender.hasPermission(permission.getPermission())) {
-				return true;
-			} else {
-				return false;
-			}
+			return sender.hasPermission(permission.getPermission());
 		} else {
 			if(sender.isOp()) {
 				return true;
 			} else {
-				if(permission == Permission.JOIN || permission == Permission.LIST || permission == Permission.SPECTATE) {
-					return true;
-				} else {
-					return false;
-				}
+				return permission == Permission.JOIN || permission == Permission.LIST || permission == Permission.SPECTATE;
 			}
 		}
 	}

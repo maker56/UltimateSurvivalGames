@@ -13,6 +13,7 @@ import me.maker56.survivalgames.database.ConfigLoader;
 import me.maker56.survivalgames.database.sql.DatabaseManager;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameManager;
+import me.maker56.survivalgames.listener.ChatListener;
 import me.maker56.survivalgames.listener.PlayerListener;
 import me.maker56.survivalgames.listener.ResetListener;
 import me.maker56.survivalgames.listener.SelectionListener;
@@ -105,6 +106,7 @@ public class SurvivalGames extends JavaPlugin {
 		pm.registerEvents(new ResetListener(), this);
 		pm.registerEvents(new UpdateListener(), this);
 		pm.registerEvents(new SpectatorListener(), this);
+		pm.registerEvents(new ChatListener(), this);
 		
 		try {
 			new Metrics(this).start();

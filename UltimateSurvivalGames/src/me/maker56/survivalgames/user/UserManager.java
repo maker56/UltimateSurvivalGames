@@ -226,6 +226,10 @@ public class UserManager {
 		return getSpectator(name) != null;
 	}
 	
+	public SpectatorUser getSpectator(Player p) {
+		return getSpectator(p.getName());
+	}
+	
 	public SpectatorUser getSpectator(String name) {
 		for(Game game : gm.getGames()) {
 			for(SpectatorUser su : game.getSpecators()) {

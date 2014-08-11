@@ -197,6 +197,10 @@ public class Game {
 		}
 	}
 	
+	public void sendSpectators(JSONMessage msg) {
+		msg.sendToSpectators(spectators);
+	}
+	
 	public List<SpectatorUser> getSpecators() {
 		return spectators;
 	}

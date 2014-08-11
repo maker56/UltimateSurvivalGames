@@ -10,7 +10,7 @@ import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameManager;
 import me.maker56.survivalgames.game.phases.VotingPhase;
 import me.maker56.survivalgames.listener.PlayerListener;
-import me.maker56.survivalgames.listener.SeparatingListener;
+import me.maker56.survivalgames.listener.ChatListener;
 import me.maker56.survivalgames.scoreboard.ScoreBoardManager;
 
 public class ConfigReloader {
@@ -22,7 +22,7 @@ public class ConfigReloader {
 		Game.reinitializeDatabase();
         PermissionHandler.reinitializeDatabase();
         PlayerListener.reinitializeDatabase();
-        SeparatingListener.reinitializeConfig();
+        ChatListener.reinitializeConfig();
 	}
 	
 	public static void reloadDatabase() {

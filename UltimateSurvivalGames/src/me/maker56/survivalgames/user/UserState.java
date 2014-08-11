@@ -184,5 +184,7 @@ public abstract class UserState {
 	public void sendMessage(String message) {
 		player.sendMessage(message);
 	}
+	
+	public abstract boolean isSpectator();
 
 }

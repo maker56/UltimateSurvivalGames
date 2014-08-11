@@ -10,4 +10,9 @@ public class SpectatorUser extends UserState {
 		super(p, game);
 	}
 
+	@Override
+	public boolean isSpectator() {
+		return true;
+	}
+
 }

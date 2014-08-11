@@ -35,4 +35,9 @@ public class User extends UserState {
 		return currentChest != null;
 	}
 
+	@Override
+	public boolean isSpectator() {
+		return false;
+	}
+
 }
