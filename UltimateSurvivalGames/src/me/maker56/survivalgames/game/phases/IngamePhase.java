@@ -128,6 +128,9 @@ public class IngamePhase {
 			if(killer == null) {
 				game.sendMessage(MessageHandler.getMessage("game-player-die-damage").replace("%0%", user.getName()));
 			} else {
+				double killerRawHealth = Math.round(((int) ((Damageable)killer.getPlayer()).getHealth())) / 10d;
+				double killerHealth = killerRawHealth / 2;
+				user.sendMessage("game-tribute-death-hearts-left").replace("%0%", killer.getName()).replace("%1%", killerHealth);
 				game.sendMessage(MessageHandler.getMessage("game-player-die-killer").replace("%0%", user.getName()).replace("%1%", killer.getName()));
 				double killMoney = game.getCurrentArena().getMoneyOnKill();
 				if(killMoney > 0 && SurvivalGames.econ != null) {
