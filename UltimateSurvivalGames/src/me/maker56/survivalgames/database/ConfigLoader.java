@@ -430,6 +430,7 @@ public class ConfigLoader {
 		
 		c.addDefault("game-player-die-killer", "%0% was killed by %1%!");
 		c.addDefault("game-player-die-damage", "%0% has died and gone from us!");
+		c.addDefault("game-tribute-death-hearts-left", "Your killer (&b%0%%6) had &b%1%&6 hearts left!");
 		c.addDefault("game-player-left", "%0% left the lobby!");
 		c.addDefault("game-remainplayers", "&b%0%&6 tributes remain.");
 		
