@@ -30,9 +30,9 @@ public class ConfigLoader {
 		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "barapi.yml").getFileConfiguration();
 		SurvivalGames.barapi = c;
 		
-		c.options().header("This configuration is for the barapi support.\n" +
-				"This function works only if the plugin barapi is installed! (http://dev.bukkit.org/bukkit-plugins/bar-api/)\n" +
-				"You can disable the barapi for one gamestate if you set it blank.\n" +
+		c.options().header("This configuration is for the BarAPI support.\n" +
+				"This function works only if the plugin \"BarAPI\" is installed! (http://dev.bukkit.org/bukkit-plugins/bar-api/)\n" +
+				"You can disable the BarAPI for one gamestate if you set it blank.\n" +
 				"\n" +
 				"### VARIABLES ###\n" +
 				"%0% - required players to start\n" +
@@ -87,7 +87,7 @@ public class ConfigLoader {
 		c.addDefault(path + "Title", "&b&lIngame");
 		content = new ArrayList<>();
 		content.add("&e&lAlive&7://%playing%");
-		content.add("&c&lDeath&7://%death%");
+		content.add("&c&lDead&7://%death%");
 		c.addDefault(path + "Scores", content);
 		
 		path = "Phase.Deathmatch.";
@@ -211,8 +211,8 @@ public class ConfigLoader {
 				"\n" +
 				"## How does this work? ##\n" +
 				"The chestloot is splitted into 5 lists. You can add unlimited items to each list.\n" +
-				"In one chest can spawn up to 8 itemstacks. For each itemstack, the plugin choose\n" +
-				"one list. The following lists under this text have different spawn changes:\n" +
+				"In one chest can spawn up to 8 different items. For each itemstack, the plugin chooses from\n" +
+				"one list. Each list has different chances for items spawning in that list:\n" +
 				"\n" +
 				"Level 1: 40 %\n" +
 				"Level 2: 30 %\n" +
@@ -220,7 +220,7 @@ public class ConfigLoader {
 				"Level 4: 10 %\n" +
 				"Level 5: 5 %\n" +
 				"\n" +
-				"If the plugin has choosed a list for an itemstack, it takes a item random from the list.\n" +
+				"If the plugin has chooses a list for an itemstack, it takes a item random from the list.\n" +
 				"\n" +
 				"## How can I modify the items? ##\n" +
 				"You can add or remove items from all lists. But at least one item has to be on each list.\n" +
@@ -276,7 +276,7 @@ public class ConfigLoader {
 		SurvivalGames.reset = c;
 		
 		c.options().header("This is the file for the startup reset.\n" +
-				"If the server shutdown, reload or crash in a running game, the server reset the arena after enabling survivalgames.");
+				"If the server shuts down, reloads or crashes during a running game, the server will reset the arena after enabling the plugin on startup.");
 		c.options().copyDefaults(true);
 		SurvivalGames.saveReset();
 	}
@@ -421,32 +421,32 @@ public class ConfigLoader {
 		
 		c.addDefault("game-waiting-cooldown-big", "The voting ends in %0% seconds");
 		c.addDefault("game-waiting-cooldown-little", "The voting ends in %0%");
-		c.addDefault("game-waiting-end", "The waiting phase has been ended!");
+		c.addDefault("game-waiting-end", "The voting phase has been ended!");
 		
-		c.addDefault("game-deathmatch-cooldown", "The final deathmatch starts in &b%0%");
-		c.addDefault("game-deathmatch-start", "Let's start the final deathmatch!");
-		c.addDefault("game-deathmatch-timeout", "The deathmatch ends automaticly in %0% seconds!");
-		c.addDefault("game-deathmatch-timeout-warning", "When the deathmatch ends automaticly, the winner will be choosed random!");
+		c.addDefault("game-deathmatch-cooldown", "The deathmatch starts in &b%0%");
+		c.addDefault("game-deathmatch-start", "The deathmatch has begun!");
+		c.addDefault("game-deathmatch-timeout", "The deathmatch ends automatically in %0% seconds!");
+		c.addDefault("game-deathmatch-timeout-warning", "When the deathmatch ends automatically, the winner will be chosen at random!");
 		
 		c.addDefault("game-player-die-killer", "%0% was killed by %1%!");
-		c.addDefault("game-player-die-damage", "%0% has died and gone from us!");
+		c.addDefault("game-player-die-damage", "%0% has died from an unknown cause.");
 		c.addDefault("game-player-left", "%0% left the lobby!");
 		c.addDefault("game-remainplayers", "&b%0%&6 tributes remain.");
 		
-		c.addDefault("game-grace-period", "&bYou have %0% seconds grace-period!");
-		c.addDefault("game-grace-period-ended", "&bThe grace-period has been ended!");
+		c.addDefault("game-grace-period", "&bYou have %0% a second grace period!");
+		c.addDefault("game-grace-period-ended", "&bThe grace period has been ended!");
 		
 		c.addDefault("game-voting-cooldown", "The voting ends in &b%0%");
 		c.addDefault("game-voting-end", "The voting phrase has been ended!");
 		c.addDefault("game-no-vote", "&cYou can only vote in the voting phase of the game!");
 		c.addDefault("game-bad-vote", "&cThis isn't a valid vote ID!");
 		c.addDefault("game-already-vote", "&cYou've already voted for an arena!");
-		c.addDefault("game-no-voting-enabled", "&cSorry, voting isn't enabled! The arena will choosed random!");
+		c.addDefault("game-no-voting-enabled", "&cSorry, voting isn't enabled! The arena will chosen at random!");
 		c.addDefault("game-success-vote", "You've voted successfully for arena &b%0%&6!");
 		c.addDefault("game-extra-vote", "You've voted with &b%0% &6votes!");
-		c.addDefault("game-start-canceled", "Not enough players are in this lobby. Cancel Timer...");
-		c.addDefault("game-start", "The round begins, &b%0% &6players are playing! &bGood luck&6!");
-		c.addDefault("game-chestrefill", "It's midnight! All chests are refilled!");
+		c.addDefault("game-start-canceled", "Not enough players are in this lobby. Resetting countdown...");
+		c.addDefault("game-start", "There are &b%0%&6 tributes playing! May the odds be ever in your favor!");
+		c.addDefault("game-chestrefill", "The chests have been restocked!");
 		c.addDefault("game-win", "%0% won the SurvivalGames in arena %1% in lobby %2%!");
 		c.addDefault("game-win-winner-message", "&bCongratulations!&6 You won the SurvivalGames in arena &b%0%&6!");
 		c.addDefault("game-end", "&cThe round ends in %0%!");
@@ -467,7 +467,7 @@ public class ConfigLoader {
 		c.addDefault("game-created", "You've created the lobby %0% successfully!");
 		c.addDefault("game-spawn-set", "You've set the spawn for lobby %0% successfully!");
 		c.addDefault("game-set-spawn", "To set the spawn of this lobby, type /sg lobby setspawn %0%");
-		c.addDefault("game-not-found", "&cThe lobby %0% does not exists!");
+		c.addDefault("game-not-found", "&cThe lobby %0% does not exist!");
 		c.addDefault("game-must-enter", "&cYou must enter a name: %0%");
 		c.addDefault("game-vote", "Vote for an arena: &b/sg vote <ID>");
 		c.addDefault("forbidden-command", "&cYou can't execute this command in SurvivalGames!");
@@ -485,8 +485,8 @@ public class ConfigLoader {
 		c.addDefault("arena-spawn-notfound", "&cSpawn %0% does not exist!");
 		c.addDefault("arena-deathmatch-changed", "You've changed the deathmatch: %0%!");
 		
-		c.addDefault("arena-money-win", "&eYou've received &a%0% &emoney for winning survival games!");
-		c.addDefault("arena-money-kill", "&eYou've received &a%0% &emoney for killing %1%!");
+		c.addDefault("arena-money-win", "&eYou've received &a$%0% &e for winning the SurvivalGames!");
+		c.addDefault("arena-money-kill", "&eYou've received &a$%0% &e for killing %1%!");
 		
 		c.addDefault("arena-tools", "Here is the selection tool. Left/Rightclick to set two positions!");
 		c.addDefault("arena-tools-worldedit", "Please use the WorldEdit Wand Tool to set two positions!");
