@@ -21,110 +21,7 @@ public class ConfigLoader {
 		reloadChests();
 		reloadScoreboard();
 		reloadBarAPI();
-	}
-	
-	public static void reloadBarAPI() {
-		if(!Bukkit.getPluginManager().isPluginEnabled("BarAPI"))
-			return;
-		System.out.println("[SurvivalGames] BarAPI found!");
-		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "barapi.yml").getFileConfiguration();
-		SurvivalGames.barapi = c;
-		
-		c.options().header("This configuration is for the barapi support.\n" +
-				"This function works only if the plugin barapi is installed! (http://dev.bukkit.org/bukkit-plugins/bar-api/)\n" +
-				"You can disable the barapi for one gamestate if you set it blank.\n" +
-				"\n" +
-				"### VARIABLES ###\n" +
-				"%0% - required players to start\n" +
-				"%1% - current amount of playing players\n" +
-				"%2% - maximum limit of players\n" +
-				"%3% - name of the lobby\n" +
-				"%4% - name of the current arena (return a empty text if no arena is selected)");
-	
-		c.addDefault("State.WAITING", "&eWaiting for &b%0% &eplayers to start the game");
-		c.addDefault("State.VOTING", "&eYou're in lobby &b%3%&e!");
-		c.addDefault("State.COOLDOWN", "&ePrepare for start! &b%1% &etributes are playing!");
-		c.addDefault("State.INGAME", "");
-		c.addDefault("State.DEATHMATCH", "");
-		
-		c.addDefault("Enabled", true);
-		
-		c.options().copyDefaults(true);
-		SurvivalGames.saveBarAPI();
-	}
-	
-	public static void reloadScoreboard() {
-		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "scoreboard.yml").getFileConfiguration();
-		SurvivalGames.scoreboard = c;
-		
-		String path = "Phase.Waiting.";
-		c.addDefault(path + "Enabled", true);
-		c.addDefault(path + "Title", "&b&lWaiting for players");
-		List<String> content = new ArrayList<>();
-		content.add("&eRequired players to start&7://%requiredplayers%");
-		content.add("&eCurrent player amount&7://%playing%");
-		c.addDefault(path + "Scores", content);
-		
-		path = "Phase.Voting.";
-		c.addDefault(path + "Enabled", true);
-		c.addDefault(path + "Title", "&b&lArena Voting");
-		content = new ArrayList<>();
-		content.add("&e%arena%//%votecount%");
-		content.add("&e%arena%//%votecount%");
-		content.add("&e%arena%//%votecount%");
-		c.addDefault(path + "Scores", content);
-		
-		path = "Phase.Cooldown.";
-		c.addDefault(path + "Enabled", true);
-		c.addDefault(path + "Title", "&b&lCooldown");
-		content = new ArrayList<>();
-		content.add("&eTime remaining&7://%time%");
-		content.add("&eTributes&7://%playing%");
-		c.addDefault(path + "Scores", content);
-		
-		path = "Phase.Ingame.";
-		c.addDefault(path + "Enabled", true);
-		c.addDefault(path + "Title", "&b&lIngame");
-		content = new ArrayList<>();
-		content.add("&e&lAlive&7://%playing%");
-		content.add("&c&lDeath&7://%death%");
-		c.addDefault(path + "Scores", content);
-		
-		path = "Phase.Deathmatch.";
-		c.addDefault(path + "Enabled", true);
-		c.addDefault(path + "Title", "&b&lDeathmatch");
-		content = new ArrayList<>();
-		content.add("&eTime remaining&7://%time%");
-		c.addDefault(path + "Scores", content);
-		
-		c.options().header(
-				"##### UltimateSurvivalGames Scoreboard Configuration #####\n" +
-				"\n" +
-				"How does this work?\n" +
-				"For each game phase (WAITING,VOTING,COOLDOWN,INGAME and DEATHMATHCH) is a scoreboard design.\n" +
-				"If you set \"Enabled\" for a phase to false, no scoreboard will shown!\n" +
-				"The title can be maximal 32 charakters long and cannot contain variables.\n" +
-				"\n" +
-				"In the \"Scores\" part, you can modify the content of the scoreboard. \"//\" splits the line in name and score.\n" +
-				"The left part is the name which can be maximal 48 charalters long.\n" +
-				"The right part is the amount of a score. Here you have to write the variables.\n" +
-				"\n" +
-				"What are the variables?\n" +
-				"You can use many variables. Here is a list:\n" +
-				"\n" +
-				"  %playing% - The current amount of players in a lobby!\n" +
-				"  %requiredplayers% - The amount of required players to start a game automaticly!\n" +
-				"  %death% - The amount of deaths in a round!\n" +
-				"  %spectators% - The amount of spectators in a round!\n" +
-				"  %time% - The remaining time of a game phase!\n" +
-				"  %votecount% - The amount of votes of an arena (Only works in the voting phase)\n" +
-	            "  %arena% - The name of the arena (Only works in the score name)\n" +
-	            "\n" +
-	            "More help on http://dev.bukkit.org/bukkit-plugins/ultimatesurvivalgames/\n");
-		
-		
-		c.options().copyDefaults(true);
-		SurvivalGames.saveScoreboard();
+		reloadKits();
 	}
 	
 	public static void reloadChests() {
@@ -211,8 +108,8 @@ public class ConfigLoader {
 				"\n" +
 				"## How does this work? ##\n" +
 				"The chestloot is splitted into 5 lists. You can add unlimited items to each list.\n" +
-				"In one chest can spawn up to 8 itemstacks. For each itemstack, the plugin choose\n" +
-				"one list. The following lists under this text have different spawn changes:\n" +
+				"In one chest can spawn up to 8 different items. For each itemstack, the plugin chooses from\n" +
+				"one list. Each list has different chances for items spawning in that list:\n" +
 				"\n" +
 				"Level 1: 40 %\n" +
 				"Level 2: 30 %\n" +
@@ -220,7 +117,7 @@ public class ConfigLoader {
 				"Level 4: 10 %\n" +
 				"Level 5: 5 %\n" +
 				"\n" +
-				"If the plugin has choosed a list for an itemstack, it takes a item random from the list.\n" +
+				"If the plugin has choosed a list for an itemstack, it takes an item random from the list.\n" +
 				"\n" +
 				"## How can I modify the items? ##\n" +
 				"You can add or remove items from all lists. But at least one item has to be on each list.\n" +
@@ -244,6 +141,124 @@ public class ConfigLoader {
 		c.options().copyDefaults(true);
 		SurvivalGames.saveChests();
 	}
+	
+	public static void reloadKits() {
+		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "kits.yml").getFileConfiguration();
+		SurvivalGames.kits = c;
+		
+		c.options().header("##### UltimateSurvivalGames Kit Configuration ####");
+		
+		c.addDefault("Enabled", true);
+		
+		SurvivalGames.saveKits();
+	}
+	
+	public static void reloadBarAPI() {
+		if(!Bukkit.getPluginManager().isPluginEnabled("BarAPI"))
+			return;
+		System.out.println("[SurvivalGames] BarAPI found!");
+		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "barapi.yml").getFileConfiguration();
+		SurvivalGames.barapi = c;
+		
+		c.options().header("This configuration is for the BarAPI support.\n" +
+				"This function works only if the plugin \"BarAPI\" is installed! (http://dev.bukkit.org/bukkit-plugins/bar-api/)\n" +
+				"You can disable the BarAPI for one gamestate if you set it blank.\n" +
+				"\n" +
+				"### VARIABLES ###\n" +
+				"%0% - required players to start\n" +
+				"%1% - current amount of playing players\n" +
+				"%2% - maximum limit of players\n" +
+				"%3% - name of the lobby\n" +
+				"%4% - name of the current arena (return a empty text if no arena is selected)" +
+				"%5% - time left in seconds (return a empty text if no timer is running)");
+	
+		c.addDefault("State.WAITING", "&eWaiting for &b%0% &eplayers to start the game");
+		c.addDefault("State.VOTING", "&eYou're in lobby &b%3%&e! The voting ends in &b%5%&e seconds");
+		c.addDefault("State.COOLDOWN", "&ePrepare for start! &b%1% &etributes are playing");
+		c.addDefault("State.INGAME", "");
+		c.addDefault("State.DEATHMATCH", "&eThe deathmatch ends in &b%5%&e seconds");
+		
+		c.addDefault("Enabled", true);
+		
+		c.options().copyDefaults(true);
+		SurvivalGames.saveBarAPI();
+	}
+	
+	public static void reloadScoreboard() {
+		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "scoreboard.yml").getFileConfiguration();
+		SurvivalGames.scoreboard = c;
+		
+		String path = "Phase.Waiting.";
+		c.addDefault(path + "Enabled", true);
+		c.addDefault(path + "Title", "&b&lWaiting for players");
+		List<String> content = new ArrayList<>();
+		content.add("&eRequired players to start&7://%requiredplayers%");
+		content.add("&eCurrent player amount&7://%playing%");
+		c.addDefault(path + "Scores", content);
+		
+		path = "Phase.Voting.";
+		c.addDefault(path + "Enabled", true);
+		c.addDefault(path + "Title", "&b&lArena Voting");
+		content = new ArrayList<>();
+		content.add("&e%arena%//%votecount%");
+		content.add("&e%arena%//%votecount%");
+		content.add("&e%arena%//%votecount%");
+		c.addDefault(path + "Scores", content);
+		
+		path = "Phase.Cooldown.";
+		c.addDefault(path + "Enabled", true);
+		c.addDefault(path + "Title", "&b&lCooldown");
+		content = new ArrayList<>();
+		content.add("&eTime remaining&7://%time%");
+		content.add("&eTributes&7://%playing%");
+		c.addDefault(path + "Scores", content);
+		
+		path = "Phase.Ingame.";
+		c.addDefault(path + "Enabled", true);
+		c.addDefault(path + "Title", "&b&lIngame");
+		content = new ArrayList<>();
+		content.add("&e&lAlive&7://%playing%");
+		content.add("&c&lDead&7://%death%");
+		c.addDefault(path + "Scores", content);
+		
+		path = "Phase.Deathmatch.";
+		c.addDefault(path + "Enabled", true);
+		c.addDefault(path + "Title", "&b&lDeathmatch");
+		content = new ArrayList<>();
+		content.add("&eTime remaining&7://%time%");
+		c.addDefault(path + "Scores", content);
+		
+		c.options().header(
+				"##### UltimateSurvivalGames Scoreboard Configuration #####\n" +
+				"\n" +
+				"How does this work?\n" +
+				"For each game phase (WAITING,VOTING,COOLDOWN,INGAME and DEATHMATHCH) is a scoreboard design.\n" +
+				"If you set \"Enabled\" for a phase to false, no scoreboard will shown!\n" +
+				"The title can be maximal 32 charakters long and cannot contain variables.\n" +
+				"\n" +
+				"In the \"Scores\" part, you can modify the content of the scoreboard. \"//\" splits the line in name and score.\n" +
+				"The left part is the name which can be maximal 48 charalters long.\n" +
+				"The right part is the amount of a score. Here you have to write the variables.\n" +
+				"\n" +
+				"What are the variables?\n" +
+				"You can use many variables. Here is a list:\n" +
+				"\n" +
+				"  %playing% - The current amount of players in a lobby!\n" +
+				"  %requiredplayers% - The amount of required players to start a game automaticly!\n" +
+				"  %death% - The amount of deaths in a round!\n" +
+				"  %spectators% - The amount of spectators in a round!\n" +
+				"  %time% - The remaining time of a game phase!\n" +
+				"  %votecount% - The amount of votes of an arena (Only works in the voting phase)\n" +
+	            "  %arena% - The name of the arena (Only works in the score name)\n" +
+	            "\n" +
+	            "More help on http://dev.bukkit.org/bukkit-plugins/ultimatesurvivalgames/\n");
+		
+		
+		c.options().copyDefaults(true);
+		SurvivalGames.saveScoreboard();
+	}
+	
+
 	
 	public static void reloadSigns() {
 		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "signs.yml").getFileConfiguration();
@@ -276,7 +291,7 @@ public class ConfigLoader {
 		SurvivalGames.reset = c;
 		
 		c.options().header("This is the file for the startup reset.\n" +
-				"If the server shutdown, reload or crash in a running game, the server reset the arena after enabling survivalgames.");
+				"If the server shuts down, reloads or crashes during a running game, the server will reset the arena after enabling the plugin on startup.");
 		c.options().copyDefaults(true);
 		SurvivalGames.saveReset();
 	}
@@ -364,6 +379,7 @@ public class ConfigLoader {
 		
 		c.addDefault("Chat.Enabled", true);
 		c.addDefault("Chat.Design", "{STATE}{PREFIX}{PLAYERNAME}{SUFFIX}{MESSAGE}");
+		c.addDefault("Chat.Spectator-State", "&8[&4✖&8] &r");
 		
 		List<String> joinfull = new ArrayList<>();
 		joinfull.add("sg.donator.vip.iron");
@@ -492,6 +508,17 @@ public class ConfigLoader {
 		c.addDefault("arena-tools-worldedit", "Please use the WorldEdit Wand Tool to set two positions!");
 		
 		c.addDefault("config-error-name", "&cPlease enter a valid configuration name: %0%");
+		
+		c.addDefault("stats-player-not-found", "&cThe player %0% does not exist.");
+		c.addDefault("stats-player-not-loaded", "&cThe statistics aren't loaded for player %0%");
+		c.addDefault("stats-header", "Statistics for &b%0%&7:");
+		c.addDefault("stats-kills", "   &eKills&7: &b%0%");
+		c.addDefault("stats-deaths", "   &eDeaths&7: &b%0%");
+		c.addDefault("stats-kdr", "   &eKDR&7: &b%0%");
+		c.addDefault("stats-points", "   &ePoints&7: &b%0%");
+		c.addDefault("stats-wins", "   &eGames won&7: &b%0%");
+		c.addDefault("stats-played", "   &eGames played&7: &b%0%");
+		c.addDefault("stats-footer", "&7&m-----------------------------------------------");
 		
 		c.options().copyDefaults(true);
 		SurvivalGames.saveMessages();

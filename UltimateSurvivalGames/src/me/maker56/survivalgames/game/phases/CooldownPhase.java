@@ -84,6 +84,7 @@ public class CooldownPhase {
 				}
 				
 				game.updateScoreboard();
+				game.updateBossBarMessage();
 				time--;
 			}
 		}, 0L, 20L);

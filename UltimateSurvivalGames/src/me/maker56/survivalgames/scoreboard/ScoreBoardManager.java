@@ -37,7 +37,7 @@ public class ScoreBoardManager {
 					ScoreboardPhase sp = new ScoreboardPhase(title, scores);
 					phases.put(state, sp);
 				} catch(Exception e) {
-					System.err.println("[SurvivalGames] Cannot load Scoreboard phase " + key + " - Mabye this is the reason: " + e.toString());
+					System.err.println("[SurvivalGames] Can't load scoreboard phase " + key + " - Mabye this is the reason: " + e.toString());
 				}
 
 			}

@@ -12,7 +12,7 @@ public class SQLite implements DatabaseCore {
 
 	private Connection connection;
 	private String dbLocation;
-	private String dbName = "playerdatabase";
+	private String dbName = "database";
 	private File file;
 	
 	protected SQLite(String loc) {

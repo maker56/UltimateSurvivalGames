@@ -37,7 +37,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 public class SurvivalGames extends JavaPlugin {
 	
 	public static SurvivalGames instance;
-	public static FileConfiguration messages, database, signs, reset, chestloot, scoreboard, barapi;
+	public static FileConfiguration messages, database, signs, reset, chestloot, scoreboard, barapi, kits;
 	
 	public static ArenaManager arenaManager;
 	public static GameManager gameManager;
@@ -200,6 +200,14 @@ public class SurvivalGames extends JavaPlugin {
 		try {
 			barapi.save("plugins/SurvivalGames/barapi.yml");
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void saveKits() {
+		try {
+			kits.save("plugins/SurvivalGames/kits.yml");
+		} catch(IOException e) {
 			e.printStackTrace();
 		}
 	}

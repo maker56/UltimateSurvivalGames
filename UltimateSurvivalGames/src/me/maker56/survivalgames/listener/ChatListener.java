@@ -3,6 +3,7 @@ package me.maker56.survivalgames.listener;
 import java.util.Iterator;
 
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.chat.JSONMessage;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.user.UserManager;
 import me.maker56.survivalgames.user.UserState;
@@ -23,7 +24,7 @@ public class ChatListener implements Listener {
 
 	private UserManager um = SurvivalGames.getUserManager();
 	private static boolean chat, pex;
-	private static String design;
+	private static String design, specPrefix;
 	
 	public ChatListener() {
 		reinitializeConfig();
@@ -33,6 +34,7 @@ public class ChatListener implements Listener {
 		FileConfiguration config = SurvivalGames.instance.getConfig();
 		chat = config.getBoolean("Chat.Enabled");
 		design = ChatColor.translateAlternateColorCodes('&', config.getString("Chat.Design"));
+		specPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("Chat.Spectator-State"));
 		pex = Bukkit.getPluginManager().isPluginEnabled("PermissionsEx");
 	}
 
@@ -49,22 +51,25 @@ public class ChatListener implements Listener {
 			if(u != null) {
 				String format = design;
 				String[] formats = getFormats(u.getPlayer());
-				format = format.replace("{STATE}", u.isSpectator() ? "§8[§4✖§8] §r" : "");
+				format = format.replace("{STATE}", u.isSpectator() ? specPrefix : "");
 				format = format.replace("{PREFIX}", formats[0]);
 				format = format.replace("{PLAYERNAME}", u.getName());
 				format = format.replace("{SUFFIX}", formats[1]);
 				format = format.replace("{MESSAGE}", event.getMessage());
 				
+				System.out.println(ChatColor.stripColor(format));
+				JSONMessage msg = new JSONMessage(format)
+				.tooltip("Click to show " + u.getName() + (u.getName().toLowerCase().endsWith("s") ? "" : "'s") + " statistics")
+				.command("/sg stats " + u.getName());
+				
 				event.setCancelled(true);
 				Game g = u.getGame();
 				
 				if(u.isSpectator()) {
-					g.sendSpectators(format);
+					g.sendSpectators(msg);
 				} else {
-					g.sendMessage(format);
+					g.sendMessage(msg);
 				}
-				
-				
 			} else {
 				for(Iterator<Player> i = event.getRecipients().iterator(); i.hasNext();) {
 					Player p = i.next();

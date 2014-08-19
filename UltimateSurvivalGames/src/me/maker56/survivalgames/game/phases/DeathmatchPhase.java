@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 
 public class DeathmatchPhase {
 	
-	private int time = 600;
+	private int time = 600, starttime = time;
 	private BukkitTask task;
 	private Game game;
 	
@@ -74,6 +74,8 @@ public class DeathmatchPhase {
 						users.get(0).getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 10000, 3));
 					}
 				}
+				
+				game.updateBossBarMessage();
 				game.updateScoreboard();
 				time--;
 			}
@@ -88,6 +90,10 @@ public class DeathmatchPhase {
 	public void cancelTask() {
 		if(task != null)
 			task.cancel();
+	}
+	
+	public int getStartTime() {
+		return starttime;
 	}
 
 }

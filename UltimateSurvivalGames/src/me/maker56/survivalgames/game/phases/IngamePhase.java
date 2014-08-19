@@ -1,11 +1,16 @@
 package me.maker56.survivalgames.game.phases;
 
+import java.sql.Date;
+
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.arena.chest.Chest;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.Permission;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
+import me.maker56.survivalgames.database.sql.DatabaseManager;
+import me.maker56.survivalgames.database.sql.DatabaseTask;
+import me.maker56.survivalgames.database.sql.DatabaseThread;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
 import me.maker56.survivalgames.user.User;
@@ -15,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -37,6 +43,11 @@ public class IngamePhase {
 	public boolean grace = false;
 	private int period; 
 	
+	// GAME STATISTIC
+	private long start = System.currentTimeMillis();
+	private int players;
+	// GAME STATISTIC END
+	
 	private BukkitTask deathmatch, chestrefill, gracetask;
 	
 	public IngamePhase(Game game) {
@@ -55,6 +66,7 @@ public class IngamePhase {
 		game.sendMessage(MessageHandler.getMessage("game-start").replace("%0%", Integer.valueOf(game.getPlayingUsers()).toString()));
 		running = true;
 		game.redefinePlayerNavigatorInventory();
+		players = game.getPlayingUsers();
 		
 		game.getCurrentArena().getMinimumLocation().getWorld().setTime(0);
 		
@@ -113,6 +125,7 @@ public class IngamePhase {
 						return;
 					}
 				}
+				game.updateBossBarMessage();
 				game.updateScoreboard();
 				time--;
 			}
@@ -122,18 +135,33 @@ public class IngamePhase {
 	public void killUser(User user, User killer, boolean leave, boolean spectate) {
 		int remain = game.getUsers().size() - 1;
 		
+		// STATISTIC
+		user.getStatistics().addPlayed();
+		user.getStatistics().addDeath();
+		
 		if(leave) {
 			game.sendMessage(MessageHandler.getMessage("game-player-left").replace("%0%", user.getName()));
 		} else {
 			if(killer == null) {
 				game.sendMessage(MessageHandler.getMessage("game-player-die-damage").replace("%0%", user.getName()));
 			} else {
+				// STATISTIC
+				killer.getStatistics().addKill();
 				game.sendMessage(MessageHandler.getMessage("game-player-die-killer").replace("%0%", user.getName()).replace("%1%", killer.getName()));
 				double killMoney = game.getCurrentArena().getMoneyOnKill();
 				if(killMoney > 0 && SurvivalGames.econ != null) {
 					SurvivalGames.econ.depositPlayer(killer.getName(), killMoney);
 					killer.sendMessage(MessageHandler.getMessage("arena-money-kill").replace("%0%", Double.valueOf(killMoney).toString()).replace("%1%", user.getName()));
 				}
+				
+				// KILL STATISTIC
+				DatabaseThread.addTask(new DatabaseTask("INSERT INTO `" + DatabaseManager.tablePrefix + "kills` " +
+						"(`player`, `victim`, `health`, `time`) " +
+						"VALUES ('" + killer.getPlayer().getUniqueId().toString() + "'," +
+						"'" + user.getPlayer().getUniqueId().toString() + "'," +
+						"'" + (int)((Damageable)killer.getPlayer()).getHealth() + "'," +
+						"'" + new Date(System.currentTimeMillis()) + "')"));
+				// KILL STATISTIC END
 			}
 		}
 		
@@ -153,13 +181,16 @@ public class IngamePhase {
 			user.getPlayer().getWorld().dropItemNaturally(user.getPlayer().getLocation(), is);
 		}
 		final Player p = user.getPlayer();
-
+		
 		um.leaveGame(p);
 		game.setDeathAmount(game.getDeathAmount() + 1);
 		game.updateScoreboard();
 		
 		if(remain == 1) {
 			User winner = game.getUsers().get(0);
+			// STATISTIC
+			winner.getStatistics().addWin();
+			winner.getStatistics().addPlayed();
 			
 			if(braodcastWin) {
 				Bukkit.broadcastMessage(MessageHandler.getMessage("game-win").replace("%0%", winner.getName()).replace("%1%", game.getCurrentArena().getName()).replace("%2%", game.getName()));
@@ -171,6 +202,16 @@ public class IngamePhase {
 				SurvivalGames.econ.depositPlayer(winner.getName(), winMoney);
 				winner.sendMessage(MessageHandler.getMessage("arena-money-win").replace("%0%", Double.valueOf(winMoney).toString()));
 			}
+			
+			// GAME STATISTIC
+			DatabaseThread.addTask(new DatabaseTask("INSERT INTO `" + DatabaseManager.tablePrefix + "games` " +
+					"(`arena`, `duration`, `end`, `players`, `winner`) " +
+					"VALUES ('" + game.getCurrentArena().getName() + "'," +
+					"'" + (System.currentTimeMillis() - start) / 1000 + "'," +
+					"'" + new Date(System.currentTimeMillis()) + "'," +
+					"'" + players + "'," +
+					"'" + winner.getPlayer().getUniqueId().toString() + "')"));
+			// GAME STATISTIC END
 			
 			game.startFinish();
 		} else {

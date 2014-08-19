@@ -54,6 +54,8 @@ public class DatabaseManager {
 						" `kills` int(100) default '0'," +
 						" `deaths` int(100) default '0'," +
 						" `kdr` float default '0'," +
+						" `wins` int(100) default '0'," +
+						" `played` int(100) default '0'," +
 						" `points` int(100) default '0');"));
 		
 		DatabaseThread.addTask(new DatabaseTask("CREATE TABLE IF NOT EXISTS `" + tablePrefix + "games` (" +
@@ -62,6 +64,7 @@ public class DatabaseManager {
 				" `duration` int(100)," +
 				" `end` datetime," +
 				" `players` int(100)," +
+				" `winner` varchar(36)," +
 				" PRIMARY KEY (`id`) );"));
 		
 		DatabaseThread.addTask(new DatabaseTask("CREATE TABLE IF NOT EXISTS `" + tablePrefix + "kills` (" +

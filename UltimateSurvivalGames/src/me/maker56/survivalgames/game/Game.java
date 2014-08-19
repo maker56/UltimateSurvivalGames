@@ -635,12 +635,45 @@ public class Game {
 				str = str.replace("%1%", Integer.valueOf(getPlayingUsers()).toString());
 				str = str.replace("%2%", Integer.valueOf(getMaximumPlayers()).toString());
 				str = str.replace("%3%", getName());
-				str = str.replace("%5%", getCurrentArena() == null ? "" : getCurrentArena().getName());
+				str = str.replace("%4%", getCurrentArena() == null ? "" : getCurrentArena().getName());
+				
+				if(str.contains("%5%")) {
+					int time = -1;
+					float maxtime = 0;
+					
+					if(state == GameState.VOTING) {
+						time = getVotingPhrase().getTime();
+						maxtime = getLobbyTime();
+					} else if(state == GameState.COOLDOWN) {
+						time = getCooldownPhrase().getTime();
+						maxtime = getCooldownTime();
+					} else if(state == GameState.INGAME) {
+						time = getIngamePhrase().getTime();
+						maxtime = getCurrentArena().getAutomaticlyDeathmatchTime();
+					} else if(state == GameState.DEATHMATCH) {
+						time = getDeathmatch().getTime();
+						maxtime = getDeathmatch().getStartTime();
+					}
+					
+					if(time == -1) {
+						str = str.replace("%5%", "");
+					} else {
+						if(maxtime > 0) {
+							cPercentBarapi = ((float)time / maxtime) * 100;
+						}
+						
+						str = str.replace("%5%", Integer.valueOf(time).toString());
+					}
+					
+					
+				} else {
+					cPercentBarapi = 100;
+				}
 				
 				cBarapi = str;
 				
 				
-				Util.debug("Updated bossbar in game " + getName() + ": " + str);
+				Util.debug("Updated bossbar in game " + getName() + ": " + str + " (" + cPercentBarapi + "%)");
 				if(str.isEmpty()) {
 					for(User user : getUsers()) {
 						BarAPI.removeBar(user.getPlayer());

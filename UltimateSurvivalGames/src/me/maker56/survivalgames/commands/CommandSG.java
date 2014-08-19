@@ -8,6 +8,7 @@ import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.arguments.ArenaArgument;
 import me.maker56.survivalgames.commands.arguments.ConfigArgument;
 import me.maker56.survivalgames.commands.arguments.LobbyArgument;
+import me.maker56.survivalgames.commands.arguments.StatsArgument;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.Permission;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
@@ -41,6 +42,8 @@ public class CommandSG implements CommandExecutor {
 					sender.sendMessage("§8/§6sg vote <ID> §7- §eVote for an arena!");
 				}
 				
+				sender.sendMessage("§8/§6sg stats [NAME] §7- §eShow you statistics of a player");
+				
 				if(PermissionHandler.hasPermission(sender, Permission.LIST)) {
 					sender.sendMessage("§8/§6sg list §7- §eList of all available lobbys!");
 				}
@@ -67,7 +70,8 @@ public class CommandSG implements CommandExecutor {
 					
 				} else if(args[0].equalsIgnoreCase("lobby") || args[0].equalsIgnoreCase("game")) {
 					return new LobbyArgument(sender, args).execute();
-					
+				} else if(args[0].equalsIgnoreCase("stats")) {
+					return new StatsArgument(sender, args).execute();
 				} else if(args[0].equalsIgnoreCase("config")) {
 					return new ConfigArgument(sender, args).execute();
 				}

@@ -150,6 +150,7 @@ public class UserManager {
 		}
 		
 		final User user = getUser(p.getName());
+		user.getStatistics().updateStatistics();
 		user.clear();
 		Game game = user.getGame();
 		
