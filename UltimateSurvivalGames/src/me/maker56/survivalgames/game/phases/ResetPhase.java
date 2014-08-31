@@ -20,6 +20,11 @@ public class ResetPhase {
 		game.kickall();
 		game.setState(GameState.RESET);
 		World w = game.getCurrentArena().getMinimumLocation().getWorld();
+		for(Entity en: w.getEntities()){
+			if(en instanceof Item){
+				en.remove();
+			}
+		}
 		
 		
 		
