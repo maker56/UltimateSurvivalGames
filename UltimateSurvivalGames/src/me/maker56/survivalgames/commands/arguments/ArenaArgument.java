@@ -130,6 +130,23 @@ public class ArenaArgument {
 					
 					SurvivalGames.arenaManager.removeSpawn(p, id, "Deathmatch-Spawns");
 					return true;
+					
+				} else if(args[2].equalsIgnoreCase("domemiddle")) {
+					SurvivalGames.arenaManager.setDeathmatchDomeMiddle(p, args.length > 3);
+					return true;
+				} else if(args[2].equalsIgnoreCase("domeradius")) {
+					if(args.length == 3) {
+						SurvivalGames.arenaManager.setDeathmatchDomeRadius(p, 0, true);
+					} else {
+						int radius = 0;
+						try {
+							radius = Integer.parseInt(args[3]);
+						} catch(NumberFormatException e) {
+							p.sendMessage(MessageHandler.getMessage("prefix") + args[3] + " isn't a valid radius!");
+						}
+						SurvivalGames.arenaManager.setDeathmatchDomeRadius(p, radius, false);
+					}
+					
 				}
 				
 				return true;

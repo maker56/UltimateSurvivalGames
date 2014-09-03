@@ -29,6 +29,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import com.sk89q.worldedit.schematic.SchematicFormat;
 
@@ -103,6 +104,23 @@ public class Util {
 			return null;
 		}
 	}
+	
+	public static Vector calculateVector(Location from, Location to) {
+        Location a = from, b = to;
+        
+        double dX = a.getX() - b.getX();
+        double dY = a.getY() - b.getY();
+        double dZ = a.getZ() - b.getZ();
+        double yaw = Math.atan2(dZ, dX);
+        double pitch = Math.atan2(Math.sqrt(dZ * dZ + dX * dX), dY) + Math.PI;
+        double x = Math.sin(pitch) * Math.cos(yaw);
+        double y = Math.sin(pitch) * Math.sin(yaw);
+        double z = Math.cos(pitch);
+        
+        Vector vector = new Vector(x, z, y);
+        
+        return vector;
+    }
 	
 	public static void shootRandomFirework(Location loc, int height) {
 		Firework f = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);

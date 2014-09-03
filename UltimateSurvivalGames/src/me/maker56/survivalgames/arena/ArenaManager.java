@@ -9,6 +9,7 @@ import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.game.Game;
+import me.maker56.survivalgames.listener.DomeListener;
 import me.maker56.survivalgames.listener.SelectionListener;
 import me.maker56.survivalgames.reset.Save;
 import me.maker56.survivalgames.reset.Selection;
@@ -187,6 +188,60 @@ public class ArenaManager {
 				
 			p.sendMessage(MessageHandler.getMessage("prefix") + "§aYou've finished the setup and activated the arena successfully!");
 		}
+	}
+	
+	// DEATHMATCH DOME SETMIDDLE
+	public void setDeathmatchDomeMiddle(Player p, boolean teleport) {
+		if(!selectedarena.containsKey(p.getName())) {
+			p.sendMessage(MessageHandler.getMessage("arena-must-select").replace("%0%", "/sg arena select <LOBBYNAME> <ARENA NAME>"));
+			return;
+		}
+		
+		String gamename = selectedarena.get(p.getName())[0];
+		String arenaname = selectedarena.get(p.getName())[1];
+		String path = "Games." + gamename + ".Arenas." + arenaname + ".Dome-Middle";
+
+		if(teleport) {
+			if(cfg.contains(path)) {
+				Location loc = Util.parseLocation(cfg.getString(path));
+				if(loc == null) {
+					p.sendMessage(MessageHandler.getMessage("arena-deathmatch-domemiddle-notset"));
+				} else {
+					p.teleport(loc);
+					p.sendMessage(MessageHandler.getMessage("arena-deathmatch-domemiddle-teleport"));
+				}
+			} else {
+				p.sendMessage(MessageHandler.getMessage("arena-deathmatch-domemiddle-notset"));
+			}
+		} else {
+			cfg.set(path, Util.serializeLocation(p.getLocation(), false));
+			SurvivalGames.saveDataBase();
+			p.sendMessage(MessageHandler.getMessage("arena-deathmatch-domemiddle-set"));
+		}
+		
+	}
+	
+	// DEATHMATCH DOME RADIUS
+	public void setDeathmatchDomeRadius(Player p, int radius, boolean show) {
+		if(!selectedarena.containsKey(p.getName())) {
+			p.sendMessage(MessageHandler.getMessage("arena-must-select").replace("%0%", "/sg arena select <LOBBYNAME> <ARENA NAME>"));
+			return;
+		}
+		
+		String gamename = selectedarena.get(p.getName())[0];
+		String arenaname = selectedarena.get(p.getName())[1];
+		String path = "Games." + gamename + ".Arenas." + arenaname + ".Dome-Radius";
+		// TODO (DEATHMATCH END REACHED MESSAGE)
+		if(show) {
+			int cradius = cfg.getInt(path);
+			p.sendMessage(cradius == 0 ? MessageHandler.getMessage("arena-deathmatch-domeradius-disabled") : MessageHandler.getMessage("arena-deathmatch-domeradius-show").replace("%0%", Integer.valueOf(cradius).toString()));
+		} else {
+			radius = Math.abs(radius);
+			cfg.set(path, radius);
+			SurvivalGames.saveDataBase();
+			p.sendMessage(MessageHandler.getMessage("arena-deathmatch-domeradius-changed").replace("%0%", Integer.valueOf(radius).toString()));
+		}
+		
 	}
 	
 	// DEATHMATCH CHANGEN
@@ -415,7 +470,15 @@ public class ArenaManager {
 		
 		boolean refill = cfg.getBoolean(path + "Midnight-chest-refill");
 		
-		return new Arena(min, max, spawns, chesttype, chestdata, graceperiod, arenaname, game, deathmatch, deathmatchspawns, allowedBlocks, autodeathmatch, playerdeathmatch, kill, win, refill);
+		Location domeMiddle = Util.parseLocation(cfg.getString(path + "Dome-Middle", ""));
+		int domeRadius = cfg.getInt(path + "Dome-Radius", 0);
+		
+		if(domeMiddle != null && domeRadius > 0) {
+			if(!DomeListener.isRegistered())
+				new DomeListener();
+		}
+		
+		return new Arena(min, max, spawns, chesttype, chestdata, graceperiod, arenaname, game, deathmatch, deathmatchspawns, allowedBlocks, autodeathmatch, playerdeathmatch, kill, win, refill, domeMiddle, domeRadius);
 	}
 
 }

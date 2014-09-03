@@ -37,6 +37,8 @@ public class Helper {
 		new JSONMessage("§8/§6sg arena deathmatch §7- §eDe/activate the Deathmatch on the spelected arena!").color(ChatColor.YELLOW).tooltip("Prepare command").suggest("/sg arena deathmatch").send(p);
 		new JSONMessage("§8/§6sg arena deathmatch add §7- §eAdd a Deathmatch-Spawn on the selected arena!").color(ChatColor.YELLOW).tooltip("Prepare command").suggest("/sg arena deathmatch add").send(p);
 		new JSONMessage("§8/§6sg arena deathmatch remove <SPAWNID> §7- §eRemove an Spawn on the selected arena!").color(ChatColor.YELLOW).tooltip("Prepare command").suggest("/sg arena deathmatch remove ").send(p);
+		new JSONMessage("§8/§6sg arena deathmatch domemiddle §7- §eSet the middle of the invisible dome of the deathmatch arena").color(ChatColor.YELLOW).tooltip("Prepare command").suggest("/sg arena deathmatch domemiddle").send(p);
+		new JSONMessage("§8/§6sg arena deathmatch domeradius [RADIUS] §7- §eSet/View the radius of the ivsibile deathmatch dome").color(ChatColor.YELLOW).tooltip("Prepare command").suggest("/sg arena deathmatch domeradius").send(p);
 		new JSONMessage("§8/§6sg arena finish §7- §eFinished the create-setup on the selected arena!").color(ChatColor.YELLOW).tooltip("Prepare command").suggest("/sg arena finish").send(p);
 		new JSONMessage("§8/§6sg arena save §7- §eSaves the blocks of an arena to file for map reset!").color(ChatColor.YELLOW).tooltip("Prepare command").suggest("/sg arena save").send(p);
 		new JSONMessage("§8/§6sg arena delete §7- §eRemoves an arena in a lobby!").color(ChatColor.YELLOW).tooltip("Prepare command").suggest("/sg arena delete").send(p);

@@ -25,7 +25,7 @@ public class Arena implements Cloneable {
 	
 	private int votes = 0;
 	
-	public Arena(Location min, Location max, List<Location> spawns, Material chesttype, int chestdata, int graceperiod, String name, String game, boolean deathmatch, List<Location> deathmatchspawns, List<Integer> allowedBlocks, int autodeathmatch, int playerdeathmatch, double moneyKill, double moneyWin, boolean chestrefill) {
+	public Arena(Location min, Location max, List<Location> spawns, Material chesttype, int chestdata, int graceperiod, String name, String game, boolean deathmatch, List<Location> deathmatchspawns, List<Integer> allowedBlocks, int autodeathmatch, int playerdeathmatch, double moneyKill, double moneyWin, boolean chestrefill, Location domeMiddle, int domeRadius) {
 		this.min = min;
 		this.max = max;
 		this.spawns = spawns;
@@ -35,16 +35,24 @@ public class Arena implements Cloneable {
 		this.allowedBlocks = allowedBlocks;
 		this.chesttype = chesttype;
 		this.chestdata = chestdata;
-		this.deathmatch = deathmatch;
-		this.deathmatchSpawns = deathmatchspawns;
-		this.autodeathmatch = autodeathmatch;
-		this.playerdeathmatch = playerdeathmatch;
 		this.moneyKill = moneyKill;
 		this.moneyWin = moneyWin;
 		this.refill = chestrefill;
 		
-		if(min != null)
-			min.getWorld().setStorm(false);
+		this.deathmatch = deathmatch;
+		this.deathmatchSpawns = deathmatchspawns;
+		
+		if(deathmatchSpawns.isEmpty())
+			this.deathmatch = false;
+		
+		
+		this.autodeathmatch = autodeathmatch;
+		this.playerdeathmatch = playerdeathmatch;
+		this.domeRadius = domeRadius;
+		if(domeRadius > 0) {
+			this.domeMiddle = domeMiddle;
+			this.domeMiddle.setY(0);
+		}
 	}
 	
 	public int getAutomaticlyDeathmatchTime() {
@@ -124,6 +132,28 @@ public class Arena implements Cloneable {
 	
 	public String getGame() {
 		return game;
+	}
+	
+	// ADJUSTABLE DOME
+	private Location domeMiddle;
+	private int domeRadius;
+	
+	public Location getDomeMiddle() {
+		return domeMiddle;
+	}
+	
+	public int getDomeRadius() {
+		return domeRadius;
+	}
+	
+	public double domeDistance(Location loc) {
+		Location bloc = loc.clone();
+		bloc.setY(0);
+		return domeMiddle.distance(bloc);
+	}
+	
+	public boolean isDomeEnabled() {
+		return domeMiddle != null;
 	}
 	
 }

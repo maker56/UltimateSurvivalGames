@@ -446,12 +446,11 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerMoveEvent(PlayerMoveEvent event) {
-		Player p = event.getPlayer();
-		
 		Location from = event.getFrom();
 		Location to = event.getTo();
 		
 		if(from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ()) {
+			Player p = event.getPlayer();
 			if(um.isPlaying(p.getName())) {
 				Game game = um.getUser(p.getName()).getGame();
 				if(game.getState() == GameState.COOLDOWN) {

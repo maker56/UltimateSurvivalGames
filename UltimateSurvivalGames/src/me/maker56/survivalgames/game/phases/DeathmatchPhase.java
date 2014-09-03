@@ -34,6 +34,7 @@ public class DeathmatchPhase {
 	}
 	
 	public void start() {
+		game.sendMessage(MessageHandler.getMessage("game-deathmatch-start"));
 		game.setState(GameState.DEATHMATCH);
 		
 		List<Location> spawns = game.getCurrentArena().getDeathmatchSpawns();

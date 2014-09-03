@@ -440,6 +440,7 @@ public class ConfigLoader {
 		c.addDefault("game-waiting-end", "The waiting phase has been ended!");
 		
 		c.addDefault("game-deathmatch-cooldown", "The final deathmatch starts in &b%0%");
+		c.addDefault("game-deathmatch-end-reached", "&cYou reached the end of the deathmatch arena!");
 		c.addDefault("game-deathmatch-start", "Let's start the final deathmatch!");
 		c.addDefault("game-deathmatch-timeout", "The deathmatch ends automaticly in %0% seconds!");
 		c.addDefault("game-deathmatch-timeout-warning", "When the deathmatch ends automaticly, the winner will be choosed random!");
@@ -499,7 +500,14 @@ public class ConfigLoader {
 		c.addDefault("arena-spawn-added", "You've added Spawn %0% successfully!");
 		c.addDefault("arena-spawn-removed", "You removed Spawn %0% successfully!");
 		c.addDefault("arena-spawn-notfound", "&cSpawn %0% does not exist!");
+		
 		c.addDefault("arena-deathmatch-changed", "You've changed the deathmatch: %0%!");
+		c.addDefault("arena-deathmatch-domemiddle-set", "You've set the middle of the deathmatch arena successfully!");
+		c.addDefault("arena-deathmatch-domemiddle-notset", "&cThe middle of the deathmatch arena isn't defined!");
+		c.addDefault("arena-deathmatch-domemiddle-teleport", "Teleporting to the middle of the deathmatch arena...");
+		c.addDefault("arena-deathmatch-domeradius-show", "The current radius of the dome is &b%0%&6!");
+		c.addDefault("arena-deathmatch-domeradius-disabled", "&cThe deathmatch dome is disabled!");
+		c.addDefault("arena-deathmatch-domeradius-changed", "You've changed the radius of the dome to &b%0% &6successfully!");
 		
 		c.addDefault("arena-money-win", "&eYou've received &a%0% &emoney for winning survival games!");
 		c.addDefault("arena-money-kill", "&eYou've received &a%0% &emoney for killing %1%!");

@@ -28,7 +28,7 @@ public class PermissionHandler {
 			if(sender.isOp()) {
 				return true;
 			} else {
-				return permission == Permission.JOIN || permission == Permission.LIST || permission == Permission.SPECTATE;
+				return permission == Permission.JOIN || permission == Permission.LIST || permission == Permission.SPECTATE || permission == Permission.STATS;
 			}
 		}
 	}

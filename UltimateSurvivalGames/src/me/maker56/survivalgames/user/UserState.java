@@ -6,6 +6,7 @@ import java.util.Iterator;
 import me.maker56.survivalgames.chat.JSONMessage;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.statistics.StatisticData;
+import me.maker56.survivalgames.statistics.StatisticLoader;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -55,7 +56,7 @@ public abstract class UserState {
 		store[1] = p.getInventory().getArmorContents();
 		this.inventory = store;
 		
-		sd = new StatisticData(getName(), getUUID());
+		StatisticLoader.load(this);
 	}
 	
 	public double getMaxHealth() {
@@ -199,6 +200,14 @@ public abstract class UserState {
 	
 	public StatisticData getStatistics() {
 		return sd;
+	}
+	
+	public void setStatistics(StatisticData sd) {
+		this.sd = sd;
+	}
+	
+	public boolean areStatisticsLoaded() {
+		return sd != null;
 	}
 
 }
