@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import java.util.zip.GZIPOutputStream;
 
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.Util;
@@ -31,12 +32,12 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
+import com.sk89q.worldedit.world.World;
 
+@SuppressWarnings("deprecation")
 public class Save extends Thread {
 	
 	/*
@@ -754,132 +755,133 @@ public class Save extends Thread {
 	
 	@Override
 	public void run() {
-		start = System.currentTimeMillis();
-		File file = new File("plugins/SurvivalGames/reset/" + lobby + arena + ".map");
-		
-		file.mkdirs();
-		if(file.exists()) {
-			file.delete();
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return;
-			}
-		}
-
-		Location min = sel.getMinimumLocation();
-		Location max = sel.getMaximumLocation();
-		
-		cc = new CuboidClipboard(new Vector(sel.getLength(), sel.getHeight(), sel.getWidth()), new Vector(min.getBlockX(), min.getY(), min.getZ()), new Vector(max.getBlockX(), max.getBlockY(), max.getBlockZ()));
-		
-
-		if(pname != null)
-			startPercentInfoScheduler();
-		
-	    width = cc.getWidth();
-	    length = cc.getLength();
-	    height = cc.getHeight();
-	    origin = cc.getOrigin();
-
-	    HashMap<String, Tag> schematic = new HashMap<>();
-	    schematic.put("Width", new ShortTag("Width", (short)width));
-	    schematic.put("Length", new ShortTag("Length", (short)length));
-	    schematic.put("Height", new ShortTag("Height", (short)height));
-	    schematic.put("Materials", new StringTag("Materials", "Alpha"));
-	    schematic.put("WEOriginX", new IntTag("WEOriginX", cc.getOrigin().getBlockX()));
-	    schematic.put("WEOriginY", new IntTag("WEOriginY", cc.getOrigin().getBlockY()));
-	    schematic.put("WEOriginZ", new IntTag("WEOriginZ", cc.getOrigin().getBlockZ()));
-	    schematic.put("WEOffsetX", new IntTag("WEOffsetX", cc.getOffset().getBlockX()));
-	    schematic.put("WEOffsetY", new IntTag("WEOffsetY", cc.getOffset().getBlockY()));
-	    schematic.put("WEOffsetZ", new IntTag("WEOffsetZ", cc.getOffset().getBlockZ()));
-
-	    blocks = new byte[width * height * length];
-	    addBlocks = null;
-	    blockData = new byte[width * height * length];
-	    tileEntities = new ArrayList<>();
-
-		int maxSize = 6 * 16 * 16 * cc.getHeight();
-		maxSteps = (cc.getHeight() * cc.getLength() * cc.getWidth()) / maxSize;
-		long sleep = 625;
-		
-		Util.debug("SurvivalGames Map save - length:" + cc.getLength() + " width:" + cc.getWidth() + " height:" + cc.getHeight() + " perStep:" + maxSize + " maxSteps:" + maxSteps + " sleep:" + sleep);
-		
-		for(LocalWorld lw : WorldEdit.getInstance().getServer().getWorlds()) {
-			if(lw.getName().equals(min.getWorld().getName())) {
-				es = WorldEdit.getInstance().getEditSessionFactory().getEditSession(lw, 0);
-				break;
-			}
-		}
-	    
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				for (int z = 0; z < length; z++) {
-					if(cSave.size() == maxSize) {
-						nextSave();
-						while(save) { 
-							try {
-								sleep(sleep);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-
-					cSave.add(new Vector(x, y, z));
+		try {
+			start = System.currentTimeMillis();
+			File file = new File("plugins/SurvivalGames/reset/" + lobby + arena + ".map");
+			
+			file.mkdirs();
+			if(file.exists()) {
+				file.delete();
+				try {
+					file.createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return;
 				}
 			}
-		}
-		nextSave();
-		while(save) {
-			try {
-				sleep(sleep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+
+			Location min = sel.getMinimumLocation();
+			Location max = sel.getMaximumLocation();
+			
+			cc = new CuboidClipboard(new Vector(sel.getLength(), sel.getHeight(), sel.getWidth()), new Vector(min.getBlockX(), min.getY(), min.getZ()), new Vector(max.getBlockX(), max.getBlockY(), max.getBlockZ()));
+
+			if(pname != null)
+				startPercentInfoScheduler();
+			
+			width = cc.getWidth();
+		    length = cc.getLength();
+		    height = cc.getHeight();
+		    origin = cc.getOrigin();
+
+			HashMap<String, Tag> schematic = new HashMap<String, Tag>();
+			schematic.put("Width", new ShortTag((short) width));
+			
+	        schematic.put("Length", new ShortTag((short) length));
+	        schematic.put("Height", new ShortTag((short) height));
+	        schematic.put("Materials", new StringTag("Alpha"));
+	        schematic.put("WEOriginX", new IntTag(cc.getOrigin().getBlockX()));
+	        schematic.put("WEOriginY", new IntTag(cc.getOrigin().getBlockY()));
+	        schematic.put("WEOriginZ", new IntTag(cc.getOrigin().getBlockZ()));
+	        schematic.put("WEOffsetX", new IntTag(cc.getOffset().getBlockX()));
+	        schematic.put("WEOffsetY", new IntTag(cc.getOffset().getBlockY()));
+	        schematic.put("WEOffsetZ", new IntTag(cc.getOffset().getBlockZ()));
+
+	        // Copy
+	        blocks = new byte[width * height * length];
+	        addBlocks = null;
+	        blockData = new byte[width * height * length];
+	        tileEntities = new ArrayList<Tag>();
+
+			int maxSize = 6 * 16 * 16 * cc.getHeight();
+			maxSteps = (cc.getHeight() * cc.getLength() * cc.getWidth()) / maxSize;
+			long sleep = 625;
+			
+			Util.debug("SurvivalGames Map save - length:" + cc.getLength() + " width:" + cc.getWidth() + " height:" + cc.getHeight() + " perStep:" + maxSize + " maxSteps:" + maxSteps + " sleep:" + sleep);
+			
+			for(World lw : WorldEdit.getInstance().getServer().getWorlds()) {
+				if(lw.getName().equals(min.getWorld().getName())) {
+					es = WorldEdit.getInstance().getEditSessionFactory().getEditSession(lw, 0);
+					break;
+				}
 			}
-		}
 
-	    schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
-	    schematic.put("Data", new ByteArrayTag("Data", blockData));
-	    schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<CompoundTag>()));
-	    schematic.put("TileEntities", new ListTag("TileEntities", CompoundTag.class, tileEntities));
-	    if (addBlocks != null) {
-	      schematic.put("AddBlocks", new ByteArrayTag("AddBlocks", addBlocks));
-	    }
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					for (int z = 0; z < length; z++) {
+						if(cSave.size() == maxSize) {
+							nextSave();
+							while(save) { 
+								try {
+									sleep(sleep);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+						}
 
-	    CompoundTag schematicTag = new CompoundTag("Schematic", schematic);
-	    NBTOutputStream stream;
-		try {
-			stream = new NBTOutputStream(new FileOutputStream(file));
-		    stream.writeTag(schematicTag);
-		    stream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+						cSave.add(new Vector(x, y, z));
+					}
+				}
+			}
+			nextSave();
+			while(save) {
+				try {
+					sleep(sleep);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 
-		
-		sizeB = file.length();
-		format = "Bytes";
-		if(sizeB >= 1000) {
-			sizeB = sizeB / 1000;
-			format = "KiloBytes";
+	        schematic.put("Blocks", new ByteArrayTag(blocks));
+	        schematic.put("Data", new ByteArrayTag(blockData));
+	        schematic.put("Entities", new ListTag(CompoundTag.class, new ArrayList<Tag>()));
+	        schematic.put("TileEntities", new ListTag(CompoundTag.class, tileEntities));
+	        if (addBlocks != null) {
+	            schematic.put("AddBlocks", new ByteArrayTag(addBlocks));
+	        }
+
+	        // Build and output
+	        CompoundTag schematicTag = new CompoundTag(schematic);
+	        NBTOutputStream stream = new NBTOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
+	        stream.writeNamedTag("Schematic", schematicTag);
+	        stream.close();
+			
+			sizeB = file.length();
+			format = "Bytes";
 			if(sizeB >= 1000) {
 				sizeB = sizeB / 1000;
-				format = "MegaBytes";
+				format = "KiloBytes";
+				if(sizeB >= 1000) {
+					sizeB = sizeB / 1000;
+					format = "MegaBytes";
+				}
 			}
-		}
 
+			
+			Bukkit.getScheduler().callSyncMethod(SurvivalGames.instance, new Callable<Void>() {
+				@Override
+				public Void call() throws Exception {
+					// TEMPORARY
+					Util.checkForOutdatedArenaSaveFiles();
+					Bukkit.getPluginManager().callEvent(new SaveDoneEvent(lobby, arena,  (System.currentTimeMillis() - start), sizeB, format));
+					return null;
+				}
+			});
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		if(task != null)
 			task.cancel();
-		Bukkit.getScheduler().callSyncMethod(SurvivalGames.instance, new Callable<Void>() {
-			@Override
-			public Void call() throws Exception {
-				// TEMPORARY
-				Util.checkForOutdatedArenaSaveFiles();
-				Bukkit.getPluginManager().callEvent(new SaveDoneEvent(lobby, arena,  (System.currentTimeMillis() - start), sizeB, format));
-				return null;
-			}
-		});
 	}
 	
 	private long sizeB;
@@ -894,7 +896,7 @@ public class Save extends Thread {
 	byte[] blocks;
 	byte[] addBlocks;
 	byte[] blockData;
-	ArrayList<CompoundTag> tileEntities;
+	ArrayList<Tag> tileEntities;
 	int width;
     int height;
     int length;
@@ -905,6 +907,7 @@ public class Save extends Thread {
 			@Override
 			public Void call() {
 				try {
+					
 					Util.debug("Start save: " + cSave.size() + " blocks");
 					for(Vector v : cSave) {
 						int x = v.getBlockX();
@@ -912,8 +915,7 @@ public class Save extends Thread {
 						int z = v.getBlockZ();
 						
 						int index = y * width * length + z * width + x;
-						
-	                    BaseBlock block = es.getBlock(new BlockVector(x, y, z).add(origin));
+						BaseBlock block = es.getBlock(new BlockVector(x, y, z).add(origin));
 
 	                    // Save 4096 IDs in an AddBlocks section
 	                    if (block.getType() > 255) {
@@ -929,33 +931,29 @@ public class Save extends Thread {
 	                    blocks[index] = (byte) block.getType();
 	                    blockData[index] = (byte) block.getData();
 
-	                    // Store TileEntity data
-	                    if (block instanceof TileEntityBlock) {
-	                        TileEntityBlock tileEntityBlock = block;
-
-	                        // Get the list of key/values from the block
-	                        CompoundTag rawTag = tileEntityBlock.getNbtData();
-	                        if (rawTag != null) {
-	                            Map<String, Tag> values = new HashMap<String, Tag>();
-	                            for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
-	                                values.put(entry.getKey(), entry.getValue());
-	                            }
-	                            
-	                            values.put("id", new StringTag("id", tileEntityBlock.getNbtId()));
-	                            values.put("x", new IntTag("x", x));
-	                            values.put("y", new IntTag("y", y));
-	                            values.put("z", new IntTag("z", z));
-	                            
-	                            CompoundTag tileEntityTag = new CompoundTag("TileEntity", values);
-	                            tileEntities.add(tileEntityTag);
+	                    // Get the list of key/values from the block
+	                    CompoundTag rawTag = block.getNbtData();
+	                    if (rawTag != null) {
+	                        Map<String, Tag> values = new HashMap<String, Tag>();
+	                        for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
+	                            values.put(entry.getKey(), entry.getValue());
 	                        }
+
+	                        values.put("id", new StringTag(block.getNbtId()));
+	                        values.put("x", new IntTag(x));
+	                        values.put("y", new IntTag(y));
+	                        values.put("z", new IntTag(z));
+
+	                        CompoundTag tileEntityTag = new CompoundTag(values);
+	                        tileEntities.add(tileEntityTag);
 	                    }
 					}
 					stepsDone++;
 					cSave.clear();
+					
+
 				} catch(Exception e) {
 					e.printStackTrace();
-					
 				}
 
 				Util.debug("end save");

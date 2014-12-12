@@ -16,6 +16,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class DomeListener implements Listener {
@@ -46,16 +48,18 @@ public class DomeListener implements Listener {
 					if(arena.isDomeEnabled()) {
 						double distance = arena.domeDistance(p.getLocation());
 						if(distance >= arena.getDomeRadius()) {
-							p.playEffect(p.getEyeLocation(), Effect.POTION_BREAK, 16451);
-							p.playEffect(p.getEyeLocation(), Effect.POTION_BREAK, 16452);
-							p.playEffect(p.getEyeLocation(), Effect.POTION_BREAK, 16457);
+							p.playEffect(p.getEyeLocation(), Effect.FLAME, 16451);
+							p.playEffect(p.getEyeLocation(), Effect.FLAME, 16452);
+							p.playEffect(p.getEyeLocation(), Effect.FLAME, 16457);
+							
 							Vector v = Util.calculateVector(p.getLocation(), arena.getDomeMiddle());
 							v.multiply(2);
 							p.setVelocity(v);
+
 							p.sendMessage(MessageHandler.getMessage("game-deathmatch-end-reached"));
 							
-							if(distance + 8 > arena.getDomeRadius()) {
-								p.teleport(arena.getDomeMiddle());
+							if(distance > arena.getDomeRadius() && distance - arena.getDomeRadius() > 8) {
+								p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100, 1, true));
 							}
 						}
 					}

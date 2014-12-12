@@ -287,7 +287,6 @@ public class Util {
 		return null;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public static void debug(Object object) {
 		if(debug) {
 			System.out.println("[SurvivalGames] [Debug] " + object.toString());
@@ -311,6 +310,7 @@ public class Util {
 				SchematicFormat sf = SchematicFormat.getFormat(file);
 				if(sf == null) {
 					outdated.add(key);
+					
 				}
 			}
 		}
@@ -324,6 +324,7 @@ public class Util {
 				} else {
 					s+= " §c! ";
 				}
+				
 
 			}
 			s+= "Select all the arenas with §l/sg arena select §cand type §c§l/sg arena save§c! In the old format, the arenas will not reset!";

@@ -29,12 +29,10 @@ import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
@@ -42,6 +40,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.data.DataException;
 
+@SuppressWarnings("deprecation")
 public class Reset extends Thread {
 	
 	private static List<String> resets = new ArrayList<>();
@@ -763,46 +762,24 @@ public class Reset extends Thread {
 	        Vector offset = new Vector();
 
 	        // Schematic tag
-	        CompoundTag schematicTag = (CompoundTag) nbtStream.readTag();
+	        CompoundTag schematicTag = (CompoundTag) nbtStream.readNamedTag().getTag();
 	        nbtStream.close();
-	        if (!schematicTag.getName().equals("Schematic")) {
-	            throw new DataException("Tag \"Schematic\" does not exist or is not first");
-	        }
-
-	        // Check
 	        Map<String, Tag> schematic = schematicTag.getValue();
-	        if (!schematic.containsKey("Blocks")) {
-	            throw new DataException("Schematic file is missing a \"Blocks\" tag");
-	        }
 
 	        // Get information
 	        short width = getChildTag(schematic, "Width", ShortTag.class).getValue();
 	        short length = getChildTag(schematic, "Length", ShortTag.class).getValue();
 	        short height = getChildTag(schematic, "Height", ShortTag.class).getValue();
 
-	        try {
-	            int originX = getChildTag(schematic, "WEOriginX", IntTag.class).getValue();
-	            int originY = getChildTag(schematic, "WEOriginY", IntTag.class).getValue();
-	            int originZ = getChildTag(schematic, "WEOriginZ", IntTag.class).getValue();
-	            origin = new Vector(originX, originY, originZ);
-	        } catch (DataException e) {
-	            // No origin data
-	        }
+	        int originX = getChildTag(schematic, "WEOriginX", IntTag.class).getValue();
+            int originY = getChildTag(schematic, "WEOriginY", IntTag.class).getValue();
+            int originZ = getChildTag(schematic, "WEOriginZ", IntTag.class).getValue();
+            origin = new Vector(originX, originY, originZ);
 
-	        try {
-	            int offsetX = getChildTag(schematic, "WEOffsetX", IntTag.class).getValue();
-	            int offsetY = getChildTag(schematic, "WEOffsetY", IntTag.class).getValue();
-	            int offsetZ = getChildTag(schematic, "WEOffsetZ", IntTag.class).getValue();
-	            offset = new Vector(offsetX, offsetY, offsetZ);
-	        } catch (DataException e) {
-	            // No offset data
-	        }
-
-	        // Check type of Schematic
-	        String materials = getChildTag(schematic, "Materials", StringTag.class).getValue();
-	        if (!materials.equals("Alpha")) {
-	            throw new DataException("Schematic file is not an Alpha schematic");
-	        }
+            int offsetX = getChildTag(schematic, "WEOffsetX", IntTag.class).getValue();
+            int offsetY = getChildTag(schematic, "WEOffsetY", IntTag.class).getValue();
+            int offsetZ = getChildTag(schematic, "WEOffsetZ", IntTag.class).getValue();
+            offset = new Vector(offsetX, offsetY, offsetZ);
 
 	        // Get blocks
 	        byte[] blockId = getChildTag(schematic, "Blocks", ByteArrayTag.class).getValue();
@@ -872,7 +849,7 @@ public class Reset extends Thread {
 	        clipboard.setOrigin(origin);
 	        clipboard.setOffset(offset);
 	        
-	        for(LocalWorld lws : we.getServer().getWorlds()) {
+	        for(com.sk89q.worldedit.world.World lws : we.getServer().getWorlds()) {
 				if(lws.getName().equals(world.getName())) {
 					lw = lws;
 					break;
@@ -908,13 +885,9 @@ public class Reset extends Thread {
 							
 							int index = y * width * length + z * width + x;
 							BaseBlock block = new BaseBlock(blocks[index], blockData[index]);
-
+							
 							if (block instanceof TileEntityBlock && tileEntitiesMap.containsKey(pt)) {
-								try {
-									((TileEntityBlock) block).setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
-								} catch (DataException e) {
-									throw new DataException(e.getMessage());
-								}
+								((TileEntityBlock) block).setNbtData(new CompoundTag(tileEntitiesMap.get(pt)));
 							}
 							cReset.put(pos, block);
 						}
@@ -950,7 +923,7 @@ public class Reset extends Thread {
 	}
 	
 	WorldEdit we = SurvivalGames.getWorldEdit().getWorldEdit();
-	LocalWorld lw = null;
+	com.sk89q.worldedit.world.World lw = null;
 	EditSession es = null;
 	String currentItemChunk = "";
 
@@ -998,19 +971,8 @@ public class Reset extends Thread {
 		});
 	}
 	
-	private static <T extends Tag> T getChildTag(Map<String, Tag> items,
-			String key, Class<T> expected) throws DataException {
-
-		if (!items.containsKey(key)) {
-			throw new DataException("Schematic file is missing a \"" + key
-					+ "\" tag");
-		}
-		Tag tag = items.get(key);
-		if (!expected.isInstance(tag)) {
-			throw new DataException(key + " tag is not of tag type "
-					+ expected.getName());
-		}
-		return expected.cast(tag);
+	private static <T extends Tag> T getChildTag(Map<String, Tag> items, String key, Class<T> expected) throws DataException {
+		return expected.cast(items.get(key));
 	}
 
 

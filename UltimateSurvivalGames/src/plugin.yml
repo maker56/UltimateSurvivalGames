@@ -1,8 +1,9 @@
 name: SurvivalGames
-author: maker56
+authors: [maker56,JefroyTJF]
 main: me.maker56.survivalgames.SurvivalGames
-version: Beta dev1.9.3
-softdepend: [WorldEdit,Vault,Multiverse-Core,BarAPI,PermissionsEx]
+version: Beta dev1.9.3b
+website: http://dev.bukkit.org/bukkit-plugins/survival_games
+softdepend: [WorldEdit,Vault,Multiverse-Core,BarAPI,PermissionsEx,tjfSystem]
 
 commands:
   sg:

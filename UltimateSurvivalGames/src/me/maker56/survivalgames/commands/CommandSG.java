@@ -26,6 +26,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandSG implements CommandExecutor {
+	
+	private String authors;
+	
+	public CommandSG() {
+		this.authors = " §7§m--§r §ePlugin developed by ";
+		List<String> authors = SurvivalGames.getInstance().getDescription().getAuthors();
+		for(int i = 0; i < authors.size(); i++) {
+			this.authors += authors.get(i);
+			
+			if(i != authors.size() - 1) {
+				this.authors += " and ";
+			}
+		}
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -34,7 +48,7 @@ public class CommandSG implements CommandExecutor {
 			
 			
 			if(args.length == 0) {
-				sender.sendMessage(MessageHandler.getMessage("prefix") + "Version " + SurvivalGames.instance.getDescription().getVersion() + " §7§m--§r §ePlugin developed by maker56");
+				sender.sendMessage(MessageHandler.getMessage("prefix") + "Version " + SurvivalGames.instance.getDescription().getVersion() + authors);
 				
 				if(PermissionHandler.hasPermission(sender, Permission.JOIN)) {
 					sender.sendMessage("§8/§6sg join [LOBBY] §7- §eJoin a game!");

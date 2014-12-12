@@ -205,7 +205,6 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerDeathEvent(PlayerDeathEvent event) {
 		Player p = event.getEntity();

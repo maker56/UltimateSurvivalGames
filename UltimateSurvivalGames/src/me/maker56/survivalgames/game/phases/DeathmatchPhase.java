@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.Util;
+import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
@@ -60,6 +61,7 @@ public class DeathmatchPhase {
 					game.sendMessage(MessageHandler.getMessage("game-deathmatch-timeout-warning"));
 				}
 				
+				
 				if(time % 60 == 0 && time != 0) {
 					game.sendMessage(MessageHandler.getMessage("game-deathmatch-timeout").replace("%0%", Util.getFormatedTime(time)));
 				} else if(time % 10 == 0 && time < 60 && time > 10) {
@@ -67,13 +69,30 @@ public class DeathmatchPhase {
 				} else if(time <= 10 && time > 0) {
 					game.sendMessage(MessageHandler.getMessage("game-deathmatch-timeout").replace("%0%", Util.getFormatedTime(time)));
 				} else if(time == 0) {
+					Arena a = game.getCurrentArena();
+					User user = null;
 					
-					List<User> users = game.getUsers();
-					Collections.shuffle(users);
-					
-					if(users.size() > 0) {
-						users.get(0).getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 10000, 3));
+					if(a.isDomeEnabled()) {
+						double nearest = a.getDomeRadius() + 50;
+						for(User u : game.getUsers()) {
+							double distance = a.domeDistance(u.getPlayer().getLocation());
+							if(distance <= nearest) {
+								nearest = distance;
+								user = u;
+							}
+						}
+					} else {
+						Collections.shuffle(game.getUsers());
+						user = game.getUsers().get(0);
 					}
+					
+					for(User u : game.getUsers()) {
+						if(!u.equals(user)) {
+							u.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 10000000, 3));
+						}
+					}
+					
+					
 				}
 				
 				game.updateBossBarMessage();

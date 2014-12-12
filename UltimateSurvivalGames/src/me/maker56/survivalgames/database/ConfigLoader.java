@@ -146,7 +146,7 @@ public class ConfigLoader {
 		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "kits.yml").getFileConfiguration();
 		SurvivalGames.kits = c;
 		
-		c.options().header("##### UltimateSurvivalGames Kit Configuration ####");
+		c.options().header("##### UltimateSurvivalGames Kit Configuration ####\n\nComing soon...");
 		
 		c.addDefault("Enabled", true);
 		
@@ -442,7 +442,7 @@ public class ConfigLoader {
 		c.addDefault("game-deathmatch-cooldown", "The final deathmatch starts in &b%0%");
 		c.addDefault("game-deathmatch-end-reached", "&cYou reached the end of the deathmatch arena!");
 		c.addDefault("game-deathmatch-start", "Let's start the final deathmatch!");
-		c.addDefault("game-deathmatch-timeout", "The deathmatch ends automaticly in %0% seconds!");
+		c.addDefault("game-deathmatch-timeout", "The deathmatch ends automaticly in &b%0%");
 		c.addDefault("game-deathmatch-timeout-warning", "When the deathmatch ends automaticly, the winner will be choosed random!");
 		
 		c.addDefault("game-player-die-killer", "%0% was killed by %1%!");

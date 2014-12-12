@@ -75,8 +75,6 @@ public class SpectatorListener implements Listener {
 			event.setAmount(0);
 	}
 	
-	
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onEntityDamage(EntityDamageByEntityEvent event) {
 		Player damager = null;

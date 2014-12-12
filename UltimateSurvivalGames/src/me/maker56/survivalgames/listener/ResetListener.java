@@ -145,7 +145,6 @@ public class ResetListener implements Listener {
 	
 	// AFTER SAVE / RESET
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onSaveComplete(SaveDoneEvent event) {
 		for(Player p : Bukkit.getOnlinePlayers()) {
