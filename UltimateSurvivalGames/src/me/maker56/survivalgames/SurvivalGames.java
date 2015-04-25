@@ -62,6 +62,17 @@ public class SurvivalGames extends JavaPlugin {
 	}
 	
 	public void onEnable() {
+		if(!Bukkit.getVersion().toLowerCase().contains("spigot")) {
+			System.err.println("[SurvivalGames] ###################################################################");
+			System.err.println("[SurvivalGames] #########       THIS PLUGIN REQUIRES SPIGOT TO RUN       ##########");
+			System.err.println("[SurvivalGames] #########      Please use it instead of craftbukkit!     ##########");
+			System.err.println("[SurvivalGames] ######### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##########");
+			System.err.println("[SurvivalGames] #########       Download: http://www.spigotmc.org/       ##########");
+			System.err.println("[SurvivalGames] ###################################################################");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
+		}
+		
 		if(!Bukkit.getPluginManager().isPluginEnabled("WorldEdit")) {
 			System.err.println("[SurvivalGames] ##########################################################");
 			System.err.println("[SurvivalGames] ######### NO WORLDEDIT FOUND! DISABLE PLUGIN... ##########");

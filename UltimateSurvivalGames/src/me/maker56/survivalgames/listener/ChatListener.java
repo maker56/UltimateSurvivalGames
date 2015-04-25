@@ -3,10 +3,14 @@ package me.maker56.survivalgames.listener;
 import java.util.Iterator;
 
 import me.maker56.survivalgames.SurvivalGames;
-import me.maker56.survivalgames.chat.JSONMessage;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.user.UserManager;
 import me.maker56.survivalgames.user.UserState;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ClickEvent.Action;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -58,17 +62,18 @@ public class ChatListener implements Listener {
 				format = format.replace("{MESSAGE}", event.getMessage());
 				
 				System.out.println(ChatColor.stripColor(format));
-				JSONMessage msg = new JSONMessage(format)
-				.tooltip("Click to show " + u.getName() + (u.getName().toLowerCase().endsWith("s") ? "" : "'s") + " statistics")
-				.command("/sg stats " + u.getName());
 				
+				BaseComponent[] bc = new ComponentBuilder(format)
+				.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to show " + u.getName() + (u.getName().toLowerCase().endsWith("s") ? "" : "'s") + " statistics").create()))
+				.event(new ClickEvent(Action.RUN_COMMAND, "/sg stats " + u.getName())).create();
+	
 				event.setCancelled(true);
 				Game g = u.getGame();
 				
 				if(u.isSpectator()) {
-					g.sendSpectators(msg);
+					g.sendSpectators(bc);
 				} else {
-					g.sendMessage(msg);
+					g.sendMessage(bc);
 				}
 			} else {
 				for(Iterator<Player> i = event.getRecipients().iterator(); i.hasNext();) {

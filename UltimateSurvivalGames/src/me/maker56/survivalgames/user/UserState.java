@@ -3,10 +3,10 @@ package me.maker56.survivalgames.user;
 import java.util.Collection;
 import java.util.Iterator;
 
-import me.maker56.survivalgames.chat.JSONMessage;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.statistics.StatisticData;
 import me.maker56.survivalgames.statistics.StatisticLoader;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -181,8 +181,8 @@ public abstract class UserState {
 		return player.getName();
 	}
 	
-	public void sendMessage(JSONMessage message) {
-		message.send(player);
+	public void sendMessage(BaseComponent[] message) {
+		player.spigot().sendMessage(message);
 	}
 	
 	public void sendMessage(String message) {

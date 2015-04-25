@@ -9,7 +9,6 @@ import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.arena.chest.Chest;
 import me.maker56.survivalgames.barapi.BarAPIManager;
-import me.maker56.survivalgames.chat.JSONMessage;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.events.UserLobbyJoinedEvent;
 import me.maker56.survivalgames.events.UserLobbyLeftEvent;
@@ -24,6 +23,7 @@ import me.maker56.survivalgames.scoreboard.ScoreboardPhase;
 import me.maker56.survivalgames.user.SpectatorUser;
 import me.maker56.survivalgames.user.User;
 import me.maker56.survivalgames.user.UserState;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -197,8 +197,10 @@ public class Game {
 		}
 	}
 	
-	public void sendSpectators(JSONMessage msg) {
-		msg.sendToSpectators(spectators);
+	public void sendSpectators(BaseComponent[] msg) {
+		for(SpectatorUser su : spectators) {
+			su.sendMessage(msg);
+		}
 	}
 	
 	public List<SpectatorUser> getSpecators() {
@@ -509,12 +511,16 @@ public class Game {
 		return cooldown;
 	}
 	
-	public void sendMessage(JSONMessage message) {
-		message.send(users);
-		message.sendToSpectators(spectators);
+	public void sendMessage(String message) {
+		for(User user : users) {
+			user.sendMessage(message);
+		}
+		for(SpectatorUser su : spectators) {
+			su.sendMessage(message);
+		}
 	}
 	
-	public void sendMessage(String message) {
+	public void sendMessage(BaseComponent[] message) {
 		for(User user : users) {
 			user.sendMessage(message);
 		}

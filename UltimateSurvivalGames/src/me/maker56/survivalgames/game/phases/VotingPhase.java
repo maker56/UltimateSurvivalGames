@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.arena.Arena;
-import me.maker56.survivalgames.chat.JSONMessage;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
 import me.maker56.survivalgames.game.Game;
 import me.maker56.survivalgames.game.GameState;
 import me.maker56.survivalgames.user.User;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.ClickEvent.Action;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -241,7 +244,9 @@ public class VotingPhase {
 			
 			int i = 1;
 			for(Arena arena : voteArenas) {
-				game.sendMessage(new JSONMessage("§3" + i + "§7. §6" + arena.getName() + " §7(§e" + arena.getVotes() + "§7)").tooltip("Click to vote for arena " + arena.getName()).command("/sg vote " + i));
+				game.sendMessage(new ComponentBuilder("§3" + i + "§7. §6" + arena.getName() + " §7(§e" + arena.getVotes() + "§7)")
+				.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote for arena " + arena.getName()).create()))
+				.event(new ClickEvent(Action.RUN_COMMAND, "/sg vote " + i)).create());
 				i++;
 			}
 		}

@@ -5,7 +5,7 @@
 	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/uPlugins/Libraries/Vault.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/uPlugins/Libraries/BarAPI.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/uPlugins/Libraries/PermissionsEx.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/uPlugins/Libraries/spigot 1.8 r01.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/uPlugins/Libraries/worldedit-bukkit-6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/SurvivalGames Testserver/spigot.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
