@@ -122,7 +122,6 @@ public class VotingPhase {
 					return;
 				}
 				
-				game.updateBossBarMessage();
 				game.updateScoreboard();
 				time--;
 

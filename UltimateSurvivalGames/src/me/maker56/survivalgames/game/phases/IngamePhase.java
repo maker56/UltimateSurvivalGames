@@ -125,7 +125,7 @@ public class IngamePhase {
 						return;
 					}
 				}
-				game.updateBossBarMessage();
+
 				game.updateScoreboard();
 				time--;
 			}

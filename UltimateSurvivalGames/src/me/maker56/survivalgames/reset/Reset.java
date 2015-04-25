@@ -881,6 +881,7 @@ public class Reset extends Thread {
 							if(!chunkString.equals(currentItemChunk)) {
 								currentItemChunk = chunkString;
 								resetEntities(chunkString);
+								Bukkit.broadcastMessage(currentItemChunk);
 							}
 							
 							int index = y * width * length + z * width + x;

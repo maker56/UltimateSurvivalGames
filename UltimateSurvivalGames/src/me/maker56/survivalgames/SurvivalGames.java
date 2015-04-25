@@ -5,7 +5,6 @@ import java.io.IOException;
 import me.maker56.survivalgames.arena.ArenaManager;
 import me.maker56.survivalgames.arena.chest.ChestListener;
 import me.maker56.survivalgames.arena.chest.ChestManager;
-import me.maker56.survivalgames.barapi.BarAPIManager;
 import me.maker56.survivalgames.commands.CommandSG;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
@@ -37,7 +36,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 public class SurvivalGames extends JavaPlugin {
 	
 	public static SurvivalGames instance;
-	public static FileConfiguration messages, database, signs, reset, chestloot, scoreboard, barapi, kits;
+	public static FileConfiguration messages, database, signs, reset, chestloot, scoreboard, kits;
 	
 	public static ArenaManager arenaManager;
 	public static GameManager gameManager;
@@ -93,7 +92,6 @@ public class SurvivalGames extends JavaPlugin {
 		PermissionHandler.reinitializeDatabase();
 		Game.reinitializeDatabase();
 		MessageHandler.reload();
-		BarAPIManager.reinitializeDatabase();
 		
 		if(setupEconomy())
 			System.out.println("[SurvivalGames] Vault found!");
@@ -202,14 +200,6 @@ public class SurvivalGames extends JavaPlugin {
 	public static void saveScoreboard() {
 		try {
 			scoreboard.save("plugins/SurvivalGames/scoreboard.yml");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void saveBarAPI() {
-		try {
-			barapi.save("plugins/SurvivalGames/barapi.yml");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

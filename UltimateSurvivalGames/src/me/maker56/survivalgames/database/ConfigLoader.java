@@ -1,12 +1,12 @@
 package me.maker56.survivalgames.database;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.game.GameState;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -154,34 +154,9 @@ public class ConfigLoader {
 	}
 	
 	public static void reloadBarAPI() {
-		if(!Bukkit.getPluginManager().isPluginEnabled("BarAPI"))
-			return;
-		System.out.println("[SurvivalGames] BarAPI found!");
-		FileConfiguration c = new YMLLoader("plugins/SurvivalGames", "barapi.yml").getFileConfiguration();
-		SurvivalGames.barapi = c;
-		
-		c.options().header("This configuration is for the BarAPI support.\n" +
-				"This function works only if the plugin \"BarAPI\" is installed! (http://dev.bukkit.org/bukkit-plugins/bar-api/)\n" +
-				"You can disable the BarAPI for one gamestate if you set it blank.\n" +
-				"\n" +
-				"### VARIABLES ###\n" +
-				"%0% - required players to start\n" +
-				"%1% - current amount of playing players\n" +
-				"%2% - maximum limit of players\n" +
-				"%3% - name of the lobby\n" +
-				"%4% - name of the current arena (return a empty text if no arena is selected)" +
-				"%5% - time left in seconds (return a empty text if no timer is running)");
-	
-		c.addDefault("State.WAITING", "&eWaiting for &b%0% &eplayers to start the game");
-		c.addDefault("State.VOTING", "&eYou're in lobby &b%3%&e! The voting ends in &b%5%&e seconds");
-		c.addDefault("State.COOLDOWN", "&ePrepare for start! &b%1% &etributes are playing");
-		c.addDefault("State.INGAME", "");
-		c.addDefault("State.DEATHMATCH", "&eThe deathmatch ends in &b%5%&e seconds");
-		
-		c.addDefault("Enabled", true);
-		
-		c.options().copyDefaults(true);
-		SurvivalGames.saveBarAPI();
+		File f = new File("plugins/SurvivalGames/barapi.yml");
+		if(f.exists())
+			f.delete();
 	}
 	
 	public static void reloadScoreboard() {

@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/uPlugins/Libraries/Vault.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/uPlugins/Libraries/BarAPI.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/uPlugins/Libraries/PermissionsEx.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/uPlugins/Libraries/worldedit-bukkit-6.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Mats_2/Desktop/SurvivalGames Testserver/spigot.jar"/>

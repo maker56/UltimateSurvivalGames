@@ -6,7 +6,6 @@ import me.maker56.survivalgames.commands.permission.Permission;
 import me.maker56.survivalgames.commands.permission.PermissionHandler;
 import me.maker56.survivalgames.database.ConfigReloader;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -44,7 +43,6 @@ public class ConfigArgument {
 					ConfigReloader.reloadSigns();
 					ConfigReloader.reloadChestloot();
 					ConfigReloader.reloadScoreboard();
-					ConfigReloader.reloadBarAPI();
 					p.sendMessage(MessageHandler.getMessage("prefix") + "You've reloaded all configuration files successfully!");
 					return true;
 				}
@@ -69,15 +67,8 @@ public class ConfigArgument {
 				} else if(con.equalsIgnoreCase("scoreboard")) {
 					ConfigReloader.reloadScoreboard();
 					p.sendMessage(MessageHandler.getMessage("prefix") + "You've reloaded the scoreboard.yml successfully!");
-				} else if(con.equalsIgnoreCase("barapi")) {
-					if(!Bukkit.getPluginManager().isPluginEnabled("BarAPI")) {
-						p.sendMessage(MessageHandler.getMessage("prefix") + "§cThe plugin BarAPI isn't loaded!");
-						return true;
-					}
-					ConfigReloader.reloadBarAPI();
-					p.sendMessage(MessageHandler.getMessage("prefix") + "You've reloaded the barapi.yml successfully!");
 				} else {
-					p.sendMessage(MessageHandler.getMessage("config-error-name").replace("%0%", "/sg config reload [MESSAGES/SIGNS/DATABASE/CONFIG/CHESTLOOT]"));
+					p.sendMessage(MessageHandler.getMessage("config-error-name").replace("%0%", "/sg config reload [MESSAGES/SIGNS/DATABASE/CONFIG/CHESTLOOT/SCOREBOARD]"));
 					return true;
 				}
 				

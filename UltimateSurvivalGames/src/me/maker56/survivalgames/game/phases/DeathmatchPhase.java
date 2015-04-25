@@ -95,7 +95,7 @@ public class DeathmatchPhase {
 					
 				}
 				
-				game.updateBossBarMessage();
+
 				game.updateScoreboard();
 				time--;
 			}

@@ -3,12 +3,10 @@ package me.maker56.survivalgames.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.confuser.barapi.BarAPI;
 import me.maker56.survivalgames.SurvivalGames;
 import me.maker56.survivalgames.Util;
 import me.maker56.survivalgames.arena.Arena;
 import me.maker56.survivalgames.arena.chest.Chest;
-import me.maker56.survivalgames.barapi.BarAPIManager;
 import me.maker56.survivalgames.commands.messages.MessageHandler;
 import me.maker56.survivalgames.events.UserLobbyJoinedEvent;
 import me.maker56.survivalgames.events.UserLobbyLeftEvent;
@@ -260,7 +258,7 @@ public class Game {
 		SurvivalGames.signManager.updateSigns();
 		updateScoreboard();
 		checkForStart();
-		updateBossBarMessage();
+//		updateBossBarMessage();
 		Bukkit.getPluginManager().callEvent(new UserLobbyJoinedEvent(user, this));
 	}
 	
@@ -287,10 +285,7 @@ public class Game {
 		checkForCancelStart();
 		updateScoreboard();
 		SurvivalGames.signManager.updateSigns();
-		updateBossBarMessage();
-		if(Bukkit.getPluginManager().isPluginEnabled("BarAPI")) {
-			BarAPI.removeBar(user.getPlayer());
-		}
+//		updateBossBarMessage();
 		Bukkit.getPluginManager().callEvent(new UserLobbyLeftEvent(user.getPlayer(), this));
 	}
 	
@@ -448,8 +443,8 @@ public class Game {
 	
 	public void setCurrentArena(Arena arena) {
 		this.arena = arena;
-		if(arena != null)
-			updateBossBarMessage();
+//		if(arena != null)
+//			updateBossBarMessage();
 	}
 	
 	public Arena getCurrentArena() {
@@ -460,7 +455,7 @@ public class Game {
 		this.state = state;
 		if(SurvivalGames.signManager != null)
 			SurvivalGames.signManager.updateSigns();
-		updateBossBarMessage();
+//		updateBossBarMessage();
 	}
 	
 	public List<User> getUsers() {
@@ -625,98 +620,98 @@ public class Game {
 		user.getPlayer().setScoreboard(sp.getScoreboard());
 	}
 	
-	// BARAPI
+	// BARAPI (OUTDATED)
 	
-	private String cBarapi = null;
-	private float cPercentBarapi = 100;
-	
-	public void updateBossBarMessage() {
-		if(Bukkit.getPluginManager().isPluginEnabled("BarAPI")) {
-			GameState state = getState();
-			if(BarAPIManager.messages.containsKey(state)) {
-				
-				String str = BarAPIManager.messages.get(state);
-				
-				str = str.replace("%0%", Integer.valueOf(getRequiredPlayers()).toString());
-				str = str.replace("%1%", Integer.valueOf(getPlayingUsers()).toString());
-				str = str.replace("%2%", Integer.valueOf(getMaximumPlayers()).toString());
-				str = str.replace("%3%", getName());
-				str = str.replace("%4%", getCurrentArena() == null ? "" : getCurrentArena().getName());
-				
-				if(str.contains("%5%")) {
-					int time = -1;
-					float maxtime = 0;
-					
-					if(state == GameState.VOTING) {
-						time = getVotingPhrase().getTime();
-						maxtime = getLobbyTime();
-					} else if(state == GameState.COOLDOWN) {
-						time = getCooldownPhrase().getTime();
-						maxtime = getCooldownTime();
-					} else if(state == GameState.INGAME) {
-						time = getIngamePhrase().getTime();
-						maxtime = getCurrentArena().getAutomaticlyDeathmatchTime();
-					} else if(state == GameState.DEATHMATCH) {
-						time = getDeathmatch().getTime();
-						maxtime = getDeathmatch().getStartTime();
-					}
-					
-					if(time == -1) {
-						str = str.replace("%5%", "");
-					} else {
-						if(maxtime > 0) {
-							cPercentBarapi = ((float)time / maxtime) * 100;
-						}
-						
-						str = str.replace("%5%", Integer.valueOf(time).toString());
-					}
-					
-					
-				} else {
-					cPercentBarapi = 100;
-				}
-				
-				cBarapi = str;
-				
-				
-				Util.debug("Updated bossbar in game " + getName() + ": " + str + " (" + cPercentBarapi + "%)");
-				if(str.isEmpty()) {
-					for(User user : getUsers()) {
-						BarAPI.removeBar(user.getPlayer());
-					}
-				} else {
-					for(User user : getUsers()) {
-						BarAPI.setMessage(user.getPlayer(), str, cPercentBarapi);
-					}
-				}
-				
-			} else {
-				if(cBarapi != null) {
-					for(User user : getUsers()) {
-						BarAPI.removeBar(user.getPlayer());
-					}
-					cBarapi = null;
-				}
-			}
-		}
-	}
-	
-	public String getCurrentBossBarMessage() {
-		return cBarapi;
-	}
-	
-	public float getCurrentBossBarPercentage() {
-		return cPercentBarapi;
-	}
-	
-	public void updateBossBar(User user) {
-		if(cBarapi != null && Bukkit.getPluginManager().isPluginEnabled("BarAPI")) {
-			if(cBarapi.isEmpty()) {
-				BarAPI.removeBar(user.getPlayer());
-			} else {
-				BarAPI.setMessage(user.getPlayer(), cBarapi, cPercentBarapi);
-			}	
-		}
-	}
+//	private String cBarapi = null;
+//	private float cPercentBarapi = 100;
+//	
+//	public void updateBossBarMessage() {
+//		if(Bukkit.getPluginManager().isPluginEnabled("BarAPI")) {
+//			GameState state = getState();
+//			if(BarAPIManager.messages.containsKey(state)) {
+//				
+//				String str = BarAPIManager.messages.get(state);
+//				
+//				str = str.replace("%0%", Integer.valueOf(getRequiredPlayers()).toString());
+//				str = str.replace("%1%", Integer.valueOf(getPlayingUsers()).toString());
+//				str = str.replace("%2%", Integer.valueOf(getMaximumPlayers()).toString());
+//				str = str.replace("%3%", getName());
+//				str = str.replace("%4%", getCurrentArena() == null ? "" : getCurrentArena().getName());
+//				
+//				if(str.contains("%5%")) {
+//					int time = -1;
+//					float maxtime = 0;
+//					
+//					if(state == GameState.VOTING) {
+//						time = getVotingPhrase().getTime();
+//						maxtime = getLobbyTime();
+//					} else if(state == GameState.COOLDOWN) {
+//						time = getCooldownPhrase().getTime();
+//						maxtime = getCooldownTime();
+//					} else if(state == GameState.INGAME) {
+//						time = getIngamePhrase().getTime();
+//						maxtime = getCurrentArena().getAutomaticlyDeathmatchTime();
+//					} else if(state == GameState.DEATHMATCH) {
+//						time = getDeathmatch().getTime();
+//						maxtime = getDeathmatch().getStartTime();
+//					}
+//					
+//					if(time == -1) {
+//						str = str.replace("%5%", "");
+//					} else {
+//						if(maxtime > 0) {
+//							cPercentBarapi = ((float)time / maxtime) * 100;
+//						}
+//						
+//						str = str.replace("%5%", Integer.valueOf(time).toString());
+//					}
+//					
+//					
+//				} else {
+//					cPercentBarapi = 100;
+//				}
+//				
+//				cBarapi = str;
+//				
+//				
+//				Util.debug("Updated bossbar in game " + getName() + ": " + str + " (" + cPercentBarapi + "%)");
+//				if(str.isEmpty()) {
+//					for(User user : getUsers()) {
+//						BarAPI.removeBar(user.getPlayer());
+//					}
+//				} else {
+//					for(User user : getUsers()) {
+//						BarAPI.setMessage(user.getPlayer(), str, cPercentBarapi);
+//					}
+//				}
+//				
+//			} else {
+//				if(cBarapi != null) {
+//					for(User user : getUsers()) {
+//						BarAPI.removeBar(user.getPlayer());
+//					}
+//					cBarapi = null;
+//				}
+//			}
+//		}
+//	}
+//	
+//	public String getCurrentBossBarMessage() {
+//		return cBarapi;
+//	}
+//	
+//	public float getCurrentBossBarPercentage() {
+//		return cPercentBarapi;
+//	}
+//	
+//	public void updateBossBar(User user) {
+//		if(cBarapi != null && Bukkit.getPluginManager().isPluginEnabled("BarAPI")) {
+//			if(cBarapi.isEmpty()) {
+//				BarAPI.removeBar(user.getPlayer());
+//			} else {
+//				BarAPI.setMessage(user.getPlayer(), cBarapi, cPercentBarapi);
+//			}	
+//		}
+//	}
 
 }
