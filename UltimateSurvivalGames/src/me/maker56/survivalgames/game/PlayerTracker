@@ -1,0 +1,88 @@
+package me.maker56.survivalgames.game;
+
+import java.text.DecimalFormat;
+
+import me.maker56.survivalgames.SurvivalGames;
+import me.maker56.survivalgames.game.Game;
+import me.maker56.survivalgames.game.GameState;
+import me.maker56.survivalgames.user.User;
+import me.maker56.survivalgames.user.UserManager;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+
+public class PlayerTracker {
+
+	private static final UserManager um = SurvivalGames.userManger;
+
+	public static void startTaskTimer() {
+		new BukkitRunnable() {
+			public void run() {
+				for (Player pl : Bukkit.getOnlinePlayers()) {
+					if (um.isPlaying(pl.getName())) {
+						User user = um.getUser(pl);
+						Game game = user.getGame();
+						GameState state = game.getState();
+						if (state == GameState.INGAME || state == GameState.DEATHMATCH) {
+							for(ItemStack item : pl.getInventory().getContents()){
+								if(item!=null){
+									Material mat = item.getType();
+									if(mat == Material.COMPASS){
+										// THE ITEM META -- ENABLES CHANGING THE ITEM'S NAME TO TELL WHERE THE LOCATION IS
+										ItemMeta meta = item.getItemMeta();
+										
+										// THE PLAYER IS SET TO NULL FOR NOW SO WE CAN CHANGE IT LATER
+										Player result = null;
+										
+										// THE LAST DISTANCE -- THIS IS THE AMOUNT OF DISTANCE BY DEFAULT
+										double lastDistance = 1.7976931348623157E+308D;
+										
+										// CHECK ALL PLAYERS AND IF THEY'RE PLAYING, AND CHECK THE DISTANCE, AND SET EVERYTHING
+										for(Player p : Bukkit.getOnlinePlayers()){
+											if(pl.getPlayer().getName()!=p.getName()){
+												if(um.isPlaying(p.getName()) && !um.isSpectator(p.getName())){
+													double distance = pl.getPlayer().getLocation().distance(p.getLocation());
+													if(distance < lastDistance){
+														lastDistance = distance;
+														result = p;
+													}
+												}
+											}
+										}
+										
+										// IF THE PLAYER IS NOT NULL, RETURN PLAYER AND DISTANCE
+										if(result!=null){
+											Double blocks = Double.valueOf(pl.getPlayer().getLocation().distance(result.getLocation()));
+											Double blockl = Double.valueOf(round(blocks.doubleValue()));
+											String blocka = blockl.toString();
+											String playera = result.getDisplayName().toString();
+											pl.setCompassTarget(result.getPlayer().getLocation());
+											meta.setDisplayName("§d§lNEAREST PLAYER: §e"+playera+" §5- §d§lDISTANCE: §e"+blocka);
+										}
+										// IF THE PLAYER IS NULL, RETURN NOBODY
+										else{
+											meta.setDisplayName("§d§lNEAREST PLAYER: §cNo Nearby Players §5- §d§lDISTANCE: §e0");
+										}
+										
+										// SET THE ITEMMETA NO MATTER WHAT
+										item.setItemMeta(meta);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}.runTaskTimer(SurvivalGames.instance, 0, 1*20);
+	}
+
+	public static double round(double d) {
+		DecimalFormat twoDForm = new DecimalFormat("#");
+		return Double.valueOf(twoDForm.format(d)).doubleValue();
+	}
+
+}
