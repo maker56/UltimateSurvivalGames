@@ -23,6 +23,7 @@ import me.maker56.survivalgames.metrics.Metrics;
 import me.maker56.survivalgames.scoreboard.ScoreBoardManager;
 import me.maker56.survivalgames.sign.SignManager;
 import me.maker56.survivalgames.user.UserManager;
+import me.maker56.survivalgames.game.PlayerTracker;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
@@ -130,6 +131,7 @@ public class SurvivalGames extends JavaPlugin {
 		}
 		
 		signManager.updateSigns();
+		PlayerTracker.startTaskTimer();
 	}
 	
 	// UPDATE CHECKING
