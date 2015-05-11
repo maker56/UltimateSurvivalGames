@@ -82,6 +82,7 @@ public class SignManager {
 		}
 	}
 	
+	
 	public boolean isSign(Location loc) {
 		return signs.containsKey(loc);
 	}
@@ -149,11 +150,11 @@ public class SignManager {
 				s.update();
 			} else {
 				if(SurvivalGames.database.contains("Games." + lobby)) {
-					s.setLine(1, "ง4Game not");
-					s.setLine(2, "ง4loaded!");
+					s.setLine(1, "ยง4Game not");
+					s.setLine(2, "ยง4loaded!");
 				} else {
-					s.setLine(1, "ง4Game not");
-					s.setLine(2, "ง4found!");
+					s.setLine(1, "ยง4Game not");
+					s.setLine(2, "ยง4found!");
 				}
 				s.update();
 			}
